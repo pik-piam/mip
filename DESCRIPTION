@@ -1,0 +1,25 @@
+Package: mip
+Type: Package
+Title: Comparison of multi-model runs
+Version: 0.95.0
+Date: 2017-09-18
+Author: David Klein, Benjamin Leon Bodirsky, Florian Humpenoeder, Lavinia Baumstark, Jerome Hilaire
+Maintainer: David Klein <dklein@pik-potsdam.de>
+Description: Package contains generic functions to produce comparison plots of multi-model runs.
+License: BSD_2_clause + file LICENSE
+Depends: R(>= 2.10.0),
+         quitte, 
+         magclass
+Imports: ggplot2, 
+         dplyr, 
+         RColorBrewer, 
+         plotly, 
+         shiny, 
+         reshape2, 
+         data.table, 
+         lusweave (>= 1.43.2), 
+         trafficlight, 
+         gridExtra
+RoxygenNote: 6.0.1
+LazyData: yes
+Suggests: testthat

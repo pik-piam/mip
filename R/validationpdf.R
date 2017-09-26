@@ -9,6 +9,7 @@
 #' @param digits integer indicating the number of digits to be shown.
 #' @param filter Additional filter to be applied on the data to only plot a subset of the provided data
 #' @param prefix Prefix which will be put in front of each part title (useful if validation is integrated into a bigger document)
+#' @param hideEmptySection removes sections in output file which would be empty for the reason that variables in input 'x' has have correspondance in the hist file
 #' @param debug Switch to activate or deactivate debug mode.
 #' @author Jan Philipp Dietrich
 #' @importFrom magclass as.magpie ndata dimSums nyears getRegions getNames nregions
@@ -19,7 +20,7 @@
 #' @export
 #' 
 
-validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_historical=FALSE, digits=3, filter=NULL, prefix=NULL, debug=getOption("debug")) {
+validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_historical=FALSE, digits=3, filter=NULL, prefix=NULL, hideEmptySection=FALSE, debug=getOption("debug")) {
   if(is.null(debug)) debug <- FALSE
   styles <- c("trafficlight","comparison","detailed")
   if(!(style %in% styles)) stop("Unknown style \"",style,"\", please use one of the following: ",paste(styles,collapse=", "))
@@ -252,6 +253,11 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     on.exit(swclose(sw, clean_output=!debug, engine="knitr"))
   }
   stats <- list()
+  if (hideEmptySection)
+  {
+    vars <- vars[vars$fullname %in% levels(hist$fullname),]
+    vars <- droplevels(vars)
+  }
   for(l1 in levels(vars$level1)) {
     cat("...",l1,"\n")
     swlatex(sw,"\\clearpage")

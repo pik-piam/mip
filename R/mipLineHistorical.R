@@ -94,8 +94,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
     if(!is.null(x_hist)) {
       # remove missing values from the historic data
       x_hist <- x_hist[!is.na(x_hist$value),]
-      p <- p + geom_line(data=x_hist, aes_string(x="period",y="value",color=color.dim,linetype=linetype.dim),size=1, alpha=0.15)
-      p <- p + geom_point(data=x_hist, aes_string(x="period",y="value",color=color.dim),size=MarkerSize, shape="+")
+      p <- p + geom_line(data=x_hist, aes_string(x="period",y="value",color="moscen"),size=1, alpha=0.15)
+      p <- p + geom_point(data=x_hist, aes_string(x="period",y="value",color="moscen"),size=MarkerSize, shape="+")
     }
     return(p)
   }
@@ -129,10 +129,10 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   }
   
   # datasources ordering // matrix // needed for colors and legend
-  sources <- unique(x[c("model","scenario")])
-  if(!is.null(x_hist)) sources <- rbind(sources, unique(x_hist[c("model","scenario")]))
+  sources <- levels(x$moscen)
+  if(!is.null(x_hist)) sources <- c(sources, levels(x_hist$moscen))
   if(!is.null(x_proj) & leg.proj){
-    sources <- rbind(sources, unique(x_proj[c("model","scenario")]))
+    sources <- c(sources, levels(x_proj$moscen))
   }
 
   sources <- as.vector(interaction(sources))
@@ -228,7 +228,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   if(lsh$col2>0 & !is.null(x_hist)){
     l2 <- ggplot(data=x_hist)
     l2 <- l2 + geom_line(aes_(x=~period,y=~value,color=~model),size=1,alpha=.15)
-    l2 <- l2 + geom_point(aes_(x=~period,y=~value,color=~model),size=1.5,shape=1)
+    l2 <- l2 + geom_point(aes_(x=~period,y=~value,color=~model),size=3.5,shape="+")
     l2 <- l2 + scale_color_manual(values=as.vector(color_set[(lsh$col1+1):(lsh$col1+lsh$col2)]),name="Historical data")
     l2 <- l2 + theme_legend()
     leg[["historical"]] <- g_legend(l2)  

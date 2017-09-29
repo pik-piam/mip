@@ -39,6 +39,10 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj")) {
 
   x <- as.quitte(x)
+  
+  class(x) <- setdiff(class(x),"data.table")
+  class(x_hist) <- setdiff(class(x_hist),"data.table")
+  
   x <- droplevels(x)
   x <- x[!is.na(x$value),]
   if(all(is.na(x$scenario))) x$scenario <- ""

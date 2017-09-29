@@ -10,6 +10,7 @@
 #' @param filter Additional filter to be applied on the data to only plot a subset of the provided data
 #' @param prefix Prefix which will be put in front of each part title (useful if validation is integrated into a bigger document)
 #' @param hideEmptySection removes sections in output file which would be empty for the reason that variables in input 'x' has have correspondance in the hist file
+#' @param show_stats boolean specifying whether additional statistic section should show up or not
 #' @param debug Switch to activate or deactivate debug mode.
 #' @author Jan Philipp Dietrich
 #' @importFrom magclass as.magpie ndata dimSums nyears getRegions getNames nregions
@@ -20,7 +21,7 @@
 #' @export
 #' 
 
-validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_historical=FALSE, digits=3, filter=NULL, prefix=NULL, hideEmptySection=FALSE, debug=getOption("debug")) {
+validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_historical=FALSE, digits=3, filter=NULL, prefix=NULL, hideEmptySection=FALSE, show_stats=TRUE, debug=getOption("debug")) {
   if(is.null(debug)) debug <- FALSE
   styles <- c("trafficlight","comparison","detailed")
   if(!(style %in% styles)) stop("Unknown style \"",style,"\", please use one of the following: ",paste(styles,collapse=", "))
@@ -289,7 +290,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
       }
     }
   }
-  if(!is.null(stats$trafficlight) | length(xtrax)>0 | length(xtrahist)>0 | !is.null(stats$ignored_all0) ) {
+  if(show_stats & (!is.null(stats$trafficlight) | length(xtrax)>0 | length(xtrahist)>0 | !is.null(stats$ignored_all0)) ) {
     swlatex(sw,"\\clearpage")
     swlatex(sw,paste0("\\part{",prefix,"Statistics}"))  
     if(!is.null(stats$trafficlight)) {
@@ -298,6 +299,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
       tl      <- stats$trafficlight
       
       tlsummary <- function(tl) {
+        tl[is.na(tl)] <- -1
         summary <- data.frame(green = sum(tl$value==2),
                               yellow = sum(tl$value==1),
                               red = sum(tl$value==0),

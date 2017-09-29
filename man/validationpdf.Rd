@@ -6,7 +6,7 @@
 \usage{
 validationpdf(x, hist, file = "validation.pdf", style = "comparison",
   only_historical = FALSE, digits = 3, filter = NULL, prefix = NULL,
-  hideEmptySection = FALSE, debug = getOption("debug"))
+  hideEmptySection = FALSE, show_stats = TRUE, debug = getOption("debug"))
 }
 \arguments{
 \item{x}{Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif file)}
@@ -27,6 +27,8 @@ it will write its content to the file}
 \item{prefix}{Prefix which will be put in front of each part title (useful if validation is integrated into a bigger document)}
 
 \item{hideEmptySection}{removes sections in output file which would be empty for the reason that variables in input 'x' has have correspondance in the hist file}
+
+\item{show_stats}{boolean specifying whether additional statistic section should show up or not}
 
 \item{debug}{Switch to activate or deactivate debug mode.}
 }

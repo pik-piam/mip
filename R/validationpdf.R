@@ -63,16 +63,16 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   x$fullname    <- paste0(x$variable, " (",x$unit,")")
   hist$fullname <- paste0(hist$variable, " (",hist$unit,")")
   
-  #vars     <- intersect(x$fullname,hist$fullname)
   vars     <- x$fullname
-  xtrax    <- setdiff(x$fullname,hist$fullname)
-  xtrahist <- setdiff(hist$fullname,x$fullname)
- 
+
   remove_symbols <- function(x) return(gsub("(\\++|\\-+)\\|","", x))
   extract_symbols <- function(x) return(gsub("(\\+|\\-)\\|","\\1",gsub("[^\\|^\\+^\\-]*","",x)))
   
   x$fullname    <- as.factor(remove_symbols(x$fullname))
   hist$fullname <- as.factor(remove_symbols(hist$fullname))
+  
+  xtrax    <- setdiff(x$fullname,hist$fullname)
+  xtrahist <- setdiff(hist$fullname,x$fullname)
   
   x$variable    <- remove_symbols(x$variable)
   hist$variable <- remove_symbols(hist$variable)

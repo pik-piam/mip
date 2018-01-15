@@ -328,14 +328,26 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     }
     if(!is.null(stats$ignored_all0)) {
       swlatex(sw,"\\section{Ignored data}")
-      if(!is.null(stats$ignored_all0$x)) {
-        swlatex(sw,"Data contains only a mix of 0 and NA values and is ignored.")
-        swR(sw,cat,stats$ignored_all0$x,sep="\n")
+      if(!is.null(stats$ignored_all0$x) && !is.null(stats$ignored_all0$hist)) {
+        swlatex(sw, "Variables of data and validation data that only contain a mix of 0 and NA values and are ignored.")
+        swR(sw, cat, intersect(stats$ignored_all0$x, stats$ignored_all0$hist), sep="\n")
       }
-      if(!is.null(stats$ignored_all0$hist)) {
-        swlatex(sw,"Validation data contains only a mix of 0 and NA values and is ignored.")
-        swR(sw,cat,stats$ignored_all0$hist,sep="\n")
+      if(!is.null(stats$ignored_all0$x)){
+        swlatex(sw, "Data contains only a mix of 0 and NA values and is ignored, but validation data contains other values.")
+        swR(sw, cat,setdiff(stats$ignored_all0$x, stats$ignored_all0$hist) ,sep="\n")
       }
+      if(!is.null(stats$ignored_all0$hist)){
+        swlatex(sw, "Validation data contains only a mix of 0 and NA values and is ignored, but data contains other values.")
+        swR(sw, cat,setdiff(stats$ignored_all0$hist, stats$ignored_all0$x) ,sep="\n")
+      }
+      # if(!is.null(stats$ignored_all0$x)) {
+      #   swlatex(sw,"Data contains only a mix of 0 and NA values and is ignored.")
+      #   swR(sw,cat,stats$ignored_all0$x,sep="\n")
+      # }
+      # if(!is.null(stats$ignored_all0$hist)) {
+      #   swlatex(sw,"Validation data contains only a mix of 0 and NA values and is ignored.")
+      #   swR(sw,cat,stats$ignored_all0$hist,sep="\n")
+      # }
     }
     if(length(xtrax)>0 | length(xtrahist)>0) {
       swlatex(sw,"\\section{Non-Matching Data}")

@@ -4,10 +4,12 @@
 \alias{scenTool}
 \title{scenTool}
 \usage{
-scenTool(file = NULL)
+scenTool(file = NULL, valfile = NULL)
 }
 \arguments{
-\item{file}{CSV file in MIF format (NULL by default; in this case the user can upload files directly in the tool)}
+\item{file}{model data in CSV file in MIF format (NULL by default; in this case the user can upload files directly in the tool)}
+
+\item{valfile}{validation data in CSV file in MIF format (NULL by default; in this case the user can upload files directly in the tool)}
 }
 \description{
 scenTool allows to explore and visualize time series of modelling results. The app is based on shiny opens in an external web brower. For more details: https://github.com/flohump/scenTool

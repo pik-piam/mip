@@ -1,5 +1,5 @@
 #' Create a validation PDF file
-#' 
+#'
 #' @param x     Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif file)
 #' @param hist  Validation data.All formats allowed which can be converted to quitte (including characters containing the path to a mif file)
 #' @param file file name of the output PDF or a Sweave object. If a sweave object is provided the function will return the updated object, otherwise
@@ -12,6 +12,7 @@
 #' @param hideEmptySection removes sections in output file which would be empty for the reason that variables in input 'x' has have correspondance in the hist file
 #' @param show_stats boolean specifying whether additional statistic section should show up or not
 #' @param debug Switch to activate or deactivate debug mode.
+#' @param pdfStyle list of style-options for the pdf
 #' @author Jan Philipp Dietrich
 #' @importFrom magclass as.magpie ndata dimSums nyears getRegions getNames nregions
 #' @importFrom quitte as.quitte getRegs
@@ -19,9 +20,9 @@
 #' @importFrom trafficlight trafficlight
 #' @importFrom reshape2 melt
 #' @export
-#' 
+#'
 
-validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_historical=FALSE, digits=3, filter=NULL, prefix=NULL, hideEmptySection=FALSE, show_stats=TRUE, debug=getOption("debug")) {
+validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_historical=FALSE, digits=3, filter=NULL, prefix=NULL, hideEmptySection=FALSE, show_stats=TRUE, debug=getOption("debug"), pdfStyle=NULL) {
   if(is.null(debug)) debug <- FALSE
   styles <- c("trafficlight","comparison","detailed")
   if(!(style %in% styles)) stop("Unknown style \"",style,"\", please use one of the following: ",paste(styles,collapse=", "))
@@ -31,7 +32,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     # strip down NAs
     hist <- hist[!is.na(hist$value),]
   }
-  
+
   #rename "World" in GLO
   .tmp <- function(x) {
     if(is.factor(x)) {
@@ -44,39 +45,39 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   }
   x$region <- .tmp(x$region)
   hist$region <- .tmp(hist$region)
-  
+
   if(all(is.na(x$scenario))) x$scenario <- "default"
-  
+
   tmp <- function(filter,x) {
     if(is.null(filter)) return(TRUE)
     else return(grepl(filter,x))
   }
-  
+
   #filter data
   x <- droplevels(x[!is.na(x$value) & tmp(filter,x$variable),])
   hist <- droplevels(hist[!is.na(hist$value) &  tmp(filter,hist$variable),])
   if(only_historical)  hist <- droplevels(hist[hist$scenario=="historical",])
-  
+
   if(dim(x)[1]==0) stop("No data remaining to be validated after all filter have been applied!")
   if(dim(hist)[1]==0) stop("No validation data remaining after all filter have been applied!")
-  
+
   x$fullname    <- paste0(x$variable, " (",x$unit,")")
   hist$fullname <- paste0(hist$variable, " (",hist$unit,")")
-  
+
   vars     <- x$fullname
 
   remove_symbols <- function(x) return(gsub("(\\++|\\-+)\\|","", x))
   extract_symbols <- function(x) return(gsub("(\\+|\\-)\\|","\\1",gsub("[^\\|^\\+^\\-]*","",x)))
-  
+
   x$fullname    <- as.factor(remove_symbols(x$fullname))
   hist$fullname <- as.factor(remove_symbols(hist$fullname))
-  
+
   xtrax    <- setdiff(x$fullname,hist$fullname)
   xtrahist <- setdiff(hist$fullname,x$fullname)
-  
+
   x$variable    <- remove_symbols(x$variable)
   hist$variable <- remove_symbols(hist$variable)
- 
+
   splitvars <- function(vars, nlevel=4) {
     properties <- extract_symbols(vars)
     fullname   <- remove_symbols(vars)
@@ -98,13 +99,13 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     return(out)
   }
   vars <- splitvars(vars, nlevel=4)
-  
+
   calc_digits <- function(tmpx,digits) {
     d <- max(0,-1*ceiling(log10(max(tmpx)))+digits)
     if(is.finite(d) & is.numeric(d)) return(d)
     return(0)
   }
-  
+
   prepmagpie <- function(x,hist) {
     tmpsort <- function(x){
       reg <- sort(getRegions(x))
@@ -114,9 +115,9 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     tmpx <- tmpsort(as.magpie(as.quitte(x)))
     tmphist <- tmpsort(as.magpie(as.quitte(hist)))
     regs <- intersect(getRegions(tmpx),getRegions(tmphist))
-    return(list(x=tmpx[regs,,],hist=tmphist[regs,,]))      
+    return(list(x=tmpx[regs,,],hist=tmphist[regs,,]))
   }
-  
+
   preptitle <- function(x) {
     # put unit in brackets
     x <- sub("\\.([^\\.]*)$"," (\\1)",x)
@@ -128,7 +129,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     x <- gsub(".", " | ", x, fixed=TRUE)
     return(x)
   }
-  
+
   histtables <- function(sw, m, digits) {
     dimnames(m$x)[[2]] <- sub("y","",dimnames(m$x)[[2]])
     for(s in 1:ndata(m$x)) {
@@ -149,7 +150,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
       }
     }
   }
-  
+
   styleTrafficlight <- function(sw, x, hist, stats) {
     m <- prepmagpie(x,hist)
     p <- trafficlight(m$x,m$hist, detailed=FALSE)
@@ -157,27 +158,55 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     swfigure(sw,print,p, sw_option="width=10,height=2")
     return(stats)
   }
-  
+
   styleDetailed <- function(sw, x, hist, varname, stats) {
     m <- prepmagpie(x,hist)
     name <- paste0(sub("^.*\\|","",varname["name"]), " (",x$unit[[1]],")")
-    if("GLO" %in% intersect(getRegs(x),getRegs(hist))) swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
+    if("GLO" %in% intersect(getRegs(x),getRegs(hist))) {
+      if("plot.priority"  %in% names(pdfStyle) ) {
+        prio <- pdfStyle$plot.priority
+        swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name, plot.priority = prio)
+      } else {
+        swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
+      }
+    }
     regs <- setdiff(intersect(getRegs(x),getRegs(hist)),"GLO")
-    if(length(regs)>0) swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12)
+    if(length(regs)>0) {
+      if("plot.priority"  %in% names(pdfStyle) ) {
+        prio <- pdfStyle$plot.priority
+        swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12, plot.priority = prio)
+      } else {
+        swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12)
+      }
+    }
     p <- trafficlight(m$x,m$hist)
     stats$trafficlight <- rbind(stats$trafficlight,melt(attr(p,"data")))
     swfigure(sw,print,p, sw_option="width=8,height=11")
     histtables(sw,m,digits)
     return(stats)
   }
-  
+
   styleComparison <- function(sw, x, hist, varname, stats, debug) {
     m <- prepmagpie(x,hist)
     name <- paste0(sub("^.*\\|","",varname["name"]), " (",x$unit[[1]],")")
     if(debug) save(x,hist,file = paste0("mipLineHistorical_",varname["name"],".Rda"))
-    if("GLO" %in% intersect(getRegs(x),getRegs(hist))) swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
+    if("GLO" %in% intersect(getRegs(x),getRegs(hist))) {
+      if("plot.priority"  %in% names(pdfStyle) ) {
+        prio <- pdfStyle$plot.priority
+        swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name, plot.priority = prio)
+      } else{
+        swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
+      }
+    }
     regs <- setdiff(intersect(getRegs(x),getRegs(hist)),"GLO")
-    if(length(regs)>0) swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12)
+    if(length(regs)>0) {
+      if("plot.priority"  %in% names(pdfStyle) ) {
+        prio <- pdfStyle$plot.priority
+        swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12, plot.priority = prio)
+      } else {
+        swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12)
+      }
+    }
     for(s in 1:ndata(m$x)) {
       x <- m$x[,,s]
       xc <- m$hist
@@ -189,46 +218,46 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     histtables(sw,m,digits)
     return(stats)
   }
-  
+
   hascontent <- function(stats, ...) {
     test <- list(...)
     hascontent <- TRUE
     for(n in names(test)) {
       if(all(test[[n]]$value==0, na.rm=TRUE)) {
         if(is.null(stats$ignored_all0)) stats$ignored_all0 <- list()
-        stats$ignored_all0[[n]] <- c(stats$ignored_all0[[n]],levels(droplevels(test[[n]]$fullname))) 
-        hascontent <- FALSE  
+        stats$ignored_all0[[n]] <- c(stats$ignored_all0[[n]],levels(droplevels(test[[n]]$fullname)))
+        hascontent <- FALSE
       }
     }
     stats$hascontent <- hascontent
     return(stats)
   }
-  
-  
+
+
   fillcontent <- function(sw, x, hist, varname, style, stats) {
     stats <- hascontent(stats,x=x,hist=hist)
     if(!stats$hascontent) return(stats)
 
     x$fullname <- NULL
     hist$fullname <- NULL
-    
+
     if(varname["level4"]!="") {
       cat("      ...",varname["level4"],"\n")
       swlatex(sw,paste0("\\subsubsection{",varname["level4"],"}"))
-    }  
+    }
     if(style=="trafficlight") {
       stats <- styleTrafficlight(sw, x, hist, stats)
     } else if(style=="comparison") {
-      stats <- styleComparison(sw, x, hist, varname, stats, debug) 
+      stats <- styleComparison(sw, x, hist, varname, stats, debug)
     } else if(style=="detailed") {
-      stats <- styleDetailed(sw, x, hist, varname, stats) 
+      stats <- styleDetailed(sw, x, hist, varname, stats)
     } else {
       stop("Unknown style ",style)
-    }           
-    return(stats) 
+    }
+    return(stats)
   }
-  
-  
+
+
   template <-  c("\\documentclass[a4paper, portrait ]{article}",
                  "\\setlength{\\parindent}{0in}",
                  "\\usepackage{float}",
@@ -243,14 +272,14 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
                  "\\begin{document}",
                  "<<echo=false>>=",
                  "options(width=110)",
-                 "@") 
-  
+                 "@")
+
   cat("Start preparing data...\n")
   if(is.environment(file)) {
     sw <- file
   } else {
     sw <- swopen(outfile = file, template = template)
-    swlatex(sw,c("\\title{MAgPIE Validation}","\\author{HAL 9000}","\\maketitle","\\tableofcontents"))
+    swlatex(sw,c("\\title{Model Validation}","\\author{HAL 9000}","\\maketitle","\\tableofcontents"))
     on.exit(swclose(sw, clean_output=!debug, engine="knitr"))
   }
   stats <- list()
@@ -286,18 +315,18 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
           if(dim(varname)[1]>1) warnings("There seems to be a problem with the variable names. Use only first option!")
           varname <- varname[1,]
           stats <- fillcontent(sw,x[x$fullname==varname["fullname"],],hist[hist$fullname==varname["fullname"],],varname, style, stats)
-        } 
+        }
       }
     }
   }
   if(show_stats & (!is.null(stats$trafficlight) | length(xtrax)>0 | length(xtrahist)>0 | !is.null(stats$ignored_all0)) ) {
     swlatex(sw,"\\clearpage")
-    swlatex(sw,paste0("\\part{",prefix,"Statistics}"))  
+    swlatex(sw,paste0("\\part{",prefix,"Statistics}"))
     if(!is.null(stats$trafficlight)) {
       swlatex(sw,"\\section{Traffic Lights}")
-      
+
       tl      <- stats$trafficlight
-      
+
       tlsummary <- function(tl) {
         tl[is.na(tl)] <- -1
         summary <- data.frame(green = sum(tl$value==2),
@@ -306,9 +335,9 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
                               "NA" = sum(tl$value==-1))
         summary <- rbind(summary,round(summary/sum(summary),2))
         rownames(summary) <- c("total","relative")
-        return(summary)  
+        return(summary)
       }
-      
+
       stats$summary <- list()
       for(i in grep(".",levels(tl$Var2),fixed=TRUE,invert=TRUE,value=TRUE)) {
         stats$summary[[i]] <- list(GLO=tlsummary(tl[tl$Var2==i & tl$Var1=="GLO",]),
@@ -361,7 +390,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
       }
     }
   }
-  
+
   cat("Finished preparing data!\n")
   return(stats)
 }

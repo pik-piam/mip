@@ -9,17 +9,18 @@
 #'     scenTool("testdata.mif")
 #'   }
 #' 
-#' @importFrom ggplot2 ggsave theme_minimal aes_ aes_string ylab scale_color_manual scale_x_continuous xlim
+#' @importFrom ggplot2 ggsave theme_minimal aes_ aes_string ylab scale_color_manual scale_x_continuous xlim stat_summary
 #' @importFrom reshape2 melt dcast
 #' @importFrom shiny reactiveValues observeEvent updateTextInput observe updateSelectInput reactive hoverOpts uiOutput sliderInput
 #' renderPrint renderDataTable downloadHandler fluidPage navbarPage tabPanel sidebarLayout sidebarPanel
 #' fileInput tags selectInput mainPanel tabsetPanel wellPanel fluidRow column radioButtons conditionalPanel
 #' checkboxInput checkboxGroupInput numericInput textInput downloadButton dataTableOutput h2 verbatimTextOutput
-#' shinyApp renderPlot plotOutput
+#' shinyApp renderPlot plotOutput renderUI HTML nearPoints updateCheckboxInput updateSliderInput
 #' @importFrom plotly as.widget layout plotly plotlyOutput renderPlotly ggplotly
 #' @importFrom stats as.formula complete.cases na.omit
 #' @importFrom utils write.csv
-#' @importFrom data.table fread setcolorder as.data.table data.table
+#' @importFrom data.table fread setcolorder as.data.table data.table setnames
+#' @importFrom stats median reshape
 #' @export
 #'
 scenTool <- function(file=NULL,valfile=NULL) {
@@ -312,6 +313,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
         p <- p + geom_point(aes_string(color=input$color_scatter,shape=input$shape_scatter))
         if(input$showline) p <- p + geom_line(aes_string(color=input$color_scatter))
       } else if(input$plottype == "line") {
+        Value <- NULL
         p <- ggplot(data=sel, aes(x=Year, y=Value)) + theme_minimal()
         if(input$show_val) {
           #p <- p + geom_line(data = val$val ,mapping = aes_string(linetype="Model"))

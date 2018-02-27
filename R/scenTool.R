@@ -381,13 +381,17 @@ scenTool <- function(file=NULL,valfile=NULL) {
       
       p <- p + ylab(val$ylab) + ggtitle(val$title)
 #      p <- p + theme(axis.text.x = element_text(angle=90, vjust=0.5),legend.position = "bottom",legend.direction = "vertical")
-      p <- p + theme(legend.position = "bottom",legend.direction = "vertical")
-      p <- p + guides(color = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 3)) +
-        guides(fill  = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 4)) +
-        guides(shape = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 2)) +
-        guides(alpha = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 5)) +
-        guides(linetype = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE,title = "Validation Source", order = 1)) +
-        theme(legend.box.just = "left")
+      if(input$hide_legend) {
+        p <- p + theme(legend.position="none")
+      } else {
+        p <- p + theme(legend.position = "bottom",legend.direction = "vertical")
+        p <- p + guides(color = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 3)) +
+          guides(fill  = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 4)) +
+          guides(shape = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 2)) +
+          guides(alpha = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE, order = 5)) +
+          guides(linetype = guide_legend(ncol=input$legend_ncol,title.position = "top", byrow = TRUE,title = "Validation Source", order = 1)) +
+          theme(legend.box.just = "left")
+      }
 
       return(p)
     })
@@ -541,8 +545,6 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                                    fluidRow(
                                                      column(2,
                                                             selectInput("plottype", "Plot Type", c("line","bar","area","scatter"), selected = "line"),
-                                                            checkboxInput('free_scale', 'Free Scale'),
-                                                            checkboxInput('short_legend', 'Shorten Legend'),
                                                             conditionalPanel(condition = "input.plottype == 'line'", checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL)),
                                                             conditionalPanel(condition = "input.plottype == 'line'", checkboxInput('show_val', 'Show Validation', value = FALSE, width = NULL)),
                                                             conditionalPanel(condition = "input.plottype == 'bar' || input.plottype == 'area'", checkboxInput('stack', 'Stack', value = FALSE, width = NULL)),
@@ -560,8 +562,8 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                                             #conditionalPanel(condition = "input.plottype == 'line' && input.summarize != 'Simple'", selectInput('linetype', 'Line Type', c("NULL","Model","Scenario","Region","Variable"),selected = NULL)),
                                                             #conditionalPanel(condition = "input.plottype == 'scatter' && input.showline", selectInput('linetype_scatter', 'Line Type', c("NULL","Model","Scenario","Region","Year"),selected = NULL)),
                                                             conditionalPanel(condition = "input.plottype == 'line' && input.summarize != 'Simple'", selectInput('shape', 'Point Shape', c("NULL","Model","Scenario","Region","Variable"),selected = NULL)),# 
-                                                            conditionalPanel(condition = "input.plottype == 'scatter'", selectInput('shape_scatter', 'Point Shape', c("NULL","Model","Scenario","Region","Year"),selected = NULL))
-                                                            
+                                                            conditionalPanel(condition = "input.plottype == 'scatter'", selectInput('shape_scatter', 'Point Shape', c("NULL","Model","Scenario","Region","Year"),selected = NULL)),
+                                                            conditionalPanel(condition = "input.plottype == 'line'", sliderInput("xlim", "X axis",min=1900,max=2100,value=c(2000,2100),step=10))
                                                             
                                                      ),
                                                      # column(2,
@@ -574,7 +576,8 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                                      ),
                                                      column(2,
                                                             textInput('plottitle', 'Plot Title', "Variable(s)"),
-                                                            textInput('ylab', 'Y Axis Label', "Unit"),
+                                                            checkboxInput('hide_legend', 'Hide Legend'),
+                                                            checkboxInput('short_legend', 'Shorten Legend'),
                                                             conditionalPanel(condition = "input.display == 'plotly'", checkboxInput('legend_inside', 'Legend in Plot', value = FALSE, width = NULL)),
                                                             conditionalPanel(condition = "input.display == 'ggplot2'", numericInput('legend_ncol', 'Legend Columns', value = 2, min = 1, max = 5,step = 1, width = NULL))
                                                      ),
@@ -585,12 +588,14 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                                      ),
                                                      column(2,
                                                             selectInput('display', "Display", c("plotly","ggplot2"), selected = "plotly"),
-                                                            conditionalPanel(condition = "input.plottype == 'line'", sliderInput("xlim", "X axis",min=1900,max=2100,value=c(2000,2100),step=10)),
+                                                            textInput('ylab', 'Y Axis Label', "Unit"),
+                                                            checkboxInput('free_scale', 'Free Y Scale'),
                                                             downloadButton('downloadPlot', 'Download')
                                                              )
 
 
                                                    )
+                                                   
                                                  )
                                         ),
                                         tabPanel("Table", 

@@ -20,6 +20,8 @@ Imports: ggplot2,
          lusweave (>= 1.43.2), 
          trafficlight, 
          gridExtra
+URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
+BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 6.0.1
 LazyData: yes
 Suggests: testthat

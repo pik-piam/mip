@@ -41,7 +41,6 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   x <- as.quitte(x)
   
   class(x) <- setdiff(class(x),"data.table")
-  class(x_hist) <- setdiff(class(x_hist),"data.table")
   
   x <- droplevels(x)
   x <- x[!is.na(x$value),]
@@ -50,6 +49,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   x$moscen <- interaction(x$model,x$scenario)
   
   if(!is.null(x_hist)) {
+    class(x_hist) <- setdiff(class(x_hist),"data.table")
     x_hist <- as.quitte(x_hist)
     x_hist <- droplevels(x_hist)
     x_hist <- x_hist[!is.na(x_hist$value),]

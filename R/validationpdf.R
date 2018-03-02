@@ -189,11 +189,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   styleComparison <- function(sw, x, hist, varname, stats, debug) {
     m <- prepmagpie(x,hist)
     name <- paste0(sub("^.*\\|","",varname["name"]), " (",x$unit[[1]],")")
-<<<<<<< HEAD
     if(debug) save(x,hist,file = paste0("mipLineHistorical_",make.names(varname["name"]),".Rda"))
-    if("GLO" %in% intersect(getRegs(x),getRegs(hist))) swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
-=======
-    if(debug) save(x,hist,file = paste0("mipLineHistorical_",varname["name"],".Rda"))
     if("GLO" %in% intersect(getRegs(x),getRegs(hist))) {
       if("plot.priority"  %in% names(pdfStyle) ) {
         prio <- pdfStyle$plot.priority
@@ -202,7 +198,6 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
         swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
       }
     }
->>>>>>> 8fd0c7dd8225d4bdc1685aa9c79789bd0cf7acd8
     regs <- setdiff(intersect(getRegs(x),getRegs(hist)),"GLO")
     if(length(regs)>0) {
       if("plot.priority"  %in% names(pdfStyle) ) {

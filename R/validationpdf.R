@@ -174,14 +174,14 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   styleComparison <- function(sw, x, hist, varname, stats, debug) {
     m <- prepmagpie(x,hist)
     name <- paste0(sub("^.*\\|","",varname["name"]), " (",x$unit[[1]],")")
-    if(debug) save(x,hist,file = paste0("mipLineHistorical_",varname["name"],".Rda"))
+    if(debug) save(x,hist,file = paste0("mipLineHistorical_",make.names(varname["name"]),".Rda"))
     if("GLO" %in% intersect(getRegs(x),getRegs(hist))) swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
     regs <- setdiff(intersect(getRegs(x),getRegs(hist)),"GLO")
     if(length(regs)>0) swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12)
     for(s in 1:ndata(m$x)) {
       x <- m$x[,,s]
       xc <- m$hist
-      if(debug) save(x,xc,file = paste0("trafficlight_",varname["name"],s,".Rda"))
+      if(debug) save(x,xc,file = paste0("trafficlight_",make.names(varname["name"]),s,".Rda"))
       p <- trafficlight(m$x[,,s],m$hist, detailed=(nregions(m$x)<2))
       stats$trafficlight <- rbind(stats$trafficlight,melt(attr(p,"data")))
       swfigure(sw,print,p, tex_caption=preptitle(getNames(m$x)[s]), sw_option="width=10,height=2")

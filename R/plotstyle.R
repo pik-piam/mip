@@ -71,7 +71,7 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE) {
       tmpcols <- brewer.pal(9,"Set1")
       if(nna<9) tmpcols <- tmpcols[1:nna]
       set1 <- colorRampPalette(tmpcols)
-      res$color[is.na(res$color)] <- set1(nna) #.makegray(nna,from=0.2,to=0.8)
+      suppressWarnings(res$color[is.na(res$color)] <- set1(nna)) #.makegray(nna,from=0.2,to=0.8)
       # replace NA in legends with row names (= entitiy name)
       res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend),])
     } else {

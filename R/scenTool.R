@@ -536,7 +536,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
                           mainPanel(
                             tabsetPanel(id = "main",type = "tabs",
                                         tabPanel("Plot",
-                                                 conditionalPanel(condition = "input.display == 'plotly'",plotlyOutput("plotly",width="auto",height="auto")),
+                                                 conditionalPanel(condition = "input.display == 'plotly'",plotlyOutput("plotly",width="auto",height="750px")),
                                                  conditionalPanel(condition = "input.display == 'ggplot2'",
                                                                   plotOutput("plot",height = "600px",width = "auto",hover = hoverOpts("plot_hover", delay = 50, delayType = "debounce")),
                                                                   uiOutput("hover_info")),
@@ -563,7 +563,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                                             #conditionalPanel(condition = "input.plottype == 'scatter' && input.showline", selectInput('linetype_scatter', 'Line Type', c("NULL","Model","Scenario","Region","Year"),selected = NULL)),
                                                             conditionalPanel(condition = "input.plottype == 'line' && input.summarize != 'Simple'", selectInput('shape', 'Point Shape', c("NULL","Model","Scenario","Region","Variable"),selected = NULL)),# 
                                                             conditionalPanel(condition = "input.plottype == 'scatter'", selectInput('shape_scatter', 'Point Shape', c("NULL","Model","Scenario","Region","Year"),selected = NULL)),
-                                                            conditionalPanel(condition = "input.plottype == 'line'", sliderInput("xlim", "X axis",min=1900,max=2100,value=c(2000,2100),step=10))
+                                                            conditionalPanel(condition = "input.plottype == 'line'", sliderInput("xlim", "X axis",min=1900,max=2100,value=c(2000,2100),step=5))
                                                             
                                                      ),
                                                      # column(2,

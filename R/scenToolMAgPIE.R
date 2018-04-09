@@ -34,7 +34,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
   server <- function(input,output,session,extFile=file) {
 
     #initialize reactive value
-    val <- reactiveValues(rep_full=NULL,rep_sel=NULL,val_full=NULL,val_sel=NULL)
+    val <- reactiveValues(rep_full=NULL,rep_sel=NULL,rep_sel_tmp=NULL,val_full=NULL,val_sel=NULL,val_sel_tmp=NULL)
     
     if(is.null(file)) {
       #create dummy data for testing the tool
@@ -75,48 +75,72 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
         val$val_full <- readRDS(input$valfile$datapath)
       } else val$val_full <- read.quitte(input$valfile$datapath)
       #setnames(val$val_full,"Model","Validation Source")
-      #print(str(val$val_full))
     })
     
     #subsetting the data stepwise is faster than all at once
-    observeEvent(c(input$model,input$scenario,input$region,input$year,input$variable,input$normalize,input$valfile),{
-      print("subset data")
-      val$rep_sel <- subset(val$rep_full,model %in% input$model)
-      val$rep_sel <- subset(val$rep_sel,scenario %in% input$scenario)
-      val$rep_sel <- subset(val$rep_sel,region %in% input$region)
-      val$rep_sel <- subset(val$rep_sel,period %in% input$year)
-      val$rep_sel <- subset(val$rep_sel,variable %in% input$variable)
-      val$rep_sel <- droplevels(val$rep_sel)
+    observeEvent(c(input$model,input$scenario,input$region,input$year,input$variable,input$valfile,input$show_val),{
+      # print(!is.null(val$rep_sel))
+      # if(!is.null(val$rep_sel)) {
+      #   print(levels(val$rep_sel$variable))
+      #   if(input$variable == levels(val$rep_sel$variable)) {
+      #     print("partial subset model data")
+      #     val$rep_sel <- subset(val$rep_sel,model %in% input$model)
+      #     val$rep_sel <- subset(val$rep_sel,scenario %in% input$scenario)
+      #     val$rep_sel <- subset(val$rep_sel,region %in% input$region)
+      #     val$rep_sel <- subset(val$rep_sel,period %in% input$year)
+      #     #        val$rep_sel <- subset(val$rep_sel,variable %in% input$variable)
+      #     val$rep_sel <- droplevels(val$rep_sel)
+      #   }
+      # } else {
+        print("full subset model data")
+        val$rep_sel <- subset(val$rep_full,model %in% input$model)
+        val$rep_sel <- subset(val$rep_sel,scenario %in% input$scenario)
+        val$rep_sel <- subset(val$rep_sel,region %in% input$region)
+        val$rep_sel <- subset(val$rep_sel,period %in% input$year)
+        val$rep_sel <- subset(val$rep_sel,variable %in% input$variable)
+        val$rep_sel <- droplevels(val$rep_sel)
+#      }
       
-      if(!is.null(val$val_full)) {
-        print("validation data")
+      if(!is.null(val$val_full) & input$show_val) {
+        print("subset validation data")
         val$val_sel <- subset(val$val_full,region %in% input$region)
         val$val_sel <- subset(val$val_sel,variable %in% input$variable)
         val$val_sel <- droplevels(val$val_sel)
         if(nrow(val$val_sel) == 0) val$val_sel <- NULL
       } else val$val_sel <- NULL
-      
-      if(input$normalize) {
-        print("normalize data")
-        years <- unique(val$rep_sel$period)
-        base_year <- val$rep_sel$value[val$rep_sel$period==years[1]]
-        val$rep_sel$value <- val$rep_sel$value/rep(base_year,length(years))
-        if(!is.null(val$val_sel)) {
-          val$val_sel$value <- val$val_sel$value/rep(base_year,length(unique(val$val_sel$period)))
-        }
-      }
-      
     })
-
+    
+    
     #subsetting the data stepwise is faster than all at once
     observeEvent(c(input$valmodel,input$valscenario,input$valyear),{
-      print("subset data")
+      print("subset selected validation data")
       val$val_sel <- subset(val$val_sel,model %in% input$valmodel)
       val$val_sel <- subset(val$val_sel,scenario %in% input$valscenario)
       #val$val_sel <- subset(val$val_sel,Region %in% input$valregion)
       val$val_sel <- subset(val$val_sel,period %in% input$valyear)
       #val$val_sel <- subset(val$val_sel,Variable %in% input$valvariable)
     })
+    
+    #normalize
+    observeEvent(c(input$normalize),{
+      if(input$normalize) {
+        val$rep_sel_tmp <- val$rep_sel
+        print("normalize data")
+        years <- unique(val$rep_sel$period)
+        base_year <- val$rep_sel$value[val$rep_sel$period==years[1]]
+        val$rep_sel$value <- val$rep_sel$value/rep(base_year,length(years))
+        if(!is.null(val$val_sel)) {
+          val$val_sel_tmp <- val$val_sel
+          val$val_sel$value <- val$val_sel$value/rep(base_year,length(unique(val$val_sel$period)))
+        }
+      } else {
+        print("restore data")
+        if(!is.null(val$rep_sel_tmp)) val$rep_sel <- val$rep_sel_tmp
+        if(!is.null(val$val_sel_tmp)) val$val_sel <- val$val_sel_tmp
+      }
+    })
+    
+    
     
     observe({
       print("update choices data")
@@ -139,14 +163,15 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
     
     
     tf <- reactive({
-#      print(str(as.magpie(val$rep_sel)))
       if(is.null(val$val_sel)) stop("Validation file needed for trafficlights!")
       else trafficlight(x=as.magpie(val$rep_sel,spatial="region",temporal="period",tidy=TRUE),xc=as.magpie(val$val_sel,spatial="region",temporal="period",tidy=TRUE),detailed=FALSE)
     })
     
     
     lineplot <- reactive({
-      p <- mipLineHistorical(x=val$rep_sel,x_hist=if(input$show_val) val$val_sel else NULL,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = input$scales)
+      if(input$update_plot) {
+        p <- mipLineHistorical(x=val$rep_sel,x_hist=val$val_sel,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = input$scales)
+      } else p <- NULL
       return(p)
     })
     
@@ -214,7 +239,10 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
                             selectInput('region', 'Region', "Pending upload",multiple = TRUE),
                             selectInput('year', 'Year', "Pending upload",multiple = TRUE),
                             #sliderInput("year", "Year",min=2000,max=2100,value=c(2000,2100),step=10),
-                            selectInput('variable', 'Variable', "Pending upload",multiple = FALSE)
+                            selectInput('variable', 'Variable', "Pending upload",multiple = FALSE),
+                            tags$hr(),
+                            checkboxInput('update_plot', 'Update Plot', value = TRUE, width = NULL),
+                            conditionalPanel(condition = "input.valfile != NULL", checkboxInput('show_val', 'Show Validation', value = TRUE, width = NULL))
                             ),
                             tabPanel("Validation Data",
                                      fileInput('valfile', 'Upload Validation File', accept=c('.mif','.csv','.rda','.RData')),
@@ -239,8 +267,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
                                                    fluidRow(
                                                      column(2,
                                                             selectInput('scales', 'Scales',c("fixed","free_y","free_x","free"),selected="fixed"),
-                                                            checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL),
-                                                            conditionalPanel(condition = "input.valfile != NULL", checkboxInput('show_val', 'Show Validation', value = TRUE, width = NULL))
+                                                            checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL)
                                                      )
                                                    )
                                                  ),

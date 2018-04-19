@@ -7,7 +7,7 @@
 scenToolMAgPIE(file = NULL, valfile = NULL)
 }
 \arguments{
-\item{file}{report data. Can be a CSV/MIF file or rda/RData file with a quitte object (saved with saveRDS). NULL by default; in this case the user can upload files directly in the tool}
+\item{file}{report data. Can be a CSV/MIF file or rds file with a quitte object (saved with saveRDS). file can also be a vector of rds files. NULL by default; in this case the user can upload files directly in the tool}
 
 \item{valfile}{validation data. Can be a CSV/MIF file or rda/RData file with a quitte object (saved with saveRDS). NULL by default; in this case the user can upload files directly in the tool}
 }

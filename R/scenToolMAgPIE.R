@@ -1,7 +1,7 @@
 #' @title scenToolMAgPIE
 #' @description scenToolMAgPIE allows to explore and visualize time series of modelling results. The app is based on shiny opens in an external web brower. For more details: https://github.com/flohump/scenTool
 #' 
-#' @param file report data. Can be a CSV/MIF file or rda/RData file with a quitte object (saved with saveRDS). NULL by default; in this case the user can upload files directly in the tool
+#' @param file report data. Can be a CSV/MIF file or rds file with a quitte object (saved with saveRDS). file can also be a vector of rds files. NULL by default; in this case the user can upload files directly in the tool
 #' @param valfile validation data. Can be a CSV/MIF file or rda/RData file with a quitte object (saved with saveRDS). NULL by default; in this case the user can upload files directly in the tool
 #' @author Florian Humpenoeder
 #' @examples
@@ -20,7 +20,7 @@
 #' @importFrom utils write.csv
 #' @importFrom data.table fread setcolorder as.data.table data.table setnames
 #' @importFrom stats median reshape
-#' @importFrom tools file_ext
+#' @importFrom tools file_ext file_path_sans_ext
 #' @importFrom trafficlight trafficlight
 #' @export
 #'
@@ -48,11 +48,35 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
       names(long) <- c("model","scenario","region","variable","unit","period","value")
       long$value <- 1:length(long$value)
       val$rep_full <- as.quitte(long)
-    } else if (file_ext(file) %in% c("RData","rda")) {
-      val$rep_full <- readRDS(file)
+    } else if (all(file_ext(file) == "rds")) {
+      readdata <- function(file) {
+        if(grepl("http://",file)) {
+          out <- readRDS(gzcon(url(file)))
+        } else {
+          out <- readRDS(file)
+        }
+        if(!is.null(out$date)) out$date <- as.POSIXct(out$date, origin="1970-01-01")
+        if(!is.null(out$revision_date)) out$revision_date <- as.POSIXct(out$revision_date, origin="1970-01-01")
+        return(out)
+      }
+      #read in the data
+      tmp <- NULL
+      for (f in file) {
+        print(f)
+        tmp <- rbind(tmp,readdata(f))
+      }
+      #add time-date stamp in case of duplicate scenario names
+      if (length(levels(tmp$scenario)) != length(unique(levels(tmp$scenario)))) {
+        suffix <- format(as.POSIXct(as.numeric(file_path_sans_ext(basename(file)))/100000, origin="1970-01-01"))
+        levels(tmp$scenario) <- paste(levels(tmp$scenario),suffix)
+      }
+      # #sort regions
+      # tmp$region <- factor(tmp$region, levels = c(setdiff(levels(tmp$region),"GLO"),"GLO"))
+      # tmp <- tmp[order(tmp$region,tmp$variable,tmp$period),]
+      val$rep_full <- tmp
     } else val$rep_full <- read.quitte(file)
     if(!is.null(valfile)) {
-      if (file_ext(valfile) %in% c("RData","rda")) {
+      if (file_ext(valfile) %in% c("RData","rda","rds")) {
         val$val_full <- readRDS(valfile)
       } else val$val_full <- read.quitte(valfile)
     }
@@ -99,6 +123,9 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
         val$rep_sel <- subset(val$rep_sel,period %in% input$year)
         val$rep_sel <- subset(val$rep_sel,variable %in% input$variable)
         val$rep_sel <- droplevels(val$rep_sel)
+        #print(head(val$rep_sel,12))
+        #val$rep_sel$scenario <- factor(val$rep_sel$scenario, levels = val$rep_sel$scenario[order(input$scenario)])
+        
 #      }
       
       if(!is.null(val$val_full) & input$show_val) {

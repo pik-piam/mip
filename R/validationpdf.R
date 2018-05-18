@@ -26,7 +26,16 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   if(is.null(debug)) debug <- FALSE
   styles <- c("trafficlight","comparison","detailed")
   if(!(style %in% styles)) stop("Unknown style \"",style,"\", please use one of the following: ",paste(styles,collapse=", "))
+  
+  # convert x into a quitte object
   x <- as.quitte(x)
+  # select only the time horizon specified in pdfStyle
+  if("years"  %in% names(pdfStyle) ) {
+    y <- pdfStyle$years
+    x <- x[x$period %in% y,]
+    x <- as.quitte(x)
+  }
+  
   if(!is.null(hist)) {
     hist <- as.quitte(hist)
     # strip down NAs

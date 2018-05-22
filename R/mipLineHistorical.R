@@ -54,6 +54,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   a <- x
   a$id <- "x"
   
+  if(is.data.frame(x_hist) && dim(x_hist)[1]==0) x_hist <- NULL
   if(!is.null(x_hist)) {
     class(x_hist) <- setdiff(class(x_hist),"data.table")
     x_hist <- as.quitte(x_hist)

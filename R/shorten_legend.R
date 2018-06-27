@@ -29,6 +29,7 @@ shorten_legend <- function(x, maxchar=20, identical_only=FALSE, sep=c(" ","|","_
   }
   
   if(is.factor(x)) {
+    x <- droplevels(x)
     tmp <- shorten_legend(levels(x),maxchar=maxchar, identical_only=identical_only, sep=sep)
     levels(x) <- tmp
     attr(x,"front") <- attr(tmp,"front")

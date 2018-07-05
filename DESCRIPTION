@@ -1,7 +1,7 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.104.2
+Version: 0.104.3
 Date: 2018-07-05
 Author: David Klein, Benjamin Leon Bodirsky, Florian Humpenoeder, Lavinia Baumstark, Jerome Hilaire
 Maintainer: David Klein <dklein@pik-potsdam.de>
@@ -25,4 +25,4 @@ BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 6.0.1
 LazyData: yes
 Suggests: testthat
-ValidationKey: 18461114
+ValidationKey: 18478831

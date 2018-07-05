@@ -8,6 +8,7 @@
 #' provided by user in magpie or quitte format it will be added to the plot. If user sets total to 
 #' TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot 
 #' will ignore it.
+#' @param shorten Shorten variable names (default is TRUE) by removing categories only if they are identical (for short names in the legend)
 #' @author David Klein, Jan Philipp Dietrich
 #' @section Example Plot:
 #' \if{html}{\figure{mipArea.png}{example plot}}
@@ -28,7 +29,7 @@
 #' @importFrom dplyr group_by_ summarise_ ungroup
 #' @export
 #'
-mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE){
+mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, shorten = TRUE){
 
   # library(ggplot2)
   # library(magclass)
@@ -45,7 +46,7 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE){
   x <- as.quitte(x)
   
   # shorten variable names and calc ylab
-  x$variable <- shorten_legend(x$variable,identical_only=TRUE)
+  if (shorten) x$variable <- shorten_legend(x$variable,identical_only=TRUE)
   ylab <- paste0(sub(".$","",attr(x$variable,"front")),attr(x$variable,"back"))
   # add unit
   unit <- unique(as.character(x$unit))

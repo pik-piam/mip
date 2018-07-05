@@ -4,7 +4,8 @@
 \alias{mipArea}
 \title{Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.}
 \usage{
-mipArea(x, stack_priority = c("variable", "region"), total = TRUE)
+mipArea(x, stack_priority = c("variable", "region"), total = TRUE,
+  shorten = TRUE)
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}
@@ -17,6 +18,8 @@ more than one element.}
 provided by user in magpie or quitte format it will be added to the plot. If user sets total to 
 TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot 
 will ignore it.}
+
+\item{shorten}{Shorten variable names (default is TRUE) by removing categories only if they are identical (for short names in the legend)}
 }
 \description{
 Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.

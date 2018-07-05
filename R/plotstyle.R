@@ -59,8 +59,9 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE) {
   res <- luplot$plotstyle[uq_entity,]
   row.names(res) <- uq_entity
   
-  # count unknown entities
-  nna <- sum(!complete.cases(res))
+  # count unknown entities, i.e. count rows that have NA only, i.e. where number of columns is the same as number of NAs
+  ina <- rowSums(is.na(res))==NCOL(res)
+  nna <- sum(ina)
 
   # replace NA
   if (nna != 0) {
@@ -71,6 +72,8 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE) {
       tmpcols <- brewer.pal(9,"Set1")
       if(nna<9) tmpcols <- tmpcols[1:nna]
       set1 <- colorRampPalette(tmpcols)
+      cat("Brewed colors for ",nna," unknown entities:\n")
+      cat(row.names(res)[ina],sep="\n")
       suppressWarnings(res$color[is.na(res$color)] <- set1(nna)) #.makegray(nna,from=0.2,to=0.8)
       # replace NA in legends with row names (= entitiy name)
       res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend),])

@@ -2,6 +2,7 @@
 
 export(mipArea)
 export(mipBarYearData)
+export(mipLine)
 export(mipLineHistorical)
 export(plotstyle)
 export(plotstyle.add)

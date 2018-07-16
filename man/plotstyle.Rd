@@ -4,7 +4,8 @@
 \alias{plotstyle}
 \title{Returns plot styles for given entities}
 \usage{
-plotstyle(..., out = "color", unknown = NULL, plot = FALSE)
+plotstyle(..., out = "color", unknown = NULL, plot = FALSE,
+  verbosity = getOption("plotstyle.verbosity"))
 }
 \arguments{
 \item{...}{One or more strings or a vector of strings with names of entities (regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be ignored. If left empty all available entities will be used}
@@ -14,6 +15,8 @@ plotstyle(..., out = "color", unknown = NULL, plot = FALSE)
 \item{unknown}{Optional data frame defining plot styles for unknown entities. A default color map will be used for unknown entities if nothing is provided here}
 
 \item{plot}{If TRUE plots with all given entities and their colors will be produced (to produce plots with all available entitities leave the \code{...} entry empty!)}
+
+\item{verbosity}{Set to 1 if you want to know for which unknown entities plotstyle brewed colors}
 }
 \value{
 Plot styles for given entities

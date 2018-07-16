@@ -6,6 +6,7 @@
 #' @param out Switch defining which type of plot style you want to get: Currently you can choose between "color", "legend" and "all" (the latter will return a dataframe with all available plot styles)
 #' @param unknown Optional data frame defining plot styles for unknown entities. A default color map will be used for unknown entities if nothing is provided here
 #' @param plot If TRUE plots with all given entities and their colors will be produced (to produce plots with all available entitities leave the \code{...} entry empty!)
+#' @param verbosity Set to 1 if you want to know for which unknown entities plotstyle brewed colors
 #' @return Plot styles for given entities
 #' @author David Klein, Jan Philipp Dietrich
 #' @seealso \code{\link{plotstyle.add}}
@@ -25,7 +26,7 @@
 #' @importFrom ggplot2 ggplot geom_bar coord_flip theme element_blank labs aes
 #' @importFrom grDevices colorRampPalette
 
-plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE) {
+plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE, verbosity = getOption("plotstyle.verbosity")) {
   
   luplot<-list()
   luplot$plotstyle <- read.csv2(system.file("extdata","plotstyle.csv",package = "mip"),stringsAsFactors = F,row.names=1)
@@ -72,8 +73,10 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE) {
       tmpcols <- brewer.pal(9,"Set1")
       if(nna<9) tmpcols <- tmpcols[1:nna]
       set1 <- colorRampPalette(tmpcols)
-      cat("Brewed colors for ",nna," unknown entities:\n")
-      cat(row.names(res)[ina],sep="\n")
+      if (!is.null(verbosity)) {
+        cat("Brewed colors for",nna,"unknown entities:\n")
+        cat(row.names(res)[ina],sep="\n")
+      }
       suppressWarnings(res$color[is.na(res$color)] <- set1(nna)) #.makegray(nna,from=0.2,to=0.8)
       # replace NA in legends with row names (= entitiy name)
       res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend),])

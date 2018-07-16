@@ -57,7 +57,7 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, short
   ###
   
   # count levels of the given columns
-  n_levels <- sapply(subset(x, select=c("variable","region","scenario","model")),nlevels)
+  n_levels <- sapply(subset(x, select=c("variable","region","scenario","model")), nlevels)
 
   # initialize
   dim_to_stack <- stack_priority

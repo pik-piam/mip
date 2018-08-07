@@ -2,7 +2,7 @@
 #' @description scenToolMAgPIE allows to explore and visualize time series of modelling results. The app is based on shiny opens in an external web brower. For more details: https://github.com/flohump/scenTool
 #' 
 #' @param file report data. Can be a CSV/MIF file or rds file with a quitte object (saved with saveRDS). file can also be a vector of rds files. NULL by default; in this case the user can upload files directly in the tool
-#' @param valfile validation data. Can be a CSV/MIF file or rda/RData file with a quitte object (saved with saveRDS). NULL by default; in this case the user can upload files directly in the tool
+#' @param valfile validation data. Can be a CSV/MIF file or rds file with a quitte object (saved with saveRDS). NULL by default; in this case the user can upload files directly in the tool
 #' @author Florian Humpenoeder
 #' @examples
 #'   \dontrun{
@@ -86,7 +86,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
     observeEvent(input$datafile, {
       print("read data")
       #assing to reactive value
-      if (file_ext(input$datafile$datapath) %in% c("RData","rda")) {
+      if (file_ext(input$datafile$datapath) %in% c("RData","rda","rds")) {
         val$rep_full <- readRDS(input$datafile$datapath)
       } else val$rep_full <- read.quitte(input$datafile$datapath)
     })
@@ -95,7 +95,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
     observeEvent(input$valfile, {
       print("read val data")
       #assing to reactive value
-      if (file_ext(input$valfile$datapath) %in% c("RData","rda")) {
+      if (file_ext(input$valfile$datapath) %in% c("RData","rda","rds")) {
         val$val_full <- readRDS(input$valfile$datapath)
       } else val$val_full <- read.quitte(input$valfile$datapath)
       #setnames(val$val_full,"Model","Validation Source")
@@ -129,6 +129,8 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
 #      }
       
       if(!is.null(val$val_full) & input$show_val) {
+        #levels(val_full$region) <- sub("World","GLO",levels(val_full$region))
+        val$val_full <- val$val_full[val$val_full$period > 1950,] #show validation data only for years > 1950
         print("subset validation data")
         val$val_sel <- subset(val$val_full,region %in% input$region)
         val$val_sel <- subset(val$val_sel,variable %in% input$variable)
@@ -259,7 +261,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
                           sidebarPanel(
                             tabsetPanel(id="side",type = "tabs",
                             tabPanel("Report Data",
-                            fileInput('datafile', 'Upload Report File', accept=c('.mif','.csv','.rda','.RData')),
+                            fileInput('datafile', 'Upload Report File', accept=c('.mif','.csv','.rda','.rds','.RData')),
                             tags$hr(),
                             selectInput('model', 'Model', "Pending upload",multiple = TRUE),
                             selectInput('scenario', 'Scenario', "Pending upload",multiple = TRUE),
@@ -272,7 +274,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
                             conditionalPanel(condition = "input.valfile != NULL", checkboxInput('show_val', 'Show Validation', value = TRUE, width = NULL))
                             ),
                             tabPanel("Validation Data",
-                                     fileInput('valfile', 'Upload Validation File', accept=c('.mif','.csv','.rda','.RData')),
+                                     fileInput('valfile', 'Upload Validation File', accept=c('.mif','.csv','.rda','.rds','.RData')),
                                      tags$hr(),
                                      #checkboxInput('auto_val_sel', 'Automatic matching with Model Data', value = TRUE, width = NULL),
                                      selectInput('valmodel', 'Model', "Pending upload",multiple = TRUE),

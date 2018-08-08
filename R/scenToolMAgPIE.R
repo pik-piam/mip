@@ -102,20 +102,21 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
     })
     
     #subsetting the data stepwise is faster than all at once
-    observeEvent(c(input$model,input$scenario,input$region,input$year,input$variable,input$valfile,input$show_val),{
-      # print(!is.null(val$rep_sel))
-      # if(!is.null(val$rep_sel)) {
-      #   print(levels(val$rep_sel$variable))
-      #   if(input$variable == levels(val$rep_sel$variable)) {
-      #     print("partial subset model data")
-      #     val$rep_sel <- subset(val$rep_sel,model %in% input$model)
-      #     val$rep_sel <- subset(val$rep_sel,scenario %in% input$scenario)
-      #     val$rep_sel <- subset(val$rep_sel,region %in% input$region)
-      #     val$rep_sel <- subset(val$rep_sel,period %in% input$year)
-      #     #        val$rep_sel <- subset(val$rep_sel,variable %in% input$variable)
-      #     val$rep_sel <- droplevels(val$rep_sel)
-      #   }
-      # } else {
+    observeEvent(c(input$model,input$scenario,input$region,input$year,input$variable,input$valfile,input$show_val,input$update_plot),{
+      if (input$update_plot) {
+        # print(!is.null(val$rep_sel))
+        # if(!is.null(val$rep_sel)) {
+        #   print(levels(val$rep_sel$variable))
+        #   if(input$variable == levels(val$rep_sel$variable)) {
+        #     print("partial subset model data")
+        #     val$rep_sel <- subset(val$rep_sel,model %in% input$model)
+        #     val$rep_sel <- subset(val$rep_sel,scenario %in% input$scenario)
+        #     val$rep_sel <- subset(val$rep_sel,region %in% input$region)
+        #     val$rep_sel <- subset(val$rep_sel,period %in% input$year)
+        #     #        val$rep_sel <- subset(val$rep_sel,variable %in% input$variable)
+        #     val$rep_sel <- droplevels(val$rep_sel)
+        #   }
+        # } else {
         print("full subset model data")
         val$rep_sel <- subset(val$rep_full,model %in% input$model)
         val$rep_sel <- subset(val$rep_sel,scenario %in% input$scenario)
@@ -126,17 +127,18 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
         #print(head(val$rep_sel,12))
         #val$rep_sel$scenario <- factor(val$rep_sel$scenario, levels = val$rep_sel$scenario[order(input$scenario)])
         
-#      }
-      
-      if(!is.null(val$val_full) & input$show_val) {
-        #levels(val_full$region) <- sub("World","GLO",levels(val_full$region))
-        val$val_full <- val$val_full[val$val_full$period > 1950,] #show validation data only for years > 1950
-        print("subset validation data")
-        val$val_sel <- subset(val$val_full,region %in% input$region)
-        val$val_sel <- subset(val$val_sel,variable %in% input$variable)
-        val$val_sel <- droplevels(val$val_sel)
-        if(nrow(val$val_sel) == 0) val$val_sel <- NULL
-      } else val$val_sel <- NULL
+        #      }
+        
+        if(!is.null(val$val_full) & input$show_val) {
+          #levels(val_full$region) <- sub("World","GLO",levels(val_full$region))
+          val$val_full <- val$val_full[val$val_full$period > 1950,] #show validation data only for years > 1950
+          print("subset validation data")
+          val$val_sel <- subset(val$val_full,region %in% input$region)
+          val$val_sel <- subset(val$val_sel,variable %in% input$variable)
+          val$val_sel <- droplevels(val$val_sel)
+          if(nrow(val$val_sel) == 0) val$val_sel <- NULL
+        } else val$val_sel <- NULL 
+      }
     })
     
     

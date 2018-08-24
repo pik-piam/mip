@@ -4,7 +4,8 @@
 \alias{mipBarYearData}
 \title{mipBarYearData}
 \usage{
-mipBarYearData(x, colour = NULL, ylab = NULL, xlab = NULL, title = NULL)
+mipBarYearData(x, colour = NULL, ylab = NULL, xlab = NULL,
+  title = NULL)
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}

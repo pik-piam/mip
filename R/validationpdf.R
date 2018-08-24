@@ -41,6 +41,12 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     # strip down NAs
     hist <- hist[!is.na(hist$value),]
   }
+  
+  colcheck <- names(hist) %in% c("model","scenario","region","variable","unit","period","value")
+  if(any(!colcheck)) {
+    hist <- hist[colcheck]
+    warning("Unknown column in validation data removed!")
+  }
 
   #rename "World" in GLO
   .tmp <- function(x) {

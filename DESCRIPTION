@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.105.3
-Date: 2018-08-08
+Version: 0.106.0
+Date: 2018-08-24
 Author: David Klein, Benjamin Leon Bodirsky, Florian Humpenoeder, Lavinia Baumstark, Jerome Hilaire
 Maintainer: David Klein <dklein@pik-potsdam.de>
 Description: Package contains generic functions to produce comparison plots of multi-model runs.
@@ -23,6 +23,7 @@ Imports: ggplot2,
 URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
 BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 6.1.0
+Encoding: UTF-8
 LazyData: yes
 Suggests: testthat
-ValidationKey: 18691803
+ValidationKey: 18833020

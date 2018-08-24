@@ -5,9 +5,9 @@
 \title{Create a validation PDF file}
 \usage{
 validationpdf(x, hist, file = "validation.pdf", style = "comparison",
-  only_historical = FALSE, digits = 3, filter = NULL, prefix = NULL,
-  hideEmptySection = FALSE, show_stats = TRUE, debug = getOption("debug"),
-  pdfStyle = NULL)
+  only_historical = FALSE, digits = 3, filter = NULL,
+  prefix = NULL, hideEmptySection = FALSE, show_stats = TRUE,
+  debug = getOption("debug"), pdfStyle = NULL)
 }
 \arguments{
 \item{x}{Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif file)}

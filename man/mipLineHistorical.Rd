@@ -6,10 +6,10 @@
 \usage{
 mipLineHistorical(x, x_hist = NULL, color.dim = "scenario",
   linetype.dim = NULL, facet.dim = "region", funnel.dim = NULL,
-  ylab = NULL, xlab = "Year", title = NULL, color.dim.name = "Scenario",
-  ybreaks = NULL, ylim = NULL, ylog = NULL, size = 14,
-  scales = "fixed", leg.proj = FALSE, plot.priority = c("x", "x_hist",
-  "x_proj"), ggobject = FALSE)
+  ylab = NULL, xlab = "Year", title = NULL,
+  color.dim.name = "Scenario", ybreaks = NULL, ylim = NULL,
+  ylog = NULL, size = 14, scales = "fixed", leg.proj = FALSE,
+  plot.priority = c("x", "x_hist", "x_proj"), ggobject = FALSE)
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}

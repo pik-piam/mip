@@ -4,8 +4,8 @@
 \alias{shorten_legend}
 \title{Shorten legend names to a given length}
 \usage{
-shorten_legend(x, maxchar = 20, identical_only = FALSE, sep = c(" ", "|",
-  "_"))
+shorten_legend(x, maxchar = 20, identical_only = FALSE, sep = c(" ",
+  "|", "_"))
 }
 \arguments{
 \item{x}{A character vector or a factor vector that should be shortened}

@@ -8,7 +8,8 @@ mipArea(x, stack_priority = c("variable", "region"), total = TRUE,
   shorten = TRUE)
 }
 \arguments{
-\item{x}{Data to plot. Allowed data formats: magpie or quitte}
+\item{x}{Data to plot. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 
+the dimension that contains the variables must have one of the following names: variable, scenario, or model.}
 
 \item{stack_priority}{Name of column you want to stack. If you provide more than one column name the 
 function will scan the columns in the given order and use the first dimension for stacking that has 

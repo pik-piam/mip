@@ -1,6 +1,7 @@
 #' Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.
 #' 
-#' @param x Data to plot. Allowed data formats: magpie or quitte
+#' @param x Data to plot. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 
+#' the dimension that contains the variables must have one of the following names: variable, scenario, or model.
 #' @param stack_priority Name of column you want to stack. If you provide more than one column name the 
 #' function will scan the columns in the given order and use the first dimension for stacking that has 
 #' more than one element.
@@ -23,7 +24,7 @@
 #' p <- p + theme_mip(size=18)
 #' # change facetting
 #' p <- p + facet_grid(region~scenario)
-#' @importFrom magclass is.magpie
+#' @importFrom magclass is.magpie getSets
 #' @importFrom quitte is.quitte
 #' @importFrom ggplot2 ggplot geom_area aes_ geom_line scale_linetype_discrete facet_wrap facet_grid theme scale_fill_manual xlab
 #' @importFrom dplyr group_by_ summarise_ ungroup
@@ -43,6 +44,10 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, short
   ######  P R E P A R E   D A T A  ###########
   ############################################
 
+  # To ensure correct conversion to quitte objects, there should be at least  
+  # one dimension named "variable" or "scenario" or "model" in MAgPIE objects.
+  if(is.magpie(x) & !any(c("variable","model","scenario") %in% getSets(x))) stop("MAgPIE objects need to have at least one dimension named 'variable' or 'model' or 'scenario'.")
+  
   x <- as.quitte(x)
   
   # shorten variable names and calc ylab

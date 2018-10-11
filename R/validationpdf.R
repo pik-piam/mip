@@ -15,7 +15,7 @@
 #' @param pdfStyle list of style-options for the pdf
 #' @author Jan Philipp Dietrich
 #' @importFrom magclass as.magpie ndata dimSums nyears getRegions getNames nregions
-#' @importFrom quitte as.quitte getRegs
+#' @importFrom quitte as.quitte getRegs read.quitte
 #' @importFrom lusweave swopen swclose swfigure swR swtable swlatex
 #' @importFrom trafficlight trafficlight
 #' @importFrom reshape2 melt
@@ -28,7 +28,11 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   if(!(style %in% styles)) stop("Unknown style \"",style,"\", please use one of the following: ",paste(styles,collapse=", "))
   
   # convert x into a quitte object
-  x <- as.quitte(x)
+  if(is.character(x)) {
+    x <- read.quitte(x, check.duplicates = FALSE)
+  } else {
+    x <- as.quitte(x)
+  }
   # select only the time horizon specified in pdfStyle
   if("years"  %in% names(pdfStyle) ) {
     y <- pdfStyle$years
@@ -37,7 +41,11 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   }
   
   if(!is.null(hist)) {
-    hist <- as.quitte(hist)
+    if(is.character(hist)) {
+      hist <- read.quitte(hist, check.duplicates = FALSE)
+    } else {
+      hist <- as.quitte(hist)
+    }
     # strip down NAs
     hist <- hist[!is.na(hist$value),]
   }

@@ -71,6 +71,7 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE, verbosity = ge
       # only if you need more than 9 colors start ramping between maximal 9 brewer colors effectively
       # replace NA in color with freshly brewed colors from "Set1"
       tmpcols <- brewer.pal(9,"Set1")
+      tmpcols[6] <- "#00CED1" #replace yellow with turquoise as it was to light for many applications
       if(nna<9) tmpcols <- tmpcols[1:nna]
       set1 <- colorRampPalette(tmpcols)
       if (!is.null(verbosity)) {

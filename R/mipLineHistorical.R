@@ -105,8 +105,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   
   priority_x_hist <- function(p,MarkerSize=2.5){
     if(any(a$id=="x_hist")) {
-      p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="moscen"),size=1, alpha=0.15)
-      p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="moscen"),size=MarkerSize, shape="+")
+      p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="moscen"),size=1, alpha=0.3)
+      p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="moscen"),size=MarkerSize, shape="+", alpha=0.8)
     }
     return(p)
   }
@@ -130,7 +130,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   plot.priority <- rev(plot.priority)
   for(i in 1:length(plot.priority)){
     if(plot.priority[i] == "x_hist" & i>1 ){  ## if the historic values are plotted on top of the scenario ones, they should be smaller
-      p <- priority_x_hist(p,MarkerSize = 1.5)
+      p <- priority_x_hist(p,MarkerSize = 5)
     }
     else{
       p <- eval(parse(text = paste0("priority_",plot.priority[i],"(p)")))

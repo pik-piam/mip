@@ -1,7 +1,7 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.109.0
+Version: 0.109.1
 Date: 2018-10-19
 Author: David Klein, Benjamin Leon Bodirsky, Florian Humpenoeder, Lavinia Baumstark, Jerome Hilaire
 Maintainer: David Klein <dklein@pik-potsdam.de>
@@ -26,4 +26,4 @@ RoxygenNote: 6.1.0
 Encoding: UTF-8
 LazyData: yes
 Suggests: testthat
-ValidationKey: 19427070
+ValidationKey: 19444893

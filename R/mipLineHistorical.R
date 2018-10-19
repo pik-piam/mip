@@ -47,6 +47,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   x <- droplevels(x)
   x <- x[!is.na(x$value),]
   if(all(is.na(x$scenario))) x$scenario <- ""
+  if(all(is.na(x$model))) x$model <- ""
   # add a model.scenario column
   x$moscen <- interaction(x$model,x$scenario)
   

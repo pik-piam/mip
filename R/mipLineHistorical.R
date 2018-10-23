@@ -201,9 +201,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   }
   
   .legend_shares <- function(a){
-    x      <- a[a$id=="x",]
-    x_hist <- a[a$id=="x_hist",]
-    x_proj <- a[a$id=="x_proj",]
+    x      <- droplevels(a[a$id=="x",])
+    x_hist <- droplevels(a[a$id=="x_hist",])
+    x_proj <- droplevels(a[a$id=="x_proj",])
     # number of scenarios in modeled, historic, and projected data
     col1 <- nrow(unique(x[c("model","scenario")]))
     col2 <- ifelse(is.null(x_hist),0,nrow(unique(x_hist[,c("model","scenario")])))

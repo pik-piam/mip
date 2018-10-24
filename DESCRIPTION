@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.109.2
-Date: 2018-10-23
+Version: 0.110.0
+Date: 2018-10-24
 Author: David Klein, Benjamin Leon Bodirsky, Florian Humpenoeder, Lavinia Baumstark, Jerome Hilaire
 Maintainer: David Klein <dklein@pik-potsdam.de>
 Description: Package contains generic functions to produce comparison plots of multi-model runs.
@@ -26,4 +26,4 @@ RoxygenNote: 6.1.0
 Encoding: UTF-8
 LazyData: yes
 Suggests: testthat
-ValidationKey: 19467084
+ValidationKey: 19610800

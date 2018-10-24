@@ -457,3 +457,14 @@ Emi|GHGtot (Mt CO2-equiv/yr);GHG Emissions (Mt CO2-equiv/yr);red;;
 NL;No Learn;red;;dotted
 LTA_T50_Q_FUI;FUI;red;;
 LTA_T50_Q_FUQ;FUQ;blue;;
+MAgPIE.SSP1-Ref;MAgPIE.SSP1-Ref;#00FF00;;
+MAgPIE.SSP2-Ref;MAgPIE.SSP2-Ref;#0000FF;;
+MAgPIE.SSP3-Ref;MAgPIE.SSP3-Ref;#FF0000;;
+MAgPIE.SSP4-Ref;MAgPIE.SSP4-Ref;#FFB900;;
+MAgPIE.SSP5-Ref;MAgPIE.SSP5-Ref;#FF00FF;;
+Canadell_2007.historical;;#1b9e77;;
+dietrich_et_al_2012.historical;;#d95f02;;
+FAOSTAT.historical;;#7570b3;;
+Harris_2013.historical;;#e7298a;;
+LUH2v2.historical;;#66a61e;;
+WDI.historical;;#e6ab02;;

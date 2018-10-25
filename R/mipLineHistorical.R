@@ -18,8 +18,10 @@
 #' @param leg.proj to add a detailed legend for the projected data. Default is \code{FALSE}.
 #' @param plot.priority Sets the order of ploting and overlap of the data by specifying a vector of three stirng elements. Argument \code{x} stands for model output, \code{x_hist} is for obeserved (historical data) and \code{x_proj} is for projected data from other models. 
 #' @param ggobject to return a ggplot object from the function. Default is \code{FALSE}.
+#' @param paper_style removes grey color from facets if \code{TRUE} Default is \code{FALSE}.
+#' @param xlim        x axis limits as vector with min and max year
 #'
-#' @author Lavinia Baumstark, Mishko Stevanovic
+#' @author Lavinia Baumstark, Mishko Stevanovic, Florian Humpenoeder
 #'
 #' @section Example Plot:
 #' \if{html}{\figure{mipLineHistorical.png}{example plot}}
@@ -30,7 +32,7 @@
 #'     p <- mipLineHistorical(x,x_hist=hist,ylab="example",xlab="Year",title=NULL)
 #'   }
 #' @importFrom gridExtra arrangeGrob grid.arrange
-#' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline %+replace% scale_color_manual ggtitle theme_bw
+#' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
 #' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans
 #' @export
 #' 
@@ -38,7 +40,7 @@
 mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
                               ylab=NULL,xlab="Year",title=NULL,color.dim.name="Scenario",ybreaks=NULL,ylim=NULL,
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj"),
-                              ggobject=FALSE) {
+                              ggobject=FALSE,paper_style=FALSE,xlim=NULL) {
 
   x <- as.quitte(x)
   
@@ -89,6 +91,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
     }
   }
   
+  if(!is.null(xlim)) p <- p + coord_cartesian(xlim=xlim)
+  
   # facet
   p <- p + facet_wrap(facet.dim, ncol=3, scales=scales) 
   
@@ -106,8 +110,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   
   priority_x_hist <- function(p,MarkerSize=2.5){
     if(any(a$id=="x_hist")) {
-      p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="moscen"),size=1, alpha=0.3)
-      p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="moscen"),size=MarkerSize, shape="+", alpha=0.8)
+      p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model"),size=1, alpha=0.3)
+      p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model",fill="model"),size=MarkerSize, shape="+", alpha=0.8)
     }
     return(p)
   }
@@ -115,13 +119,23 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   priority_x_proj <- function(p){
     if(any(a$id=="x_proj")) {
       if(leg.proj){
+        #plot for creating the legend
+        p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,], 
+                           aes_string(x="period",y="value",group="moscen", color="moscen",linetype=linetype.dim,alpha="moscen"),
+                           size=0)
+        #plot the data without legend
         p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,], 
                            aes_string(x="period",y="value",group="moscen", color="moscen",linetype=linetype.dim),
-                           size=0.8, alpha=.7)
-      } else{
+                           size=0.8, alpha=.7,show.legend = FALSE)
+      } else {
+        #plot for creating the legend
+        p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,], 
+                           aes_string(x="period",y="value",group="moscen",linetype=linetype.dim,alpha="model"),
+                           size=0, color="white")
+        #plot the data without legend
         p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,], 
                            aes_string(x="period",y="value",group="moscen",linetype=linetype.dim),
-                           size=0.8, alpha=.5, color="#A1A194")
+                           size=0.8, alpha=.5, color="#A1A194",show.legend = FALSE)
       }
     } 
     return(p)
@@ -139,26 +153,28 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   }
   
   # datasources ordering // matrix // needed for colors and legend
+  model_output <- as.vector(unlist(unique(a[a$id=="x","moscen"])))
+  historical <- as.vector(unlist(unique(a[a$id=="x_hist","model"])))
   if(leg.proj) {
-    sources <- unique(a$moscen)
+    projection <- as.vector(unlist(unique(a[a$id=="x_proj","moscen"])))
   } else {
-    sources <- unique(a[a$id!="x_proj","moscen"])
+    projection <- as.vector(unlist(unique(a[a$id=="x_proj","model"])))
   }
   
-  sources <- as.vector(interaction(sources))
+  sources <- as.vector(interaction(c(model_output,historical,projection)))
   
   # colors
   color_set <- plotstyle(sources)
-  p <- p + scale_color_manual(values=color_set, name="Legend",
-                              labels=shorten_legend(unique(interaction(a$model,a$scenario,sep=" ")),14))
-  
+  #the color legend includes colors for model_output, historical and projection at this stage
+  p <- p + scale_color_manual(values=color_set, name="Legend")
+
   # add a vertical line for the starting year of the resutls
   p <- p + geom_vline(xintercept=as.numeric(min(x$period)),linetype=2)
   
   # labels
   p <- p + xlab(xlab) 
-  if(!is.null(ylab))    p <- p + ylab(ylab) 
-  if(!is.null(title))   p <- p + ggtitle(title) 
+  p <- p + ylab(ylab) 
+  p <- p + ggtitle(title) 
   
   text_size <- size
   
@@ -171,14 +187,31 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
       axis.title.x=element_text(size=text_size, face="bold", vjust=-0.3), 
       axis.text.x=element_text(size=text_size, angle=90, hjust=.5, colour="black"),
       legend.position="bottom",
+      legend.direction = "horizontal",
       legend.title=element_text(size=text_size,face="bold"), 
+      legend.title.align=0,
       legend.text=element_text(size=text_size-2),
-      legend.background=element_rect(fill="white"),
+      #legend.background=element_rect(fill="white"),
       legend.key=element_blank(),
-      plot.margin= unit(c(1, 1, 0, 1.7),"lines")
+      #legend.spacing.x=unit(1, "cm"),
+      #plot.margin= unit(c(1, 1, 0, 1.7),"lines")
     )
   
-  if(ggobject) return(p)
+  if (paper_style) p <- p + theme(strip.background = element_blank())
+  
+  if(ggobject) {
+    #manipulate the legends: color = model_output, fill = historical, alpha = projection
+    #color: show only model_output
+    #fill: add colors for historical and keep shape symbol
+    #alpha: add colors for projection depending on leg.proj
+    p <- p + scale_color_manual("Model output",values = color_set, breaks=model_output,labels=sub("\\."," ",model_output),guide=guide_legend(order=1,title.position = "top", ncol=1))
+    p <- p + scale_fill_manual("Historical data",values = color_set[historical],breaks=historical,
+                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",size=4),order=2,title.position = "top", ncol=1))
+    if(leg.proj) p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour=color_set[projection],shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=1))
+    else p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour="#A1A194",shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=1))
+    
+    return(p)
+  }
   
   p <- p + theme(legend.position="none")
 

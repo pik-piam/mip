@@ -9,7 +9,7 @@ mipLineHistorical(x, x_hist = NULL, color.dim = "scenario",
   ylab = NULL, xlab = "Year", title = NULL,
   color.dim.name = "Scenario", ybreaks = NULL, ylim = NULL,
   ylog = NULL, size = 14, scales = "fixed", leg.proj = FALSE,
-  plot.priority = c("x", "x_hist", "x_proj"), ggobject = FALSE,
+  plot.priority = c("x", "x_hist", "x_proj"), ggobject = TRUE,
   paper_style = FALSE, xlim = NULL)
 }
 \arguments{
@@ -47,7 +47,7 @@ mipLineHistorical(x, x_hist = NULL, color.dim = "scenario",
 
 \item{plot.priority}{Sets the order of ploting and overlap of the data by specifying a vector of three stirng elements. Argument \code{x} stands for model output, \code{x_hist} is for obeserved (historical data) and \code{x_proj} is for projected data from other models.}
 
-\item{ggobject}{to return a ggplot object from the function. Default is \code{FALSE}.}
+\item{ggobject}{returns a ggplot object. Default is \code{TRUE}.}
 
 \item{paper_style}{removes grey color from facets if \code{TRUE} Default is \code{FALSE}.}
 

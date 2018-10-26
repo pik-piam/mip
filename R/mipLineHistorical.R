@@ -17,7 +17,7 @@
 #' @param scales  Are scales shared across all facets (the default, "fixed"), or do they vary across rows ("free_x"), columns ("free_y"), or both rows and columns ("free")
 #' @param leg.proj to add a detailed legend for the projected data. Default is \code{FALSE}.
 #' @param plot.priority Sets the order of ploting and overlap of the data by specifying a vector of three stirng elements. Argument \code{x} stands for model output, \code{x_hist} is for obeserved (historical data) and \code{x_proj} is for projected data from other models. 
-#' @param ggobject to return a ggplot object from the function. Default is \code{FALSE}.
+#' @param ggobject returns a ggplot object. Default is \code{TRUE}.
 #' @param paper_style removes grey color from facets if \code{TRUE} Default is \code{FALSE}.
 #' @param xlim        x axis limits as vector with min and max year
 #'
@@ -40,7 +40,7 @@
 mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
                               ylab=NULL,xlab="Year",title=NULL,color.dim.name="Scenario",ybreaks=NULL,ylim=NULL,
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj"),
-                              ggobject=FALSE,paper_style=FALSE,xlim=NULL) {
+                              ggobject=TRUE,paper_style=FALSE,xlim=NULL) {
 
   x <- as.quitte(x)
   

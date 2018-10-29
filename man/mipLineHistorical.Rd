@@ -4,30 +4,31 @@
 \alias{mipLineHistorical}
 \title{Compares data by producing line plot}
 \usage{
-mipLineHistorical(x, x_hist = NULL, color.dim = "scenario",
+mipLineHistorical(x, x_hist = NULL, color.dim = "moscen",
   linetype.dim = NULL, facet.dim = "region", funnel.dim = NULL,
   ylab = NULL, xlab = "Year", title = NULL,
-  color.dim.name = "Scenario", ybreaks = NULL, ylim = NULL,
+  color.dim.name = "Model output", ybreaks = NULL, ylim = NULL,
   ylog = NULL, size = 14, scales = "fixed", leg.proj = FALSE,
   plot.priority = c("x", "x_hist", "x_proj"), ggobject = TRUE,
-  paper_style = FALSE, xlim = NULL)
+  paper_style = FALSE, xlim = NULL, facet.ncol = 3,
+  legend.ncol = 1)
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}
 
 \item{x_hist}{historical data to plot. Allowed data formats: magpie or quitte, If no hostoric information is provided the plot will ignore it.}
 
-\item{color.dim}{dimension used for diffenent colors, default="scenario"}
+\item{color.dim}{dimension used for different colors, default="moscen"; can only be choosen freely if x_hist is NULL.}
 
-\item{linetype.dim}{dimension used for diffenent line types, default=NULL}
+\item{linetype.dim}{dimension used for different line types, default=NULL}
 
 \item{facet.dim}{dimension used for the facets, default="region"}
 
-\item{funnel.dim}{dimension used for diffenent funnels, default=NULL}
+\item{funnel.dim}{dimension used for different funnels, default=NULL}
 
-\item{ylab}{y-axis lable}
+\item{ylab}{y-axis label}
 
-\item{xlab}{x-axis lable, default="Year"}
+\item{xlab}{x-axis label, default="Year"}
 
 \item{title}{title of the plot}
 
@@ -52,6 +53,10 @@ mipLineHistorical(x, x_hist = NULL, color.dim = "scenario",
 \item{paper_style}{removes grey color from facets if \code{TRUE} Default is \code{FALSE}.}
 
 \item{xlim}{x axis limits as vector with min and max year}
+
+\item{facet.ncol}{number of columns used for faceting, default=3.}
+
+\item{legend.ncol}{number of columns used in legends, default=1.}
 }
 \description{
 Compares data by producing line plot

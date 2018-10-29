@@ -2,12 +2,12 @@
 #' 
 #' @param x           Data to plot. Allowed data formats: magpie or quitte
 #' @param x_hist      historical data to plot. Allowed data formats: magpie or quitte, If no hostoric information is provided the plot will ignore it.
-#' @param color.dim   dimension used for diffenent colors, default="scenario"
-#' @param linetype.dim dimension used for diffenent line types, default=NULL
+#' @param color.dim   dimension used for different colors, default="moscen"; can only be choosen freely if x_hist is NULL.
+#' @param linetype.dim dimension used for different line types, default=NULL
 #' @param facet.dim   dimension used for the facets, default="region"
-#' @param funnel.dim  dimension used for diffenent funnels, default=NULL
-#' @param ylab y-axis lable
-#' @param xlab x-axis lable, default="Year"
+#' @param funnel.dim  dimension used for different funnels, default=NULL
+#' @param ylab y-axis label
+#' @param xlab x-axis label, default="Year"
 #' @param color.dim.name name for the color-dimension used in the legend
 #' @param title       title of the plot
 #' @param ybreaks      add breaks for the y axis
@@ -20,6 +20,8 @@
 #' @param ggobject returns a ggplot object. Default is \code{TRUE}.
 #' @param paper_style removes grey color from facets if \code{TRUE} Default is \code{FALSE}.
 #' @param xlim        x axis limits as vector with min and max year
+#' @param facet.ncol  number of columns used for faceting, default=3.
+#' @param legend.ncol number of columns used in legends, default=1.
 #'
 #' @author Lavinia Baumstark, Mishko Stevanovic, Florian Humpenoeder
 #'
@@ -37,10 +39,10 @@
 #' @export
 #' 
 
-mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
-                              ylab=NULL,xlab="Year",title=NULL,color.dim.name="Scenario",ybreaks=NULL,ylim=NULL,
+mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
+                              ylab=NULL,xlab="Year",title=NULL,color.dim.name="Model output",ybreaks=NULL,ylim=NULL,
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj"),
-                              ggobject=TRUE,paper_style=FALSE,xlim=NULL) {
+                              ggobject=TRUE,paper_style=FALSE,xlim=NULL,facet.ncol=3,legend.ncol=1) {
 
   x <- as.quitte(x)
   
@@ -77,7 +79,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   
   # make line plot of data
   p <- ggplot()
-  if(color.dim=="scenario") color.dim <- "moscen"
+  if (color.dim!="moscen" && !is.null(x_hist)) stop("color.dim can only be choosen freely if x_hist is NULL!")
 
   # log scale
   if(!is.null(ylog)) {
@@ -94,7 +96,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
   if(!is.null(xlim)) p <- p + coord_cartesian(xlim=xlim)
   
   # facet
-  p <- p + facet_wrap(facet.dim, ncol=3, scales=scales) 
+  if(!is.null(facet.dim)) p <- p + facet_wrap(facet.dim, ncol=facet.ncol, scales=scales) 
   
   # get the plotting year maximum
   ## has to be determened on maximum of model output and historic data
@@ -150,13 +152,13 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
     if(plot.priority[i] == "x_hist" & i>1 ){  ## if the historic values are plotted on top of the scenario ones, they should be smaller
       p <- priority_x_hist(p,MarkerSize = 5)
     }
-    else{
+    else {
       p <- eval(parse(text = paste0("priority_",plot.priority[i],"(p)")))
     }
   }
   
   # datasources ordering // matrix // needed for colors and legend
-  model_output <- as.vector(unlist(unique(a[a$id=="x","moscen"])))
+  model_output <- as.vector(unlist(unique(a[a$id=="x",color.dim])))
   historical <- as.vector(unlist(unique(a[a$id=="x_hist","model"])))
   if(leg.proj) {
     projection <- as.vector(unlist(unique(a[a$id=="x_proj","moscen"])))
@@ -207,12 +209,12 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="scenario",linetype.dim=NU
     #color: show only model_output
     #fill: add colors for historical and keep shape symbol
     #alpha: add colors for projection depending on leg.proj
-    p <- p + scale_color_manual("Model output",values = color_set, breaks=model_output,labels=sub("\\."," ",model_output),guide=guide_legend(order=1,title.position = "top", ncol=1))
+    p <- p + scale_color_manual(color.dim.name,values = color_set, breaks=model_output,labels=sub("\\."," ",model_output),guide=guide_legend(order=1,title.position = "top", ncol=legend.ncol))
     p <- p + scale_fill_manual("Historical data",values = color_set[historical],breaks=historical,
-                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",linetype=0,size=5),order=2,title.position = "top", ncol=1))
-    if(leg.proj) p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour=color_set[projection],shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=1))
-    else p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour="#A1A194",shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=1))
-    p <- p + guides(linetype=guide_legend(order=4,title.position="top",ncol=1))
+                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",linetype=0,size=5),order=2,title.position = "top", ncol=legend.ncol))
+    if(leg.proj) p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour=color_set[projection],shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
+    else p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour="#A1A194",shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
+    p <- p + guides(linetype=guide_legend(order=4,title.position="top",ncol=legend.ncol))
     
     return(p)
   }

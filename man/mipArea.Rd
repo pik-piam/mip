@@ -5,7 +5,8 @@
 \title{Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.}
 \usage{
 mipArea(x, stack_priority = c("variable", "region"), total = TRUE,
-  shorten = TRUE)
+  scales = "fixed", shorten = TRUE, hist = NULL,
+  hist_source = "first")
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 
@@ -20,7 +21,14 @@ provided by user in magpie or quitte format it will be added to the plot. If use
 TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot 
 will ignore it.}
 
+\item{scales}{Should scales be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?}
+
 \item{shorten}{Shorten variable names (default is TRUE) by removing categories only if they are identical (for short names in the legend)}
+
+\item{hist}{Historical data. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 
+the dimension that contains the variables must have one of the following names: variable, scenario, or model.}
+
+\item{hist_source}{If there are multiple historical sources the name of the source that you want to be plotted.}
 }
 \description{
 Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.

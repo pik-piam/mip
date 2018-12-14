@@ -58,6 +58,10 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, scale
   
   x <- as.quitte(x)
   
+  # Add dummy scenario if data does not contain a scenario
+  # Otherwise selecting all scenarios that are not 'historicl' further down deletes ALL data
+  if(all(is.na(x$scenario))) x$scenario <- "default"
+  
   # shorten variable names and calc ylab
   if (shorten) x$variable <- shorten_legend(x$variable,identical_only=TRUE)
   ylab <- paste0(sub(".$","",attr(x$variable,"front")),attr(x$variable,"back"))

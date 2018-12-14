@@ -18,6 +18,6 @@ theme_mip <- function(size=12) {
                    axis.text.y     = element_text(size=size, colour="black"), 
                    axis.title.x    = element_text(size=size, face="bold", vjust=-0.3), 
                    axis.text.x     = element_text(size=size, angle=90, hjust=.5, colour="black"),
-                   legend.text     = element_text(size=size-3, vjust=1.5),
+                   legend.text     = element_text(size=size-3),
                    legend.position = "bottom"))
 }

@@ -36,6 +36,17 @@ mipBarYearData <- function(x,colour=NULL,ylab=NULL,xlab=NULL,title=NULL){
     stop("this plot can only deal with data that have only one model")
   }
   
+  # calculate ylab
+  
+  x$variable <- shorten_legend(x$variable,identical_only=TRUE)
+  
+  if (is.null(ylab)) {   
+     ylab <- paste0(sub(".$","",attr(x$variable,"front")),attr(x$variable,"back"))
+     # add unit
+     unit <- unique(as.character(x$unit))
+     ylab <- paste0(ylab, " (",paste0(unit,collapse=" | "),")")
+  }
+     
   # add dummy-dimension for space between the time-steps
   tmp <- x %>%   
          select_(~-scenario, ~-value) %>%  
@@ -74,6 +85,9 @@ mipBarYearData <- function(x,colour=NULL,ylab=NULL,xlab=NULL,title=NULL){
   }
   if(!is.null(ylab))   { p <- p + ylab(ylab) }
   if(!is.null(title))  { p <- p + ggtitle(title) }
-  if(!is.null(colour)) { p <- p + scale_fill_manual(values=colour) }
+  if(is.null(colour)){
+    colour <- plotstyle(x$variable)
+  }
+  p <- p + scale_fill_manual(values=colour)
   return(p)  
 } 

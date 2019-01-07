@@ -86,7 +86,7 @@ mipBarYearData <- function(x,colour=NULL,ylab=NULL,xlab=NULL,title=NULL){
   if(!is.null(ylab))   { p <- p + ylab(ylab) }
   if(!is.null(title))  { p <- p + ggtitle(title) }
   if(is.null(colour)){
-    colour <- plotstyle(x$variable)
+    colour <- plotstyle(as.character(x$variable))
   }
   p <- p + scale_fill_manual(values=colour)
   return(p)  

@@ -171,7 +171,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   # colors
   color_set <- plotstyle(sources)
   #the color legend includes colors for model_output, historical and projection at this stage
-  p <- p + scale_color_manual(values=color_set, name="Legend")
+  if(!ggobject)
+    p <- p + scale_color_manual(values=color_set, name="Legend")
 
   # add a vertical line for the starting year of the resutls
   p <- p + geom_vline(xintercept=as.numeric(min(x$period)),linetype=2)

@@ -35,7 +35,7 @@
 #'   }
 #' @importFrom gridExtra arrangeGrob grid.arrange
 #' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
-#' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans
+#' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans expand_limits
 #' @export
 #' 
 
@@ -90,6 +90,10 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
       p <- p + coord_trans(y = "log10", limy = ylim)
     }else{
       p <- p + coord_trans(y = "log10")
+    }
+  } else {
+    if(!is.null(ylim)) {
+      p <- p + expand_limits(y = ylim)
     }
   }
   

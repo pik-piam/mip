@@ -95,7 +95,9 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, scale
   # initialize
   dim_to_stack <- stack_priority
 
-  # find first dimension in stack_priority that has more than one element  
+  # Find first dimension in stack_priority that has more than one element.
+  # Initialize dim_to_stack (this applies if if all dimensions have only one element)
+  dim_to_stack <- stack_priority[1]
   for (s in stack_priority) {
     if(n_levels[s] > 1) {
       dim_to_stack <- s

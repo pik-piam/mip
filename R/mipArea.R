@@ -141,18 +141,13 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, scale
   # separate positive and negative parts of data for area plot
   tmp <- droplevels(x[x$scenario!="historical",])
   
-  pos <- tmp
-  pos$value[pos$value < 0] <- 0
-  neg <- tmp
-  neg$value[neg$value > 0] <- 0
+  pos <- tmp[tmp$value < 0,]
+  neg <- tmp[tmp$value > 0,]
   
   if (!is.null(hist)) {
     tmp <- droplevels(x[x$scenario=="historical",])
-    postmp <- tmp
-    postmp$value[postmp$value < 0] <- 0
-    
-    negtmp <- tmp
-    negtmp$value[negtmp$value > 0] <- 0
+    postmp <- tmp$value[tmp$value < 0]
+    negtmp <- tmp$value[tmp$value > 0]
   
     pos_h <- NULL
     neg_h <- NULL

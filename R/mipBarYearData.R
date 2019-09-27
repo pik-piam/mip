@@ -8,6 +8,13 @@
 #' @param xlab x-axis text
 #' @param title title appering at the top of the plot
 #' @param colour Dimension to be colored, default: "Scenario"
+#' @param scenario_markers Use markers to conserve space with long scenario 
+#'        names.  Symbols are either picked automatically (default), or can be
+#'        passed as a named vector in the form of 
+#'        \code{c('scenario' = 'marker')}, where marker is a number between 1 
+#'        and 20, or a ggplot2 shape name 
+#'        (see \code{vignette("ggplot2-specs")}).  Set to \code{FALSE} to not 
+#'        use markers.
 #' @author Lavinia Baumstark
 #' @section Example Plot:
 #' \if{html}{\figure{mipBarYearData.png}{example plot}}
@@ -22,23 +29,30 @@
 #' }
 #'   
 #' @importFrom magclass is.magpie
-#' @importFrom ggplot2 ggplot aes_ guides guide_legend scale_x_continuous ggtitle
-#' @importFrom dplyr %>% select_ distinct_ mutate_
+#' @importFrom ggplot2 ggplot aes_ guides guide_legend scale_x_continuous 
+#'             ggtitle geom_col scale_shape_manual
+#' @importFrom dplyr %>% select_ distinct_ mutate_ mutate filter 
+#'             inner_join group_by summarise select n sym
+#' @importFrom tidyr crossing unite
+#' @importFrom stats setNames
 #' @export
 #
 
 
-mipBarYearData <- function(x,colour=NULL,ylab=NULL,xlab=NULL,title=NULL){
-  
+mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL,
+                           title = NULL, scenario_markers = NULL) {
   x <- as.quitte(x)
   
-  if(length(unique(x$model)) > 1) {
+  if (length(unique(x$model)) > 1) {
     stop("this plot can only deal with data that have only one model")
   }
   
-  # calculate ylab
+  if (!is.integer(x$period)) {
+    stop('this plot can only deal with data that have integer periods')
+  }
   
-  x$variable <- shorten_legend(x$variable,identical_only=TRUE)
+  # calculate y-axis label
+  x$variable <- shorten_legend(x$variable,identical_only = TRUE)
   
   if (is.null(ylab)) {   
      ylab <- paste0(sub(".$","",attr(x$variable,"front")),attr(x$variable,"back"))
@@ -48,46 +62,86 @@ mipBarYearData <- function(x,colour=NULL,ylab=NULL,xlab=NULL,title=NULL){
   }
      
   # add dummy-dimension for space between the time-steps
-  tmp <- x %>%   
-         select_(~-scenario, ~-value) %>%  
-         distinct_() %>%                  
-         mutate_(scenario = ~"dummy",      
-                value    = 0)
-  x <- rbind(x,tmp)
+  xpos <- crossing(period   = unique(x$period),
+                   scenario = factor(c(levels(x$scenario), '\x13'))) %>% 
+    mutate(xpos = 1:n()) %>% 
+    filter('\x13' != !!sym('scenario')) %>% 
+    droplevels()
   
-  # delete the name of the dummy-bar for space between the time-steps
-  xlabs = gsub("dummy.*", "", levels(interaction(x$scenario, x$period)))  
+  x <- x %>% 
+    inner_join(
+      xpos,
+      
+      c('scenario', 'period')
+    )
   
-  # split in positive and negative part
-  x_pos <- x
-  x_neg <- x
-  x_pos$value[x_pos$value<0]  <- 0
-  x_neg$value[x_neg$value>=0] <- 0
+  # set up scenario markers
+  if (is.null(scenario_markers))
+    scenario_markers <- TRUE
+  
+  if (scenario_markers) {
+    y_marker <- crossing(
+      x %>% 
+        group_by(!!sym('region'), !!sym('xpos')) %>% 
+        summarise(top    = sum(pmax(0, !!sym('value'))),
+                  bottom = sum(pmin(0, !!sym('value')))) %>% 
+        summarise(top    = max(!!sym('top')),
+                  bottom = min(!!sym('bottom'))) %>% 
+        mutate(
+          y = !!sym('bottom') - 0.05 * (!!sym('top') + !!sym('bottom'))) %>% 
+        select(-'top', -'bottom'),
+      
+      xpos
+    )
+  }
+  
+  if (is.logical(scenario_markers) & scenario_markers != FALSE) {
+    scenario_markers <- setNames((1:20)[1:length(levels(x$scenario))], 
+                                 levels(x$scenario))
+  }
+  
+  # calculate positions of period labels
+  if (any(scenario_markers)) {
+    xpos <- xpos %>% 
+      group_by(!!sym('period')) %>% 
+      summarise(xpos = mean(!!sym('xpos')))
+  }
+    
+  if (is.null(colour)) {
+    colour <- plotstyle(levels(x$variable))
+  }
   
   # make plot
-  p <- ggplot(x, 
-              aes_(x = ~as.numeric(interaction(scenario, period)),
-                  y = ~value, 
-                  fill = ~variable)) 
-  if (any(x_pos$value >= 0,na.rm=TRUE)) p <- p + geom_bar(data=x_pos,stat = "identity")
-  if (any(x_neg$value <  0,na.rm=TRUE)) p <- p + geom_bar(data=x_neg,stat = "identity")
-  p <- p + scale_x_continuous(breaks = 1:length(levels(interaction(x$scenario, x$period))),labels = xlabs) 
-  p <- p + facet_wrap(~region, ncol=4, scales="free_y") 
-  p <- p + theme(
-                 legend.position="bottom",
-                 axis.text.x = element_text(angle=90, hjust = 1, vjust = 0.5)) 
-  p <- p + guides(fill = guide_legend(reverse = TRUE)) +
-           guides(fill = guide_legend(ncol=2))
-  if(!is.null(xlab)) { 
-    p <- p + xlab(xlab) 
+  p <- ggplot() +
+    geom_col(data = x,
+             mapping = aes(x = !!sym('xpos'), y = !!sym('value'), 
+                           fill = !!sym('variable'))) +
+    scale_fill_manual(values = colour, name = NULL,
+                      guide = guide_legend(reverse = TRUE)) +
+    facet_wrap(~ region, scales = 'free_y') +
+    labs(x = xlab, y = ylab, title = title) +
+    theme(legend.position = 'bottom')
+  
+  # add markers
+  if (any(scenario_markers)) {
+    p <- p +
+      scale_x_continuous(breaks = xpos$xpos,
+                         labels = xpos$period) + 
+      geom_point(data = y_marker,
+                 mapping = aes(x = !!sym('xpos'), y = !!sym('y'), 
+                               shape = !!sym('scenario')),
+                 size = 1.5) +
+      scale_shape_manual(values = scenario_markers, name = NULL) +
+      theme(legend.box = 'vertical')
   } else {
-    p <- p + xlab("")
+    p <- p + 
+      scale_x_continuous(breaks = xpos$xpos,
+                         labels = xpos %>% 
+                           unite(!!sym('label'), !!sym('scenario'), 
+                                 !!sym('period'), sep = ' ') %>% 
+                           getElement('label')) +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
   }
-  if(!is.null(ylab))   { p <- p + ylab(ylab) }
-  if(!is.null(title))  { p <- p + ggtitle(title) }
-  if(is.null(colour)){
-    colour <- plotstyle(as.character(x$variable))
-  }
-  p <- p + scale_fill_manual(values=colour)
+  
   return(p)  
-} 
+}

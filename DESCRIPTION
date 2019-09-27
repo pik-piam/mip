@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.122.1
-Date: 2019-08-28
+Version: 0.123.0
+Date: 2019-09-27
 Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c("aut","cre")),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut")),
              person("Lavinia", "Baumstark", email = "baumstark@pik-potsdam.de", role = "aut"),
@@ -23,11 +23,12 @@ Imports: ggplot2,
          data.table, 
          lusweave (>= 1.43.2), 
          trafficlight, 
-         gridExtra
+         gridExtra,
+         tidyr
 URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
 BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 6.1.1
 Encoding: UTF-8
 LazyData: yes
 Suggests: testthat
-ValidationKey: 22144056
+ValidationKey: 22344180

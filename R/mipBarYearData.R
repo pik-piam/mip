@@ -32,9 +32,10 @@
 #' @importFrom ggplot2 ggplot aes_ guides guide_legend scale_x_continuous 
 #'             ggtitle geom_col scale_shape_manual
 #' @importFrom dplyr %>% select_ distinct_ mutate_ mutate filter 
-#'             inner_join group_by summarise select n sym
-#' @importFrom tidyr crossing unite
+#'             inner_join group_by summarise select n sym arrange
+#' @importFrom tidyr crossing unite 
 #' @importFrom stats setNames
+#' @importFrom quitte order.levels
 #' @export
 #
 
@@ -64,6 +65,8 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL,
   # add dummy-dimension for space between the time-steps
   xpos <- crossing(period   = unique(x$period),
                    scenario = factor(c(levels(x$scenario), '\x13'))) %>% 
+    order.levels(scenario = c(levels(x$scenario), '\x13')) %>% 
+    arrange(!!sym('period'), !!sym('scenario')) %>% 
     mutate(xpos = 1:n()) %>% 
     filter('\x13' != !!sym('scenario')) %>% 
     droplevels()
@@ -96,7 +99,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL,
   }
   
   if (is.logical(scenario_markers) & scenario_markers != FALSE) {
-    scenario_markers <- setNames((1:20)[1:length(levels(x$scenario))], 
+    scenario_markers <- setNames((1:20)[1:length(unique(x$scenario))], 
                                  levels(x$scenario))
   }
   
@@ -106,7 +109,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL,
       group_by(!!sym('period')) %>% 
       summarise(xpos = mean(!!sym('xpos')))
   }
-    
+
   if (is.null(colour)) {
     colour <- plotstyle(levels(x$variable))
   }

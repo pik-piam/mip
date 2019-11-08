@@ -117,7 +117,7 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE, verbosity = ge
       # To yield the correct mapping between colors and labels the colors have to be also reversed
       df$x<-factor(df$x,levels=rev(x)) 
       # create bar plot
-      p1 <- ggplot(data=df, aes(x=x)) + geom_bar(stat="bin",fill=rev(df$c)) + coord_flip() + 
+      p1 <- ggplot(data=df, aes(x=x)) + geom_bar(stat="count",fill=rev(df$c)) + coord_flip() + 
                theme(axis.title.x = element_blank(),axis.title.y = element_blank()) + 
                labs(title=paste0("Color bars (plot ",page," of ",pagemax,")"))
 

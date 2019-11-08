@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.123.0
-Date: 2019-09-27
+Version: 0.123.1
+Date: 2019-11-08
 Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c("aut","cre")),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut")),
              person("Lavinia", "Baumstark", email = "baumstark@pik-potsdam.de", role = "aut"),
@@ -31,4 +31,4 @@ RoxygenNote: 6.1.1
 Encoding: UTF-8
 LazyData: yes
 Suggests: testthat
-ValidationKey: 22344180
+ValidationKey: 22414048

@@ -4,8 +4,14 @@
 \alias{plotstyle}
 \title{Returns plot styles for given entities}
 \usage{
-plotstyle(..., out = "color", unknown = NULL, plot = FALSE,
-  verbosity = getOption("plotstyle.verbosity"))
+plotstyle(
+  ...,
+  out = "color",
+  unknown = NULL,
+  plot = FALSE,
+  verbosity = getOption("plotstyle.verbosity"),
+  regexp = FALSE
+)
 }
 \arguments{
 \item{...}{One or more strings or a vector of strings with names of entities (regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be ignored. If left empty all available entities will be used}
@@ -17,6 +23,11 @@ plotstyle(..., out = "color", unknown = NULL, plot = FALSE,
 \item{plot}{If TRUE plots with all given entities and their colors will be produced (to produce plots with all available entitities leave the \code{...} entry empty!)}
 
 \item{verbosity}{Set to 1 if you want to know for which unknown entities plotstyle brewed colors}
+
+\item{regexp}{If \code{TRUE}, match entities as regular expressions. 
+Matching entities are expanded, non-matching entities are returned as 
+the original expression.  Does not generate default colour maps. 
+Implies \code{plot = FALSE} and \code{verbosity = 0}.}
 }
 \value{
 Plot styles for given entities
@@ -33,6 +44,12 @@ unknown=data.frame(row.names=c("AAA","UNKNOWN_ELEMENT2"),
 plotstyle(entities,unknown=unknown)
 plotstyle(entities,out="legend")
 plotstyle(entities,out="all")
+
+# search for all 'Final Energy Biomass' entities
+plotstyle('^Final Energy\\\\|.*Biomass', regexp = TRUE)
+
+# search for all three-letter entities (a.k.a. regions)
+plotstyle('^[A-Z]{3}$', regexp = TRUE, out = 'all')
 }
 \seealso{
 \code{\link{plotstyle.add}}

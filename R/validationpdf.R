@@ -1,7 +1,7 @@
 #' Create a validation PDF file
 #'
-#' @param x     Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif file)
-#' @param hist  Validation data.All formats allowed which can be converted to quitte (including characters containing the path to a mif file)
+#' @param x     Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif or rds file)
+#' @param hist  Validation data.All formats allowed which can be converted to quitte (including characters containing the path to a mif or rds file)
 #' @param file file name of the output PDF or a Sweave object. If a sweave object is provided the function will return the updated object, otherwise
 #' it will write its content to the file
 #' @param style data style for the returned data. Currently available: "trafficlight", "detailed", "comparison"
@@ -29,7 +29,12 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   
   # convert x into a quitte object
   if(is.character(x)) {
-    x <- read.quitte(x, check.duplicates = FALSE)
+    filetype <- sub("^.*\\.","",x)
+    if(filetype=="rds") {
+      x <- readRDS(x) 
+    } else {
+      x <- read.quitte(x, check.duplicates = FALSE)
+    }
   } else {
     x <- as.quitte(x)
   }
@@ -42,7 +47,12 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   
   if(!is.null(hist)) {
     if(is.character(hist)) {
-      hist <- read.quitte(hist, check.duplicates = FALSE)
+      filetype <- sub("^.*\\.","",hist)
+      if(filetype=="rds") {
+        hist <- readRDS(hist) 
+      } else {
+        hist <- read.quitte(hist, check.duplicates = FALSE)
+      }
     } else {
       hist <- as.quitte(hist)
     }
@@ -213,22 +223,19 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     m <- prepmagpie(x,hist)
     name <- paste0(sub("^.*\\|","",varname["name"]), " (",x$unit[[1]],")")
     if(debug) save(x,hist,file = paste0("mipLineHistorical_",make.names(varname["name"]),".Rda"))
+    if("plot.priority"  %in% names(pdfStyle)) {
+      plot.priority <- pdfStyle$plot.priority
+    } else {
+      plot.priority <- c("x", "x_hist", "x_proj")
+    }
     if("GLO" %in% intersect(getRegs(x),getRegs(hist))) {
-      if("plot.priority"  %in% names(pdfStyle) ) {
-        prio <- pdfStyle$plot.priority
-        swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name, plot.priority = prio)
-      } else{
-        swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name)
-      }
+      mLH <- swfigure(sw,mipLineHistorical,x[x$region=="GLO",],hist[hist$region=="GLO",], ylab=name, plot.priority = plot.priority)
+      swfigure(sw, print, mLH)
     }
     regs <- setdiff(intersect(getRegs(x),getRegs(hist)),"GLO")
-    if(length(regs)>0) {
-      if("plot.priority"  %in% names(pdfStyle) ) {
-        prio <- pdfStyle$plot.priority
-        swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12, plot.priority = prio)
-      } else {
-        swfigure(sw,mipLineHistorical,x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12)
-      }
+    if(length(regs) > 0) {
+      mLH <- mipLineHistorical(x[x$region %in% regs,],hist[hist$region %in% regs,], ylab=name, facet.dim = "region", size=12, plot.priority = plot.priority)
+      swfigure(sw, print, mLH)
     }
     for(s in 1:ndata(m$x)) {
       x <- m$x[,,s]

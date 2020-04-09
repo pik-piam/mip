@@ -4,15 +4,25 @@
 \alias{validationpdf}
 \title{Create a validation PDF file}
 \usage{
-validationpdf(x, hist, file = "validation.pdf", style = "comparison",
-  only_historical = FALSE, digits = 3, filter = NULL,
-  prefix = NULL, hideEmptySection = FALSE, show_stats = TRUE,
-  debug = getOption("debug"), pdfStyle = NULL)
+validationpdf(
+  x,
+  hist,
+  file = "validation.pdf",
+  style = "comparison",
+  only_historical = FALSE,
+  digits = 3,
+  filter = NULL,
+  prefix = NULL,
+  hideEmptySection = FALSE,
+  show_stats = TRUE,
+  debug = getOption("debug"),
+  pdfStyle = NULL
+)
 }
 \arguments{
-\item{x}{Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif file)}
+\item{x}{Data to be validated. All formats allowed which can be converted to quitte (including characters containing the path to a mif or rds file)}
 
-\item{hist}{Validation data.All formats allowed which can be converted to quitte (including characters containing the path to a mif file)}
+\item{hist}{Validation data.All formats allowed which can be converted to quitte (including characters containing the path to a mif or rds file)}
 
 \item{file}{file name of the output PDF or a Sweave object. If a sweave object is provided the function will return the updated object, otherwise
 it will write its content to the file}

@@ -4,9 +4,15 @@
 \alias{mipArea}
 \title{Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.}
 \usage{
-mipArea(x, stack_priority = c("variable", "region"), total = TRUE,
-  scales = "fixed", shorten = TRUE, hist = NULL,
-  hist_source = "first")
+mipArea(
+  x,
+  stack_priority = c("variable", "region"),
+  total = TRUE,
+  scales = "fixed",
+  shorten = TRUE,
+  hist = NULL,
+  hist_source = "first"
+)
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 

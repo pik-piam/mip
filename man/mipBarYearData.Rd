@@ -4,8 +4,14 @@
 \alias{mipBarYearData}
 \title{mipBarYearData}
 \usage{
-mipBarYearData(x, colour = NULL, ylab = NULL, xlab = NULL,
-  title = NULL)
+mipBarYearData(
+  x,
+  colour = NULL,
+  ylab = NULL,
+  xlab = NULL,
+  title = NULL,
+  scenario_markers = NULL
+)
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}
@@ -17,6 +23,14 @@ mipBarYearData(x, colour = NULL, ylab = NULL, xlab = NULL,
 \item{xlab}{x-axis text}
 
 \item{title}{title appering at the top of the plot}
+
+\item{scenario_markers}{Use markers to conserve space with long scenario 
+names.  Symbols are either picked automatically (default), or can be
+passed as a named vector in the form of 
+\code{c('scenario' = 'marker')}, where marker is a number between 1 
+and 20, or a ggplot2 shape name 
+(see \code{vignette("ggplot2-specs")}).  Set to \code{FALSE} to not 
+use markers.}
 }
 \description{
 Function for plotting (bar-plot) MAgPIE objects and compare different scenarios, 

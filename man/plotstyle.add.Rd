@@ -4,8 +4,14 @@
 \alias{plotstyle.add}
 \title{Adds plot styles locally to plotstyle.csv}
 \usage{
-plotstyle.add(entity, legend, color, marker = NULL, linestyle = NULL,
-  replace = FALSE)
+plotstyle.add(
+  entity,
+  legend,
+  color,
+  marker = NULL,
+  linestyle = NULL,
+  replace = FALSE
+)
 }
 \arguments{
 \item{entity}{Vector of strings with names of entities (regions, variable names, etc.)}

@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.124.3
-Date: 2020-04-09
+Version: 0.125.0
+Date: 2020-04-16
 Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c("aut","cre")),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut")),
              person("Lavinia", "Baumstark", email = "baumstark@pik-potsdam.de", role = "aut"),
@@ -30,5 +30,8 @@ BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 7.1.0
 Encoding: UTF-8
 LazyData: yes
-Suggests: testthat
-ValidationKey: 22822723
+Suggests: 
+    testthat,
+    knitr
+VignetteBuilder: knitr
+ValidationKey: 22960000

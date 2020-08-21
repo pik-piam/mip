@@ -22,7 +22,7 @@ the dimension that contains the variables must have one of the following names: 
 function will scan the columns in the given order and use the first dimension for stacking that has 
 more than one element.}
 
-\item{total}{total data to plot. Allowed inputss: magpie, quitte or boolean. If total data is
+\item{total}{total data to plot. Allowed inputs: magpie, quitte or boolean. If total data is
 provided by user in magpie or quitte format it will be added to the plot. If user sets total to 
 TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot 
 will ignore it.}

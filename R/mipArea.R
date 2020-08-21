@@ -5,7 +5,7 @@
 #' @param stack_priority Name of column you want to stack. If you provide more than one column name the 
 #' function will scan the columns in the given order and use the first dimension for stacking that has 
 #' more than one element.
-#' @param total total data to plot. Allowed inputss: magpie, quitte or boolean. If total data is
+#' @param total total data to plot. Allowed inputs: magpie, quitte or boolean. If total data is
 #' provided by user in magpie or quitte format it will be added to the plot. If user sets total to 
 #' TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot 
 #' will ignore it.
@@ -30,7 +30,8 @@
 #' p <- p + facet_grid(region~scenario)
 #' @importFrom magclass is.magpie getSets
 #' @importFrom quitte is.quitte
-#' @importFrom ggplot2 ggplot geom_area aes_ geom_line scale_linetype_discrete facet_wrap facet_grid theme scale_fill_manual xlab
+#' @importFrom ggplot2 ggplot geom_area aes_ geom_line scale_linetype_discrete 
+#'   facet_wrap facet_grid theme scale_fill_manual xlab expand_limits
 #' @importFrom dplyr group_by_ summarise_ ungroup
 #' @export
 #'
@@ -223,6 +224,10 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, scale
   # use plotstyle colours and labels by default
   p <- p + scale_fill_manual(values = plotstyle(as.character(unique(x[[dim_to_stack]]))),
                              name   = "") 
+  
+  # increase y-axis limits to hide all-zero data that was set to -1e-36
+  p <- p + 
+    expand_limits(y = c(-1, 1) * 1e-32)
 
   return(p)
 }

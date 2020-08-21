@@ -1,8 +1,12 @@
-# R mip package
+# Comparison of multi-model runs
+
+R package **mip**, version **0.125.1**
+
+[![Travis build status](https://travis-ci.com/pik-piam/mip.svg?branch=master)](https://travis-ci.com/pik-piam/mip) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158586.svg)](https://doi.org/10.5281/zenodo.1158586) 
 
 ## Purpose and Functionality
 
-The mip package provides a visualization tools for model intercomparison results stored in quitte class format.
+Package contains generic functions to produce comparison plots of multi-model runs.
 
 
 ## Installation
@@ -12,7 +16,7 @@ For installation of the most recent package version an additional repository has
 ```r
 options(repos = c(CRAN = "@CRAN@", pik = "https://rse.pik-potsdam.de/r/packages"))
 ```
-The additional repository can be made availably permanently by adding the line above to a file called `.Rprofile` stored in the home folder of your system (`Sys.glob("~")` in R returns the home directory).
+The additional repository can be made available permanently by adding the line above to a file called `.Rprofile` stored in the home folder of your system (`Sys.glob("~")` in R returns the home directory).
 
 After that the most recent version of the package can be installed using `install.packages`:
 
@@ -25,31 +29,37 @@ Package updates can be installed using `update.packages` (make sure that the add
 ```r 
 update.packages()
 ```
-## Standards for the Model-Intercomparison-Plots (MIP) Library
 
-The MIP-Library contains functions that have the following attributes:
+## Tutorial
 
-*NAME:* The functions start with *mip*, followed by the type of plot (first letter capital) and afterwards some further description (e.g. mipLineHistorical.R, mipCrossbarDiscreteX.R)
+The package comes with a vignette describing the basic functionality of the package and how to use it. You can load it with the following command (the package needs to be installed):
 
-*INPUT:* All functions should be able to read in *magpie* as well as *quitte* objects. Internally the class can be changed by as.quitte or as. magpie. Please check if the input data are in the right format (quitte or magpie) and give a meaningful error message if not
-
-*OUTPUT:* The returned object of the functions is a ggplot-object that can be adjusted, printed, saved, etc. afterwards
-The data shall show the *full dimensionality* of a read in [[Model_Intercomparison_File_Format_(mif)|mif-file]]. That means it has at least the dimensions: _Model;Scenario;Region;Variable;Unit_. If for a specific function more dimensions are needed, please check if it exists and give a meaningful error message if not
-
-*ARGUMENTS:* please use standardized names for the data-arguments (*x* - default data, *x_hist* - historical data, *x_valid* - validation data) to facilitate the use of the interactive plotting function scenTool.R
-
-As we would like to use these functions also for the validation of a single model output all functions should be able to deal with data that contain only *one scenario and one model*
-
-Use function *plotstyle* for colour coding and styles
-
-If possible, please add some *plot examples* to the manual
+```r
+vignette("mif") # Model Intercomparison File Format (MIF)
+```
 
 ## Questions / Problems
 
-In case of questions / problems please contact Jan Dietrich <dietrich@pik-potsdam.de>.
-
+In case of questions / problems please contact David Klein <dklein@pik-potsdam.de>.
 
 ## Citation
 
-[![DOI](https://zenodo.org/badge/103911845.svg)](https://zenodo.org/badge/latestdoi/103911845)
+To cite package **mip** in publications use:
+
+Klein D, Dietrich J, Baumstark L, Humpenoeder F, Stevanovic M, Wirth S (2020). _mip: Comparison
+of multi-model runs_. doi: 10.5281/zenodo.1158586 (URL: https://doi.org/10.5281/zenodo.1158586),
+R package version 0.125.1, <URL: https://github.com/pik-piam/mip>.
+
+A BibTeX entry for LaTeX users is
+
+ ```latex
+@Manual{,
+  title = {mip: Comparison of multi-model runs},
+  author = {David Klein and Jan Philipp Dietrich and Lavinia Baumstark and Florian Humpenoeder and Miodrag Stevanovic and Stephen Wirth},
+  year = {2020},
+  note = {R package version 0.125.1},
+  doi = {10.5281/zenodo.1158586},
+  url = {https://github.com/pik-piam/mip},
+}
+```
 

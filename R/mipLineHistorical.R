@@ -1,8 +1,8 @@
 #' Compares data by producing line plot
 #' 
 #' @param x           Data to plot. Allowed data formats: magpie or quitte
-#' @param x_hist      historical data to plot. Allowed data formats: magpie or quitte, If no hostoric information is provided the plot will ignore it.
-#' @param color.dim   dimension used for different colors, default="moscen"; can only be choosen freely if x_hist is NULL.
+#' @param x_hist      historical data to plot. Allowed data formats: magpie or quitte, If no historic information is provided the plot will ignore it.
+#' @param color.dim   dimension used for different colors, default="moscen"; can only be chosen freely if x_hist is NULL.
 #' @param linetype.dim dimension used for different line types, default=NULL
 #' @param facet.dim   dimension used for the facets, default="region"
 #' @param funnel.dim  dimension used for different funnels, default=NULL
@@ -22,6 +22,8 @@
 #' @param xlim        x axis limits as vector with min and max year
 #' @param facet.ncol  number of columns used for faceting, default=3.
 #' @param legend.ncol number of columns used in legends, default=1.
+#' @param hlines optional horizontal lines to be added to the plot, Allowed data formats: magpie, Default is \code{NULL}.
+#' @param hlines.labels optional labels for horizontal lines, Allowed data formats: named vector, where each name corresponds to exactly one variable in hlines, Default is \code{NULL}.
 #'
 #' @author Lavinia Baumstark, Mishko Stevanovic, Florian Humpenoeder
 #'
@@ -34,7 +36,7 @@
 #'     p <- mipLineHistorical(x,x_hist=hist,ylab="example",xlab="Year",title=NULL)
 #'   }
 #' @importFrom gridExtra arrangeGrob grid.arrange
-#' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
+#' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline geom_hline geom_text %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
 #' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans expand_limits
 #' @export
 #' 
@@ -42,7 +44,7 @@
 mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
                               ylab=NULL,xlab="Year",title=NULL,color.dim.name="Model output",ybreaks=NULL,ylim=0,
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj"),
-                              ggobject=TRUE,paper_style=FALSE,xlim=NULL,facet.ncol=3,legend.ncol=1) {
+                              ggobject=TRUE,paper_style=FALSE,xlim=NULL,facet.ncol=3,legend.ncol=1,hlines=NULL,hlines.labels=NULL) {
 
   x <- as.quitte(x)
   
@@ -70,8 +72,15 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     x_hist[x_hist$scenario!="historical","id"] <- "x_proj"
     x_hist[x_hist$scenario=="historical","id"] <- "x_hist"
     a <- rbind(a,x_hist)
-  } 
-  
+  }
+
+  if(!is.null(hlines)) {
+    class(hlines) <- setdiff(class(hlines),"data.table")
+    hlines <- as.quitte(hlines)
+    hlines <- droplevels(hlines)
+    hlines <- hlines[!is.na(hlines$value),]
+  }
+    
   # remove missing values
   a <- a[!is.na(a$value),]
   a$scenario <- as.factor(a$scenario)
@@ -103,8 +112,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   if(!is.null(facet.dim)) p <- p + facet_wrap(facet.dim, ncol=facet.ncol, scales=scales) 
   
   # get the plotting year maximum
-  ## has to be determened on maximum of model output and historic data
+  ## has to be determined on maximum of model output and historic data
   ymax <- max(a$period[a$id=="x_hist"],a$period[a$id=="x"])
+  
   
 
   # internal functions for plotting of different types of data
@@ -169,7 +179,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   } else {
     projection <- as.vector(unlist(unique(a[a$id=="x_proj","model"])))
   }
-  
+
   sources <- as.vector(interaction(c(model_output,historical,projection)))
   
   # colors
@@ -180,7 +190,17 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
 
   # add a vertical line for the starting year of the resutls
   p <- p + geom_vline(xintercept=as.numeric(min(x$period)),linetype=2)
-  
+
+  if(!is.null(hlines)) {
+    value <- NULL
+    p <- p + geom_hline(data=hlines, aes(yintercept=value), linetype=2, color = "coral")
+      
+    if(!is.null(hlines.labels)){
+      hlines$labels <- hlines.labels[hlines$variable]
+      p <- p + geom_text(data = hlines, aes(x=max(a$period) - (max(a$period) - min(a$period)) / 4, y=value, label = labels))
+    }
+  }
+    
   # labels
   p <- p + xlab(xlab) 
   p <- p + ylab(ylab) 

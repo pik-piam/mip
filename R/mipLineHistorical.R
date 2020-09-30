@@ -36,8 +36,8 @@
 #'     p <- mipLineHistorical(x,x_hist=hist,ylab="example",xlab="Year",title=NULL)
 #'   }
 #' @importFrom gridExtra arrangeGrob grid.arrange
-#' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
-#' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans expand_limits geom_hline
+#' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline geom_hline geom_text %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
+#' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans expand_limits
 #' @export
 #' 
 
@@ -192,6 +192,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   p <- p + geom_vline(xintercept=as.numeric(min(x$period)),linetype=2)
 
   if(!is.null(hlines)) {
+    value <- NULL
     p <- p + geom_hline(data=hlines, aes(yintercept=value), linetype=2, color = "coral")
       
     if(!is.null(hlines.labels)){

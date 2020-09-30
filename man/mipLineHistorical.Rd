@@ -26,15 +26,17 @@ mipLineHistorical(
   paper_style = FALSE,
   xlim = NULL,
   facet.ncol = 3,
-  legend.ncol = 1
+  legend.ncol = 1,
+  hlines = NULL,
+  hlines.labels = NULL
 )
 }
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}
 
-\item{x_hist}{historical data to plot. Allowed data formats: magpie or quitte, If no hostoric information is provided the plot will ignore it.}
+\item{x_hist}{historical data to plot. Allowed data formats: magpie or quitte, If no historic information is provided the plot will ignore it.}
 
-\item{color.dim}{dimension used for different colors, default="moscen"; can only be choosen freely if x_hist is NULL.}
+\item{color.dim}{dimension used for different colors, default="moscen"; can only be chosen freely if x_hist is NULL.}
 
 \item{linetype.dim}{dimension used for different line types, default=NULL}
 
@@ -73,6 +75,10 @@ mipLineHistorical(
 \item{facet.ncol}{number of columns used for faceting, default=3.}
 
 \item{legend.ncol}{number of columns used in legends, default=1.}
+
+\item{hlines}{optional horizontal lines to be added to the plot, Allowed data formats: magpie, Default is \code{NULL}.}
+
+\item{hlines.labels}{optional labels for horizontal lines, Allowed data formats: named vector, where each name corresponds to exactly one variable in hlines, Default is \code{NULL}.}
 }
 \description{
 Compares data by producing line plot

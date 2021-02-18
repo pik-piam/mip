@@ -5,7 +5,7 @@
 #' @param x a vector of variable names
 #' @param keepOrigNames if set, the returned list contains the original variables
 #' (to the value of which the grouped ones have to sum up) as names instead of
-#' made up group names, if they exist
+#' made up group names, if they exist. The current implementation goes up to two levels (++) deep.
 #' @return a named list of variable groups with group name as name and vector of entities as content
 #' @author David Klein, Jan Philipp Dietrich
 #' @seealso \code{\link{plotstyle.add}}

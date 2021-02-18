@@ -4,10 +4,14 @@
 \alias{extractVariableGroups}
 \title{extractVariableGroups}
 \usage{
-extractVariableGroups(x)
+extractVariableGroups(x, keepOrigNames = FALSE)
 }
 \arguments{
 \item{x}{a vector of variable names}
+
+\item{keepOrigNames}{if set, the returned list contains the original variables
+(to the value of which the grouped ones have to sum up) as names instead of
+made up group names, if they exist}
 }
 \value{
 a named list of variable groups with group name as name and vector of entities as content
@@ -17,7 +21,7 @@ Groups variable names by groups based on the |+| separators given in the variabl
 }
 \examples{
 x <- c("a|+|1|+|aa","a|+|2|abc","a|+|1|+|bb","a|+|1|+|cc","a|+|3|+|aa","a|+|3|+|bb")
-mip:::extractVariableGroups(x)
+mip::extractVariableGroups(x)
 }
 \seealso{
 \code{\link{plotstyle.add}}

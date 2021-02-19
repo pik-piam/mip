@@ -15,7 +15,8 @@
 #' @export
 
 extractVariableGroups <- function(x,keepOrigNames=FALSE) {
-  tmp <- function(x,sep="|+|",ext="",allVars) {
+  tmp <- function(x,sep="|+|",ext="",allVars,keepOrigNames=FALSE) {
+    if (keepOrigNames) ext<-""
     y <- strsplit(x,sep, fixed=TRUE)
     out <- list()
     for(j in 1:length(y)) {
@@ -35,8 +36,7 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
     matches <- grep(sep,x,fixed=TRUE, value = TRUE)
     if(length(matches)==0) break()
     ext <- ifelse(i>1,paste0(" ",i),"")
-    if (keepOrigNames) ext<-""
-    out <- c(out,tmp(matches,sep=sep,ext=ext,allVars = x))
+    out <- c(out,tmp(matches,sep=sep,ext=ext,allVars = x,keepOrigNames))
   }
   return(out)
 }

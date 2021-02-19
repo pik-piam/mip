@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.127.0
-Date: 2021-02-18
+Version: 0.127.1
+Date: 2021-02-19
 Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c("aut","cre")),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut")),
              person("Lavinia", "Baumstark", email = "baumstark@pik-potsdam.de", role = "aut"),
@@ -32,5 +32,6 @@ Encoding: UTF-8
 LazyData: yes
 Suggests: 
     testthat,
-    knitr
+    knitr,
+    covr
 VignetteBuilder: knitr

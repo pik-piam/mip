@@ -2,11 +2,9 @@
 
 R package **mip**, version **0.127.1**
 
-<!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/pik-piam/mip/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/mip?branch=master)
-<!-- badges: end -->
+
   
-[![CRAN status](https://www.r-pkg.org/badges/version/mip)](https://cran.r-project.org/package=mip) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158586.svg)](https://doi.org/10.5281/zenodo.1158586)  [![R build status](https://github.com/pik-piam/mip/workflows/check/badge.svg)](https://github.com/pik-piam/mip/actions) [![codecov](https://codecov.io/gh/pik-piam/mip/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/mip)
+[![CRAN status](https://www.r-pkg.org/badges/version/mip)](https://cran.r-project.org/package=mip) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158586.svg)](https://doi.org/10.5281/zenodo.1158586)   [![codecov](https://codecov.io/gh/pik-piam/mip/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/mip)
 
 ## Purpose and Functionality
 

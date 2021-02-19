@@ -1,6 +1,8 @@
-ValidationKey: '23354100'
+ValidationKey: '23757144'
 AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
 - 'Warning: namespace ''.*'' is not available and has been replaced'
 - ‘qpdf’ is needed for checks on size reduction of PDFs
 AcceptedNotes: unable to verify current time
+AutocreateReadme: yes
+UseGithubActions: yes

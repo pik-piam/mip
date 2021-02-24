@@ -25,6 +25,7 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
         ind<-grep(gsub("\\|","\\\\|",paste0("^",name,"$")),
                   sub("\\|\\+\\+|\\|\\+","",sub(" \\(.*.\\)$","",allVars)))
         if (keepOrigNames ) try(name<-allVars[[ind]],silent = T)
+        name <- as.character(name)
         out[[name]] <- c(out[[name]],x[j])
       }
     }

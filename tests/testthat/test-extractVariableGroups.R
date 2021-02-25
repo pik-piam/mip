@@ -14,7 +14,7 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
          "a|+++|ble",
          "a|+++|blet")
 
-  x2 <- c("a|+|1|+|aa",
+  x2 <- factor(c("a|+|1|+|aa",
          "a|+|2|abc",
          "a|+|1|+|bb",
          "a|+|1|+|cc",
@@ -26,7 +26,7 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
          "a2|+|bla",
          "a2|+|blu",
          "a3|++|ble",
-         "a3|++|blet")
+         "a3|++|blet"))
   
   res1 <- list("a"=c("a|+|1|+|aa","a|+|2|abc","a|+|1|+|bb","a|+|1|+|cc","a|+|3|+|aa","a|+|3|+|bb","a|+|3"),
               "a|+|1"=c("a|+|1|+|aa","a|+|1|+|bb","a|+|1|+|cc"),

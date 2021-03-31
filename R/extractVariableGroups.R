@@ -22,8 +22,8 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
     for(j in 1:length(y)) {
       for(i in 1:(length(y[[j]])-1)) {
         name <- paste0(paste(y[[j]][1:i],collapse=sep),ext)
-        ind<-grep(gsub("\\|","\\\\|",paste0("^",name,"$")),
-                  sub("\\|\\+\\+|\\|\\+","",sub(" \\(.*.\\)$","",allVars)))
+        ind<-grep(gsub("\\|","\\\\|",gsub("\\|\\+\\+|\\|\\+","",paste0("^",name,"$"))),
+                  gsub("\\|\\+\\+|\\|\\+","",sub(" \\(.*.\\)$","",allVars)))
         if (keepOrigNames ) try(name<-allVars[[ind]],silent = T)
         name <- as.character(name)
         out[[name]] <- c(out[[name]],x[j])
@@ -37,9 +37,10 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
     matches <- grep(sep,x,fixed=TRUE, value = TRUE)
     if(length(matches)==0) break()
     ext <- ifelse(i>1,paste0(" ",i),"")
+    if (keepOrigNames & i>2) warning("Original names are not returned for more than 3 pluses")
     out <- c(out,tmp(matches,sep=sep,ext=ext,allVars = x,keepOrigNames))
   }
-  return(out)
+  return(out[sapply(out,length)>1])
 }
 
 

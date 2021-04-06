@@ -40,11 +40,10 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
                "a" = c("a|+|2|abc","a|+|3"),
                "a|+|3"=c("a|+|3|+|aa","a|+|3|+|bb"),
                "a2"=c("a2|+|bla","a2|+|blu"),
+               "a4"="a4|++|1",
                "a3"=c("a3|++|ble" ,"a3|++|blet"))
   
-  expect_mapequal(extractVariableGroups(x1),res1)
-  expect_mapequal(extractVariableGroups(x2,keepOrigNames = TRUE),res2)
-  expect_warning(extractVariableGroups(c("a|+|b","a|++|c","a|+|d","a|+++|f","a|+++|g"),keepOrigNames = TRUE))
-  
+  expect_identical(extractVariableGroups(x1),res1)
+  expect_identical(extractVariableGroups(x2,keepOrigNames = TRUE),res2)
 
 })

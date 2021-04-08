@@ -27,5 +27,5 @@ mip::extractVariableGroups(x)
 \code{\link{plotstyle.add}}
 }
 \author{
-David Klein, Jan Philipp Dietrich
+David Klein, Jan Philipp Dietrich, Anastasis Giannousakis
 }

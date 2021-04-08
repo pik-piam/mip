@@ -13,37 +13,22 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
           "a|++|bla",
           "a|++|blu",
           "a|+++|ble",
-          "a|+++|blet")
+          "a|+++|blet",
+          "a2 (unit)",
+          "a2|++++|wunit (unit)",
+          "a2|++++|wunit2 (unit 2)")
 
-  x2 <- factor(c("a4|+|1|+|aa",
-         "a|+|2|abc",
-         "a4|+|1|+|bb",
-         "a4|+|1|+|cc",
-         "a|+|3|+|aa",
-         "a|+|3|+|bb",
-         "a",
-         "a4|++|1",
-         "a2",
-         "a|+|3",
-         "a2|+|bla",
-         "a2|+|blu",
-         "a3|++|ble",
-         "a3|++|blet"))
-  
-  res1 <- list("a|+|1"=c("a|+|1|+|aa","a|+|1|+|bb","a|+|1|+|cc"),
-               "a"=c("a|+|2|abc","a|+|1","a|+|3"),
-              "a|+|3"=c("a|+|3|+|aa","a|+|3|+|bb"),
-              "a 2"=c("a|++|bla","a|++|blu"),
-              "a 3"=c("a|+++|ble" ,"a|+++|blet"))
-
-  res2 <- list("a4|++|1"=c("a4|+|1|+|aa","a4|+|1|+|bb","a4|+|1|+|cc"),
-               "a" = c("a|+|2|abc","a|+|3"),
+  res1 <- list("a"=c("a|+|1|+|aa","a|+|2|abc","a|+|1|+|bb","a|+|1|+|cc","a|+|3|+|aa","a|+|3|+|bb","a|+|1","a|+|3"),
+               "a|+|1"=c("a|+|1|+|aa","a|+|1|+|bb","a|+|1|+|cc"),
                "a|+|3"=c("a|+|3|+|aa","a|+|3|+|bb"),
-               "a2"=c("a2|+|bla","a2|+|blu"),
-               "a4"="a4|++|1",
-               "a3"=c("a3|++|ble" ,"a3|++|blet"))
+               "a 2"=c("a|++|bla","a|++|blu"),
+               "a 3"=c("a|+++|ble" ,"a|+++|blet"),
+               "a2 4"=c("a2|++++|wunit (unit)","a2|++++|wunit2 (unit 2)"))
+  res2 <- res1
+  names(res2) <- sub("a 2|a 3","a",names(res1))
+  names(res2) <- sub("a2 4","a2 (unit)",names(res2))
   
   expect_identical(extractVariableGroups(x1),res1)
-  expect_identical(extractVariableGroups(x2,keepOrigNames = TRUE),res2)
+  expect_identical(extractVariableGroups(x1,keepOrigNames = TRUE),res2)
 
 })

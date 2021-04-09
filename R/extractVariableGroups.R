@@ -7,7 +7,7 @@
 #' (to the value of which the grouped ones have to sum up) as names instead of
 #' made up group names, if they exist. The current implementation goes up to two levels (++) deep.
 #' @return a named list of variable groups with group name as name and vector of entities as content
-#' @author David Klein, Jan Philipp Dietrich
+#' @author David Klein, Jan Philipp Dietrich, Anastasis Giannousakis
 #' @seealso \code{\link{plotstyle.add}}
 #' @examples
 #' x <- c("a|+|1|+|aa","a|+|2|abc","a|+|1|+|bb","a|+|1|+|cc","a|+|3|+|aa","a|+|3|+|bb")
@@ -22,11 +22,12 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
     for(j in 1:length(y)) {
       for(i in 1:(length(y[[j]])-1)) {
         name <- paste0(paste(y[[j]][1:i],collapse=sep),ext)
-        ind<-grep(gsub("\\|","\\\\|",paste0("^",name,"$")),
-                  sub("\\|\\+\\+|\\|\\+","",sub(" \\(.*.\\)$","",allVars)))
-        if (keepOrigNames ) try(name<-allVars[[ind]],silent = T)
+        ind<-NULL
+        try(ind<-grep(gsub("\\|","\\\\|",gsub("\\|[\\+]{1,}","",paste0("^",name,"$"))),
+                  gsub("\\|[\\+]{1,}","",sub(" \\(.*.\\)$","",allVars))),silent = T)
+        if (keepOrigNames & length(ind) > 0) try(name<-allVars[[ind]],silent = T)
         name <- as.character(name)
-        out[[name]] <- c(out[[name]],x[j])
+        out[[name]] <- c(out[[name]],x[j]) 
       }
     }
     return(out)

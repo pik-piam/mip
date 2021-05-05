@@ -201,7 +201,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
     
     lineplot <- reactive({
       if(input$update_plot) {
-        p <- mipLineHistorical(x=val$rep_sel,x_hist=val$val_sel,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = input$scales)
+        p <- mipLineHistorical(x=val$rep_sel,x_hist=val$val_sel,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = input$scales,ylim=switch(input$auto_y + 1, 0, NULL))
       } else p <- NULL
       return(p)
     })
@@ -296,9 +296,10 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
                                                 plotOutput("lineplot",height = "800px",width = "auto"),
                                                  wellPanel(
                                                    fluidRow(
-                                                     column(2,
-                                                            selectInput('scales', 'Scales',c("fixed","free_y","free_x","free"),selected="fixed"),
-                                                            checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL)
+                                                     column(3,
+                                                            selectInput('scales', 'Scales (Multi-Panel)',c("fixed","free_y","free_x","free"),selected="fixed"),
+                                                            checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL),
+                                                            checkboxInput('auto_y', 'Automatic Y scaling', value = FALSE)
                                                      )
                                                    )
                                                  ),

@@ -17,7 +17,8 @@ made up group names, if they exist. The current implementation goes up to two le
 a named list of variable groups with group name as name and vector of entities as content
 }
 \description{
-Groups variable names by groups based on the |+| separators given in the variable names
+Groups variable names by summation groups based on the |+| separators given in the variable names.
+If no |+| are present the function will try to derive summation groups based on | separators.
 }
 \examples{
 x <- c("a|+|1|+|aa","a|+|2|abc","a|+|1|+|bb","a|+|1|+|cc","a|+|3|+|aa","a|+|3|+|bb")
@@ -27,5 +28,5 @@ mip::extractVariableGroups(x)
 \code{\link{plotstyle.add}}
 }
 \author{
-David Klein, Jan Philipp Dietrich, Anastasis Giannousakis
+Anastasis Giannousakis, David Klein, Jan Philipp Dietrich
 }

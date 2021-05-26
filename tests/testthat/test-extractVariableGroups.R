@@ -27,8 +27,12 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
   res2 <- res1
   names(res2) <- sub("a 2|a 3","a",names(res1))
   names(res2) <- sub("a2 4","a2 (unit)",names(res2))
+  res3 <- list(`a|1` = c("a|1|aa", "a|1|bb", "a|1|cc"),
+               `a|3` = c("a|3|aa","a|3|bb"),
+               a = c("a|1", "a|3", "a|bla", "a|blu", "a|ble", "a|blet"))
   
   expect_identical(extractVariableGroups(x1),res1)
   expect_identical(extractVariableGroups(x1,keepOrigNames = TRUE),res2)
+  expect_identical(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1)),res3)
 
 })

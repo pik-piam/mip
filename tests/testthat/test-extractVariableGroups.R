@@ -33,6 +33,7 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
   
   expect_identical(extractVariableGroups(x1),res1)
   expect_identical(extractVariableGroups(x1,keepOrigNames = TRUE),res2)
-  expect_identical(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1)),res3)
-
+  expect_warning(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1)))
+  expect_identical(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1[!grepl(")$",x1)])),res3)
+  
 })

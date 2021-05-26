@@ -48,6 +48,7 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
       out <- c(out,tmp(matches,sep=sep,ext=ext,allVars = x,keepOrigNames))
     }
   } else {
+    if (any(grepl(")$",x))) warning("closing parentheses detected in variable names, if these are units the corresponding variables might not be grouped")
     # find out how many levels of nested variables to expect
     prev<-1
     for (i in x) prev <- max(nchar(gsub("[^|]","",i))+1,prev)

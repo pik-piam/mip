@@ -11,27 +11,31 @@ Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c(
              person("Stephen", "Wirth", email = "wirth@pik-potsdam.de", role = "aut"))
 Description: Package contains generic functions to produce comparison plots of multi-model runs.
 License: BSD_2_clause + file LICENSE
-Depends: R(>= 2.10.0),
-         quitte(>= 0.3072), 
-         magclass
-Imports: ggplot2, 
-         dplyr, 
-         RColorBrewer, 
-         plotly, 
-         shiny, 
-         reshape2, 
-         data.table, 
-         lusweave (>= 1.43.2), 
-         trafficlight, 
-         gridExtra,
-         tidyr
+Depends:
+  R(>= 2.10.0),
+  quitte(>= 0.3072), 
+  magclass
+Imports:
+  ggplot2, 
+  dplyr,
+  RColorBrewer, 
+  plotly, 
+  shiny, 
+  reshape2, 
+  data.table, 
+  lusweave (>= 1.43.2), 
+  trafficlight, 
+  gridExtra,
+  tidyr,
+  gdx
+Suggests: 
+  testthat,
+  knitr,
+  covr,
+  rmarkdown
 URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
 BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 LazyData: yes
-Suggests: 
-    testthat,
-    knitr,
-    covr
 VignetteBuilder: knitr

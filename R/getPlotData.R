@@ -9,28 +9,25 @@
 #' iteration number. In the resulting data frame all data rows from a file have that number as Iteration value.
 #' @author Pascal Führlich
 #' @importFrom gdx readGDX
-#' @examples
-#' \dontrun{
-#' ggplot(
-#'   getPlotData(Sys.glob("output/C_SSP2-Base-rem-*/fulldata.gmx"), "p30_pebiolc_pricemag"),
-#'   aes(
-#      x = .data$Year,
-#'     y = .data$Value,
-#'     color = .data$Iteration,
-#'     group = .data$Iteration
-#'   )
-#' ) +
-#'   geom_line() +
-#'   facet_wrap(~Region, scales = "free_y")
-#' }
 #' @export
 getPlotData <- function(filePaths, ...) {
   plotData <- NULL
-  for (i in seq_len(length(filePaths))) {
-    gdxContent <- as.data.frame(readGDX(filePaths[[i]], ...))
-    gdxContent$Iteration <- as.factor(i) # nolint
-    gdxContent$Year <- as.integer(levels(gdxContent$Year))[gdxContent$Year] # nolint
-    plotData <- rbind(plotData, gdxContent)
+  for (i in seq_along(filePaths)) {
+    gdxContent <- readGDX(filePaths[[i]], ..., restore_zeros = FALSE)
+
+    # ensure we deal with a list even if ...length() == 1
+    if (is.magpie(gdxContent)) {
+      gdxContent <- list(gdxContent)
+      names(gdxContent) <- ..1
+    }
+
+    # convert to dataframe, add iteration and variable value and append to plotData
+    for (j in seq_along(gdxContent)) {
+      df <- magclass::as.data.frame(gdxContent[[j]], rev = 2)
+      df$variable <- names(gdxContent)[[j]]
+      df$iteration <- as.factor(i)
+      plotData <- rbind(plotData, df)
+    }
   }
   return(plotData)
 }

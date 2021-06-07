@@ -13,6 +13,10 @@
 getPlotData <- function(filePaths, ...) {
   plotData <- NULL
   for (i in seq_along(filePaths)) {
+    if (!grepl(paste0("[^0-9]0*", i, "[^0-9]"), filePaths[[i]])) {
+      warning('"', filePaths[[i]],'" should contain data for iteration ', i, ' but that path does not contain "', i,
+              '" - are file paths missing/ordered incorrectly? Consider using gtools::mixedsort\n')
+    }
     gdxContent <- readGDX(filePaths[[i]], ..., restore_zeros = FALSE)
 
     # ensure gdxContent is a list even if ...length() == 1
@@ -25,11 +29,11 @@ getPlotData <- function(filePaths, ...) {
     for (j in seq_along(gdxContent)) {
       x <- magclass::as.data.frame(gdxContent[[j]], rev = 2)
       x$variable <- names(gdxContent)[[j]]
-      x$iteration <- as.factor(i)
+      x$iteration <- as.integer(i)
       x <- x[, c(ncol(x), ncol(x) - 1, seq_len(ncol(x) - 2))] # move columns iteration & variable to front
       plotData <- tryCatch(rbind(plotData, x),
         error = function(error) {
-          message(paste0(
+          warning(paste0(
             "Cannot merge with previous data, skipping variable ", names(gdxContent)[[j]],
             "\nreason: the previous columns\n", paste(colnames(plotData), collapse = ", "), "\nare incompatible to\n",
             paste(colnames(x), collapse = ", "), "\noriginal error message: ", error

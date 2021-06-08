@@ -27,7 +27,8 @@ Imports:
   trafficlight, 
   gridExtra,
   tidyr,
-  gdx
+  gdx,
+  rlang
 Suggests: 
   testthat,
   knitr,

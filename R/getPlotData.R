@@ -14,7 +14,8 @@ getPlotData <- function(filePaths, ...) {
   plotData <- NULL
   for (i in seq_along(filePaths)) {
     if (!grepl(paste0("[^0-9]0*", i, "[^0-9]"), filePaths[[i]])) {
-      warning('"', filePaths[[i]],'" should contain data for iteration ', i, ' but that path does not contain "', i,
+      warning('WARNING: "', filePaths[[i]],'" should contain data for iteration ', i,
+              ' but that path does not contain "', i,
               '" - are file paths missing/ordered incorrectly? Consider using gtools::mixedsort\n')
     }
     gdxContent <- readGDX(filePaths[[i]], ..., restore_zeros = FALSE)
@@ -34,7 +35,7 @@ getPlotData <- function(filePaths, ...) {
       plotData <- tryCatch(rbind(plotData, x),
         error = function(error) {
           warning(paste0(
-            "Cannot merge with previous data, skipping variable ", names(gdxContent)[[j]],
+            "WARNING: Cannot merge with previous data, skipping variable ", names(gdxContent)[[j]],
             "\nreason: the previous columns\n", paste(colnames(plotData), collapse = ", "), "\nare incompatible to\n",
             paste(colnames(x), collapse = ", "), "\noriginal error message: ", error
           ))

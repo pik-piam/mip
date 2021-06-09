@@ -14,7 +14,7 @@ getPlotData <- function(filePaths, ...) {
   plotData <- NULL
   for (i in seq_along(filePaths)) {
     if (!grepl(paste0("[^0-9]0*", i, "[^0-9]"), filePaths[[i]])) {
-      warning('WARNING: "', filePaths[[i]],'" should contain data for iteration ', i,
+      warning('WARNING: "', filePaths[[i]], '" should contain data for iteration ', i,
               ' but that path does not contain "', i,
               '" - are file paths missing/ordered incorrectly? Consider using gtools::mixedsort\n')
     }

@@ -1,0 +1,42 @@
+#' getPlotData2
+#'
+#' Get ready-to-plot data from gdx files.
+#'
+#' @param filePaths A vector of paths to gdx files, each representing the state of a model after an iteration.
+#' @param ... Arguments passed to gdx::readGDX, usually variable names.
+#' @return A data frame with the variables Region, Year (converted to integer), the ones extracted by gdx::readGDX(...)
+#' and an additional Iteration variable. According to the order in which filePaths are provided each file gets an
+#' iteration number. In the resulting data frame all data rows from a file have that number as Iteration value.
+#' @author Pascal Führlich
+#' @importFrom gdx readGDX
+#' @export
+getPlotData2 <- function(filePaths, ...) {
+  plotData <- NULL
+  for (i in seq_along(filePaths)) {
+    if (!grepl(paste0("[^0-9]0*", i, "[^0-9]"), filePaths[[i]])) {
+      warning('WARNING: "', filePaths[[i]], '" should contain data for iteration ', i,
+              ' but that path does not contain "', i,
+              '" - are file paths missing/ordered incorrectly? Consider using gtools::mixedsort\n')
+    }
+    gdxContent <- readGDX(filePaths[[i]], ..., restore_zeros = FALSE, format = list("simple"))
+
+    # convert to dataframe, add iteration and variable value and append to plotData
+    for (j in seq_along(gdxContent)) {
+      x <- magclass::as.data.frame(gdxContent[[j]], rev = 2)
+      x$variable <- names(gdxContent)[[j]]
+      x$iteration <- as.integer(i)
+      x <- x[, c(ncol(x), ncol(x) - 1, seq_len(ncol(x) - 2))] # move columns iteration & variable to front
+      plotData <- tryCatch(rbind(plotData, x),
+        error = function(error) {
+          warning(paste0(
+            "WARNING: Cannot merge with previous data, skipping variable ", names(gdxContent)[[j]],
+            "\nreason: the previous columns\n", paste(colnames(plotData), collapse = ", "), "\nare incompatible to\n",
+            paste(colnames(x), collapse = ", "), "\noriginal error message: ", error
+          ))
+          return(plotData)
+        }
+      )
+    }
+  }
+  return(plotData)
+}

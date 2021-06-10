@@ -1,9 +1,9 @@
 #' plotIterations
 #'
 #' Creates a line plot using ggplot with the following mapping: x = iteration, y = value, color = year,
-#' linetype = variable. Use mip::getPlotData to create a data frame from gdx, modify it to include all expected columns,
-#' see documentation for parameter x. Copy-paste and modify the code of this function to create a plot tailored to your
-#' specific case.
+#' linetype = variable. Use mip::getPlotData to create a data frame from gdx, modify it to include all expected columns
+#' (see documentation for parameter x) then run mip::plotIterations. Copy-paste and modify the code of this function to
+#' create a plot tailored to your specific case.
 #'
 #' @param x A data frame, columns with the following names are expected:
 #' iteration (int), variable (chr or factor), .value (num). x[3] must represent region (chr or factor), x[4] must

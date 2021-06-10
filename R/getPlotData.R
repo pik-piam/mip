@@ -2,47 +2,45 @@
 #'
 #' Get ready-to-plot data from gdx files.
 #'
-#' @param filePaths A vector of paths to gdx files, each representing the state of a model after an iteration.
-#' @param ... Arguments passed to gdx::readGDX, usually variable names.
-#' @return A data frame with the variables Region, Year (converted to integer), the ones extracted by gdx::readGDX(...)
-#' and an additional Iteration variable. According to the order in which filePaths are provided each file gets an
-#' iteration number. In the resulting data frame all data rows from a file have that number as Iteration value.
+#' @param pathToGdx Path to a single gdx file.
+#' @param symbolNames A vector of names of symbols to be extracted from the gdx. For each symbol the first two domains
+#' should represent iteration and year, they are converted to integer.
+#' @param ... Additional arguments passed to gdxrrw::rgdx.param.
+#' @return A data frame combined from data frames extracted by gdxrrw::rgdx.param, where an additional "symbol" column
+#' is holding the corresponding symbol name from symbolNames. The last column is always holding the actual values and is
+#' called "value".
 #' @author Pascal Führlich
-#' @importFrom gdx readGDX
+#' @seealso \code{\link{plotIterations}}
+#' @importFrom gdxrrw rgdx.param
 #' @export
-getPlotData <- function(filePaths, ...) {
-  plotData <- NULL
-  for (i in seq_along(filePaths)) {
-    if (!grepl(paste0("[^0-9]0*", i, "[^0-9]"), filePaths[[i]])) {
-      warning('WARNING: "', filePaths[[i]], '" should contain data for iteration ', i,
-              ' but that path does not contain "', i,
-              '" - are file paths missing/ordered incorrectly? Consider using gtools::mixedsort\n')
-    }
-    gdxContent <- readGDX(filePaths[[i]], ..., restore_zeros = FALSE)
-
-    # ensure gdxContent is a list even if ...length() == 1
-    if (is.magpie(gdxContent)) {
-      gdxContent <- list(gdxContent)
-      names(gdxContent) <- ..1
-    }
-
-    # convert to dataframe, add iteration and variable value and append to plotData
-    for (j in seq_along(gdxContent)) {
-      x <- magclass::as.data.frame(gdxContent[[j]], rev = 2)
-      x$variable <- names(gdxContent)[[j]]
-      x$iteration <- as.integer(i)
-      x <- x[, c(ncol(x), ncol(x) - 1, seq_len(ncol(x) - 2))] # move columns iteration & variable to front
-      plotData <- tryCatch(rbind(plotData, x),
-        error = function(error) {
-          warning(paste0(
-            "WARNING: Cannot merge with previous data, skipping variable ", names(gdxContent)[[j]],
-            "\nreason: the previous columns\n", paste(colnames(plotData), collapse = ", "), "\nare incompatible to\n",
-            paste(colnames(x), collapse = ", "), "\noriginal error message: ", error
-          ))
-          return(plotData)
-        }
-      )
-    }
+getPlotData <- function(pathToGdx, symbolNames, ...) {
+  factorToInt <- function(aFactor) {
+    return(as.integer(levels(aFactor)[aFactor]))
   }
-  return(plotData)
+
+  reduceFunction <- function(combinedDataframe, symbolName) {
+    x <- rgdx.param(pathToGdx, symbolName, ...)
+    x[, 1] <- factorToInt(x[, 1]) # expecting column 1 to represent iteration
+    x[, 2] <- factorToInt(x[, 2]) # expecting column 2 to represent year
+
+    # add symbol column and rename symbol value column to just value so data for multiple symbols can be combined
+    x$symbol <- symbolName
+    names(x[symbolName]) <- "value"
+
+    x[, c(which(x, "value"), ncol(x))] <- x[, c(ncol(x), which(x, "value"))] # swap value column to be last
+    combinedDataframe <- tryCatch(
+      rbind(combinedDataframe, x),
+      error = function(error) {
+        warning(paste0(
+          "WARNING: Cannot merge with previous data, skipping symbol ", symbolName,
+          "\nreason: the previous columns\n", paste(colnames(combinedDataframe), collapse = ", "),
+          "\nare incompatible to\n", paste(colnames(x), collapse = ", "), "\noriginal error message: ", error
+        ))
+        return(combinedDataframe)
+      }
+    )
+    return(combinedDataframe)
+  }
+
+  return(Reduce(reduceFunction, symbolNames, NULL))
 }

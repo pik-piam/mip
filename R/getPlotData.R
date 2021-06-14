@@ -1,6 +1,7 @@
 #' getPlotData
 #'
-#' Get ready-to-plot data from gdx files.
+#' Get ready-to-plot data from gdx files. Data for multiple symbols can be extracted and combined if they have the same
+#' domains.
 #'
 #' @param pathToGdx Path to a single gdx file.
 #' @param symbolNames A vector of names of symbols to be extracted from the gdx. For each symbol the first two domains

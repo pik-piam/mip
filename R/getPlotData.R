@@ -1,6 +1,6 @@
 #' getPlotData
 #'
-#' Get ready-to-plot data from gdx files. Data for multiple symbols can be extracted and combined if they have the same
+#' Get ready-to-plot data from a gdx file. Data for multiple symbols can be extracted and combined if they have the same
 #' domains.
 #'
 #' @param pathToGdx Path to a single gdx file.
@@ -20,6 +20,7 @@ getPlotData <- function(pathToGdx, symbolNames, compress = TRUE, ...) {
     return(as.integer(levels(aFactor)[aFactor]))
   }
 
+  # read in data for a single symbol and combine it with previous data
   reduceFunction <- function(combinedDataframe, symbolName) {
     x <- gdxrrw::rgdx.param(pathToGdx, symbolName, compress = compress, ...)
     x[, 1] <- factorToInt(x[, 1]) # expecting column 1 to represent iteration
@@ -33,6 +34,8 @@ getPlotData <- function(pathToGdx, symbolNames, compress = TRUE, ...) {
     valueColumn <- x$value
     x <- x[, names(x) != "value"]
     x$value <- valueColumn
+
+    # combine data into a single data frame
     combinedDataframe <- tryCatch(
       rbind(combinedDataframe, x),
       error = function(error) {

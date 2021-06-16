@@ -28,7 +28,6 @@ Imports:
   gridExtra,
   tidyr,
   gdxrrw,
-  gdx,
   rlang
 Suggests: 
   testthat,

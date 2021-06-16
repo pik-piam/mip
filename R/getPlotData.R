@@ -8,14 +8,15 @@
 #' @param symbolName The name of a symbol to be extracted from gdx.
 #' @param compress Logical, passed to gdxrrw::rgdx.param. Ensures factor levels are equal to unique elements.
 #' @param ... Additional arguments passed to gdxrrw::rgdx.param.
-#' @return A data frame with data from the given gdx file(s). If multiple gdx files are provided an additional
+#' @return A data frame with data from the given gdx file(s). The column called <symbolName> is renamed to "value".
+#' The symbol name is stored in attr(plotData, "symName"). If multiple gdx files are provided an additional
 #' "iteration" column is added. The iteration value will be 1 for all data rows from the first gdx, 2 for the second etc.
 #' @author Pascal Führlich
 #' @seealso \code{\link{plotIterations}}
 #' @importFrom gdxrrw rgdx.param
 #' @export
 getPlotData <- function(pathToGdx, symbolName, compress = TRUE, ...) {
-  stopifnot(length(symbolName) == 1)
+  stopifnot(length(pathToGdx) > 0, all(file.access(pathToGdx, mode = 4) == 0), length(symbolName) == 1)
   if (length(pathToGdx) == 1) {
     plotData <- rgdx.param(pathToGdx, symbolName, compress = compress, ...)
   } else {

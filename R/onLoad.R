@@ -6,13 +6,13 @@
   gamspath <- grep("%", gamspath, value = TRUE, invert = TRUE)
   tmp <- NULL
   ok <- FALSE
-  sink(textConnection("tmp", "w", local = TRUE))
+  sink(textConnection("tmp", "w", local = TRUE)) # nolint
   for (path in gamspath) {
     if (gdxrrw::igdx(path) == 1) {
       ok <- TRUE
       break
     }
   }
-  sink()
+  sink() # nolint
   if (!ok) packageStartupMessage(paste(tmp, collapse = "\n"))
 }

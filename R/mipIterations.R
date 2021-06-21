@@ -1,21 +1,31 @@
 #' plotIterations
 #'
-#' Creates a line plot using ggplot with the following mapping: x = iteration, y = value, color = year,
-#' linetype = symbol. Use mip::getPlotData to create a data frame from gdx, modify it to include all expected columns
-#' (see documentation for parameter x) then run mip::plotIterations. Copy-paste and modify the code of this function to
-#' create a plot tailored to your specific case.
+#' Creates interactive line plots using ggplot and plotly. Creates one plot for each combination of values in columns
+#' not plotted via this function's arguments. If the special value "year" is passed as xAxis, color, slider or facets a
+#' list of possible column names representing years (e.g. "ttot", "tall", "t_all") is checked, the first one in names(x)
+#' is used.
 #'
-#' @param x A data frame, columns with the following names are expected:
-#' iteration (int), symbol (chr or factor), value (num). x[3] must represent region (chr or factor), x[4] must
-#' represent year (int). Additional columns are ignored.
+#' @param plotData     A data frame. Use mip::getPlotData to get a ready-to-plot data frame from one or more gdx files.
+#' @param returnGgplot If FALSE (the default) show interactive plotly plots with slider support. Set to TRUE to return
+#'                     ggplots which can be customized, but are not interactive. To re-enable slider support and
+#'                     interactivity run lapply(ggplots, plotly::ggplotly) after customizing the ggplots.
+#' @param maxPlots     Return at most this many plots.
+#' @param xAxis        A string from names(x), defining which column is plotted on the x-axis of the plots. Must not be
+#'                     NULL.
+#' @param color        A string from names(x), defining which column is plotted as color. If NULL color is not used.
+#' @param slider       A string from names(x), defining which column is plotted as a slider. The slider requires plotly.
+#'                     If NULL no slider is used.
+#' @param facets       A string from names(x), defining which column is used for grouping. A small plot (facet) is shown
+#'                     for each group. If NULL facets are not used.
 #' @return A ggplot
 #' @author Pascal Führlich
 #' @seealso \code{\link{getPlotData}}
 #' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot aes geom_line ylab facet_wrap ggtitle
+#' @importFrom plotly ggplotly
 #' @export
-mipIterations <- function(plotData, xAxis = "year", color = NULL, slider = "iteration", facets = "all_regi") {
-  # TODO documentation, document special value year
+mipIterations <- function(plotData, returnGgplot = FALSE, maxPlots = 20L,
+                          xAxis = "year", color = NULL, slider = "iteration", facets = "all_regi") {
   nonNullArgs <- Filter(Negate(is.null), c(xAxis, color, slider, facets))
   if (any(!(nonNullArgs %in% names(plotData) | nonNullArgs == "year"))) {
     stop(
@@ -63,25 +73,33 @@ mipIterations <- function(plotData, xAxis = "year", color = NULL, slider = "iter
   }
   if (!is.null(slider)) {
     aestheticsArgs <- c(aestheticsArgs, list(frame = slider))
-    message("Use lapply(plots, plotly::ggplotly) to show the slider.")
+    if (!returnGgplot) {
+      message("Make sure to run lapply(ggplots, plotly::ggplotly) to show the slider.")
+    }
   }
 
   # all combinations of values of columns not plotted (not mapped to x/y/color etc.)
   unplottedCombinations <- unique(plotData[, !(names(plotData) %in% c(xAxis, color, slider, facets, "value"))])
   unplottedCombinations <- lapply(split(unplottedCombinations, seq(nrow(unplottedCombinations))), as.list)
 
+  if (length(unplottedCombinations) > maxPlots) {
+    warning("Generating ", maxPlots, " plots instead of ", length(unplottedCombinations),
+            ", run mip::mipIterations(..., maxPlots = ", length(unplottedCombinations), ") to catch them all.\n")
+    unplottedCombinations <- unplottedCombinations[seq_len(maxPlots)]
+  }
+
   # create a plot for each combination of unplotted values (not mapped to an aesthetic)
-  result <- lapply(unplottedCombinations, function(unplottedCombination) {
+  plots <- lapply(unplottedCombinations, function(unplottedCombination) {
     # keep only rows corresponding to unplottedCombination
     x <- Reduce(function(filteredData, index) {
       return(filteredData[filteredData[[names(unplottedCombination)[[index]]]] == unplottedCombination[[index]], ])
     }, seq_along(unplottedCombination), plotData)
 
-    title <- paste(attr(plotData, "symName"), substring(paste0(list(lapply(unplottedCombination, as.character))), 5))
+    heading <- paste(attr(plotData, "symName"), substring(paste0(list(lapply(unplottedCombination, as.character))), 5))
 
     plot <- ggplot(x, do.call(aes_string, aestheticsArgs)) +
       geom_line() +
-      ggtitle(title) +
+      ggtitle(heading) +
       ylab("") # clear y-label, because the column name "value" is not helpful
     if (!is.null(facets)) {
       # create small plot for each region with different y scales, always show all facets, even if empty
@@ -89,5 +107,10 @@ mipIterations <- function(plotData, xAxis = "year", color = NULL, slider = "iter
     }
     return(plot)
   })
-  return(result)
+  names(plots) <- lapply(plots, function(plot) plot$label$title)
+  if (!returnGgplot) {
+    # return plotly plots instead of ggplots
+    plots <- lapply(plots, ggplotly)
+  }
+  return(plots)
 }

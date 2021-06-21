@@ -12,7 +12,7 @@
 #' The symbol name is stored in attr(plotData, "symName"). If multiple gdx files are provided an additional "iteration"
 #' column is added. The iteration value will be 1 for all data rows from the first gdx, 2 for the second etc.
 #' @author Pascal Führlich
-#' @seealso \code{\link{plotIterations}}
+#' @seealso \code{\link{mipIterations}}
 #' @importFrom gdxrrw rgdx.param
 #' @export
 getPlotData <- function(pathToGdx, symbolName, compress = TRUE, ...) {

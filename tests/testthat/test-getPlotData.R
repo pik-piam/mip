@@ -9,7 +9,7 @@ test_that("getPlotData works for a single gdx file", {
   attr(testData, "domains") <- c("iteration", "year", "region")
 
   # write test data to gdx file
-  testFile <- paste0(tempdir(), "/test.gdx")
+  testFile <- file.path(tempdir(), "fulldata.gdx")
   gdxrrw::wgdx.lst(testFile, testData)
 
   expected <- data.frame(
@@ -21,7 +21,8 @@ test_that("getPlotData works for a single gdx file", {
   expected$year <- as.factor(expected$year)
   attr(expected, "symName") <- "testSymbolName"
 
-  expect_equal(getPlotData(testFile, "testSymbolName"), expected)
+  expect_equal(getPlotData("testSymbolName", testFile), expected)
+  expect_equal(getPlotData("testSymbolName", dirname(testFile)), expected)
 })
 
 test_that("getPlotData works for multiple gdx files", {
@@ -34,7 +35,7 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(testData1, "symName") <- "testSymbolName"
   attr(testData1, "domains") <- c("year", "region")
-  gdxrrw::wgdx.lst(paste0(testDir, "/test1.gdx"), testData1)
+  gdxrrw::wgdx.lst(file.path(testDir, "fulldata_1.gdx"), testData1)
 
   testData2 <- data.frame(
     year = as.factor(rep(2000 + 0:7, each = 2)),
@@ -43,7 +44,7 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(testData2, "symName") <- "testSymbolName"
   attr(testData2, "domains") <- c("year", "region")
-  gdxrrw::wgdx.lst(paste0(testDir, "/test2.gdx"), testData2)
+  gdxrrw::wgdx.lst(file.path(testDir, "fulldata_2.gdx"), testData2)
 
   expected <- data.frame(
     year = as.factor(c(rep(2000 + 0:7, each = 2), rep(2000 + 0:7, each = 2))),
@@ -53,6 +54,8 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(expected, "symName") <- "testSymbolName"
 
-  actual <- getPlotData(paste0(testDir, "/test", 1:2, ".gdx"), "testSymbolName")
+  actual <- getPlotData("testSymbolName", file.path(testDir, paste0("fulldata_", 1:2, ".gdx")))
   expect_equal(actual, expected)
+  actual2 <- getPlotData("testSymbolName", testDir)
+  expect_equal(actual2, expected)
 })

@@ -2,10 +2,11 @@
 #'
 #' Get ready-to-plot data from one or more gdx files.
 #'
-#' @param pathToGdx Path to one or more gdx files. If multiple paths are provided each one represents data after a
-#' specific iteration. The order of paths should match iteration order, e.g. pathToGdx[1] should hold data for
-#' the first iteration, pathToGdx[2] for the second iteration etc.
 #' @param symbolName The name of a symbol to be extracted from gdx.
+#' @param pathToGdx Path to one or more gdx files or a a path to a folder with fulldata gdx files. If multiple paths
+#' are provided each one represents data after a specific iteration. The order of paths should match iteration order,
+#' e.g. pathToGdx[1] should hold data for the first iteration, pathToGdx[2] for the second iteration etc. If the path
+#' to a folder is given the fulldata gdx files in it are used.
 #' @param compress Logical, passed to gdxrrw::rgdx.param. Ensures factor levels are equal to unique elements.
 #' @param ... Additional arguments passed to gdxrrw::rgdx.param.
 #' @return A data frame with data from the given gdx file(s). The column called <symbolName> is renamed to "value".
@@ -15,8 +16,28 @@
 #' @seealso \code{\link{mipIterations}}
 #' @importFrom gdxrrw rgdx.param
 #' @export
-getPlotData <- function(pathToGdx, symbolName, compress = TRUE, ...) {
-  stopifnot(length(pathToGdx) > 0, all(file.exists(pathToGdx)), length(symbolName) == 1)
+getPlotData <- function(symbolName, pathToGdx = ".", compress = TRUE, ...) {
+  stopifnot(
+    length(symbolName) == 1,
+    length(pathToGdx) > 0,
+    all(file.exists(pathToGdx)),
+    length(pathToGdx) == 1 || all(endsWith(pathToGdx, ".gdx"))
+  )
+
+  # if pathToGdx is path to a folder: set pathToGdx to the relevant fulldata gdx files in that folder
+  if (length(pathToGdx) == 1 && !endsWith(pathToGdx, ".gdx")) {
+    gdxFiles <- Sys.glob(file.path(pathToGdx, "fulldata_*.gdx"))
+    if (length(gdxFiles) > 1) {
+      fileNumber <- sub("fulldata_", "", basename(gdxFiles), fixed = TRUE)
+      fileNumber <- sub(".gdx", "", fileNumber, fixed = TRUE)
+      pathToGdx <- gdxFiles[order(as.integer(fileNumber))]
+    } else {
+      pathToGdx <- file.path(pathToGdx, "fulldata.gdx")
+      stopifnot(file.exists(pathToGdx))
+    }
+  }
+
+  # read one or more gdx files
   if (length(pathToGdx) == 1) {
     plotData <- rgdx.param(pathToGdx, symbolName, compress = compress, ...)
   } else {

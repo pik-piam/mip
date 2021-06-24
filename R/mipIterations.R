@@ -5,26 +5,25 @@
 #' list of possible column names representing years (e.g. "ttot", "tall", "t_all") is checked, the first one in names(x)
 #' is used.
 #'
-#' @param plotData     A data frame. Use mip::getPlotData to get a ready-to-plot data frame from one or more gdx files.
-#' @param returnGgplot If FALSE (the default) show interactive plotly plots with slider support. Set to TRUE to return
-#'                     ggplots which can be customized, but are not interactive. To re-enable slider support and
-#'                     interactivity run lapply(ggplots, plotly::ggplotly) after customizing the ggplots.
-#' @param maxPlots     Return at most this many plots.
-#' @param xAxis        A string from names(x), defining which column is plotted on the x-axis of the plots. Must not be
-#'                     NULL.
-#' @param color        A string from names(x), defining which column is plotted as color. If NULL color is not used.
-#' @param slider       A string from names(x), defining which column is plotted as a slider. The slider requires plotly.
-#'                     If NULL no slider is used.
-#' @param facets       A string from names(x), defining which column is used for grouping. A small plot (facet) is shown
-#'                     for each group. If NULL facets are not used.
-#' @return A ggplot
+#' @param plotData      A data frame. Use mip::getPlotData to get a ready-to-plot data frame from one or more gdx files.
+#' @param returnGgplots If FALSE (the default) show interactive plotly plots with slider support. Set to TRUE to return
+#'                      ggplots which can be customized, but are not interactive. To re-enable slider support and
+#'                      interactivity run lapply(ggplots, plotly::ggplotly) after customizing the ggplots.
+#' @param maxPlots      Return at most this many plots.
+#' @param xAxis         A string from names(x), defining which column is plotted on the x-axis of the plots. Must not be
+#'                      NULL.
+#' @param color         A string from names(x), defining which column is plotted as color. If NULL color is not used.
+#' @param slider        A string from names(x), defining which column is plotted as a slider. The slider requires
+#'                      plotly. If NULL no slider is used.
+#' @param facets        A string from names(x), defining which column is used for grouping. A small plot (facet) is
+#'                      shown for each group. If NULL facets are not used.
+#' @return A list of plotly plots, if returnGgplots is TRUE a list of ggplots
 #' @author Pascal Führlich
 #' @seealso \code{\link{getPlotData}}
-#' @importFrom rlang .data
-#' @importFrom ggplot2 ggplot aes geom_line ylab facet_wrap ggtitle
+#' @importFrom ggplot2 ggplot aes_string geom_line ylab facet_wrap ggtitle
 #' @importFrom plotly ggplotly
 #' @export
-mipIterations <- function(plotData, returnGgplot = FALSE, maxPlots = 20L,
+mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
                           xAxis = "year", color = NULL, slider = "iteration", facets = "all_regi") {
   nonNullArgs <- Filter(Negate(is.null), c(xAxis, color, slider, facets))
   if (any(!(nonNullArgs %in% names(plotData) | nonNullArgs == "year"))) {
@@ -73,7 +72,7 @@ mipIterations <- function(plotData, returnGgplot = FALSE, maxPlots = 20L,
   }
   if (!is.null(slider)) {
     aestheticsArgs <- c(aestheticsArgs, list(frame = slider))
-    if (!returnGgplot) {
+    if (!returnGgplots) {
       message("Make sure to run lapply(ggplots, plotly::ggplotly) to show the slider.")
     }
   }
@@ -108,7 +107,7 @@ mipIterations <- function(plotData, returnGgplot = FALSE, maxPlots = 20L,
     return(plot)
   })
   names(plots) <- lapply(plots, function(plot) plot$label$title)
-  if (!returnGgplot) {
+  if (!returnGgplots) {
     # return plotly plots instead of ggplots
     plots <- lapply(plots, ggplotly)
   }

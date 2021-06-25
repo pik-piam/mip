@@ -24,43 +24,45 @@
 #' @importFrom plotly ggplotly
 #' @export
 mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
-                          xAxis = "year", color = NULL, slider = "iteration", facets = "all_regi") {
+                          xAxis = "year", color = NULL, slider = "iteration", facets = "region") {
   nonNullArgs <- Filter(Negate(is.null), c(xAxis, color, slider, facets))
-  if (any(!(nonNullArgs %in% names(plotData) | nonNullArgs == "year"))) {
+  if (any(!(nonNullArgs %in% c(names(plotData), "year", "region")))) {
     stop(
       "The following columns were not found in the given plot data: ",
-      paste0(nonNullArgs[!(nonNullArgs %in% names(plotData) | nonNullArgs == "year")], collapse = ", ")
+      paste0(nonNullArgs[!(nonNullArgs %in% c(names(plotData), "year", "region"))], collapse = ", ")
     )
   } else if (anyDuplicated(nonNullArgs) != 0) {
     stop("Each column can only be mapped to one aesthetic, but there are duplicate arguments: ",
          paste0(nonNullArgs, collapse = ", "))
   }
 
-  getYearDomainName <- function(aesthetic) {
-    # take the first of the following possible year domain names that is in names(x)
-    yearDomainNames <- c(
-      "year", "ttot", "tall", "t_all", "t", "tsu", "opTimeYr", "opTime5", "t0", "t_input_gdx",
-      "t_interpolate", "t_magiccttot", "t_magicc", "t_extra"
-    )
-    yearDomainName <- yearDomainNames[yearDomainNames %in% names(plotData)][1]
-    if (is.null(yearDomainName)) {
-      stop("Could not find year domain, please specify arguments to plotIterations explicitly.")
+  handleSpecialValues <- function(aesthetic, argumentValue) {
+    findDomainName <- function(domainNames) {
+      domainName <- domainNames[domainNames %in% names(plotData)][1]
+      if (is.null(domainName)) {
+        stop("Could not find ", argumentValue, " domain, please specify arguments to plotIterations explicitly.")
+      }
+      if (!identical(domainName, argumentValue)) {
+        message('Using "', domainName, '" instead of "', argumentValue, '" for ', aesthetic)
+      }
+      return(domainName)
     }
-    if (!identical(yearDomainName, "year")) {
-      message('Using "', yearDomainName, '" instead of "year" for ', aesthetic)
+
+    if (identical(argumentValue, "year")) {
+      return(findDomainName(c("year", "ttot", "tall", "t_all", "t", "tsu", "opTimeYr", "opTime5", "t0", "t_input_gdx",
+                              "t_interpolate", "t_magiccttot", "t_magicc", "t_extra")))
+    } else if (identical(argumentValue, "region")) {
+      return(findDomainName(c("region", "all_regi", "regi", "alt_regions", "ext_regi", "RCP_regions_world_bunkers",
+                              "RCP_regions_world")))
+    } else {
+      return(argumentValue)
     }
-    return(yearDomainName)
   }
 
-  if (identical(xAxis, "year")) {
-    xAxis <- getYearDomainName("xAxis")
-  } else if (identical(color, "year")) {
-    color <- getYearDomainName("color")
-  } else if (identical(slider, "year")) {
-    slider <- getYearDomainName("slider")
-  } else if (identical(facets, "year")) {
-    facets <- getYearDomainName("facets")
-  }
+  xAxis <- handleSpecialValues("xAxis", xAxis)
+  color <- handleSpecialValues("color", color)
+  slider <- handleSpecialValues("slider", slider)
+  facets <- handleSpecialValues("facets", facets)
 
   # int is plotted more appropriately than factor when plotting e.g. years
   plotData[xAxis] <- as.integer(as.character(plotData[[xAxis]]))

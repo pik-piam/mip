@@ -78,13 +78,16 @@ mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
   }
 
   # all combinations of values of columns not plotted (not mapped to x/y/color etc.)
-  unplottedCombinations <- unique(plotData[, !(names(plotData) %in% c(xAxis, color, slider, facets, "value"))])
-  unplottedCombinations <- lapply(split(unplottedCombinations, seq(nrow(unplottedCombinations))), as.list)
+  plottedColumns <- c(xAxis, color, slider, facets, "value")
+  unplottedCombinations <- unique(plotData[!(names(plotData) %in% plottedColumns)])
+  unplottedCombinations <- lapply(split(unplottedCombinations, seq_len(nrow(unplottedCombinations))), as.list)
 
   if (length(unplottedCombinations) > maxPlots) {
     warning("Generating ", maxPlots, " plots instead of ", length(unplottedCombinations),
             ", run mip::mipIterations(..., maxPlots = ", length(unplottedCombinations), ") to catch them all.\n")
     unplottedCombinations <- unplottedCombinations[seq_len(maxPlots)]
+  } else if (length(unplottedCombinations) == 0) {
+    unplottedCombinations <- list(list())
   }
 
   # create a plot for each combination of unplotted values (not mapped to an aesthetic)
@@ -94,7 +97,10 @@ mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
       return(filteredData[filteredData[[names(unplottedCombination)[[index]]]] == unplottedCombination[[index]], ])
     }, seq_along(unplottedCombination), plotData)
 
-    heading <- paste(attr(plotData, "symName"), substring(paste0(list(lapply(unplottedCombination, as.character))), 5))
+    heading <- attr(plotData, "symName")
+    if (length(unplottedCombination) > 0) {
+      heading <- paste(heading, substring(paste0(list(lapply(unplottedCombination, as.character))), 5))
+    }
 
     plot <- ggplot(x, do.call(aes_string, aestheticsArgs)) +
       geom_line() +

@@ -4,19 +4,17 @@
 #'
 #' @param symbolName The name of a symbol to be extracted from gdx.
 #' @param pathToGdx Path to one or more gdx files or a a path to a folder with fulldata gdx files. If multiple paths
-#' are provided each one represents data after a specific iteration. The order of paths should match iteration order,
-#' e.g. pathToGdx[1] should hold data for the first iteration, pathToGdx[2] for the second iteration etc. If the path
-#' to a folder is given the fulldata gdx files in it are used.
-#' @param compress Logical, passed to gdxrrw::rgdx.param. Ensures factor levels are equal to unique elements.
-#' @param ... Additional arguments passed to gdxrrw::rgdx.param.
+#'                  are provided each one represents data after a specific iteration. The order of paths should match
+#'                  iteration order, e.g. pathToGdx[1] should hold data for the first iteration, pathToGdx[2] for the
+#'                  second iteration etc. If the path to a folder is given the fulldata gdx files in it are used.
+#' @param ... Additional arguments passed to gdxrrw::rgdx.
 #' @return A data frame with data from the given gdx file(s). The column called <symbolName> is renamed to "value".
 #' The symbol name is stored in attr(plotData, "symName"). If multiple gdx files are provided an additional "iteration"
 #' column is added. The iteration value will be 1 for all data rows from the first gdx, 2 for the second etc.
 #' @author Pascal Führlich
-#' @seealso \code{\link{mipIterations}}
-#' @importFrom gdxrrw rgdx.param
+#' @seealso \code{\link{mipIterations}}, \code{\link{dataframeFromGdx}}
 #' @export
-getPlotData <- function(symbolName, pathToGdx = ".", compress = TRUE, ...) {
+getPlotData <- function(symbolName, pathToGdx = ".", ...) {
   stopifnot(
     length(symbolName) == 1,
     length(pathToGdx) > 0,
@@ -39,7 +37,7 @@ getPlotData <- function(symbolName, pathToGdx = ".", compress = TRUE, ...) {
 
   # read one or more gdx files
   if (length(pathToGdx) == 1) {
-    plotData <- rgdx.param(pathToGdx, symbolName, compress = compress, ...)
+    plotData <- dataframeFromGdx(symbolName, pathToGdx, ...)
   } else {
     plotData <- NULL
     for (i in seq_along(pathToGdx)) {
@@ -51,15 +49,14 @@ getPlotData <- function(symbolName, pathToGdx = ".", compress = TRUE, ...) {
         )
       }
 
-      gdxContent <- rgdx.param(pathToGdx[[i]], symbolName, compress = compress, ...)
-      gdxContent$iteration <- i
+      gdxContent <- dataframeFromGdx(symbolName, pathToGdx[[i]], ...)
+      gdxContent["iteration"] <- i
       plotData <- rbind(plotData, gdxContent)
     }
   }
 
   names(plotData)[names(plotData) == symbolName] <- "value"
-  plotData$iteration <- as.integer(plotData$iteration)
-  attr(plotData, "domains") <- NULL
-  attr(plotData, "domInfo") <- NULL
+  plotData["iteration"] <- as.integer(plotData[["iteration"]])
+  attr(plotData, "symName") <- symbolName
   return(plotData)
 }

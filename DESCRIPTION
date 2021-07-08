@@ -28,7 +28,8 @@ Imports:
   gridExtra,
   tidyr,
   gdxrrw,
-  rlang
+  rlang,
+  htmltools
 Suggests: 
   testthat,
   knitr,

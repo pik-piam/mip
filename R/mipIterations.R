@@ -109,8 +109,8 @@ mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
       ggtitle(heading) +
       ylab("") # clear y-label, because the column name "value" is not helpful
     if (!is.null(facets)) {
-      # create small plot for each region with different y scales, always show all facets, even if empty
-      plot <- plot + facet_wrap(facets, scales = "free_y", drop = FALSE)
+      # create small plot for each region, always show all facets, even if empty
+      plot <- plot + facet_wrap(facets, drop = FALSE)
     }
     return(plot)
   })

@@ -5,11 +5,11 @@
 #' list of possible column names representing years (e.g. "ttot", "tall", "t_all") is checked, the first one in names(x)
 #' is used.
 #'
-#' @param plotData      A data frame. Use mip::getPlotData to get a ready-to-plot data frame from one or more gdx files.
+#' @param plotData      A data frame. The actual value column must be the last. Use mip::getPlotData to get a
+#'                      ready-to-plot data frame from one or more gdx files.
 #' @param returnGgplots If FALSE (the default) show interactive plotly plots with slider support. Set to TRUE to return
 #'                      ggplots which can be customized, but are not interactive. To re-enable slider support and
 #'                      interactivity run lapply(ggplots, plotly::ggplotly) after customizing the ggplots.
-#' @param maxPlots      Return at most this many plots.
 #' @param xAxis         A string from names(x), defining which column is plotted on the x-axis of the plots. Must not be
 #'                      NULL.
 #' @param color         A string from names(x), defining which column is plotted as color. If NULL color is not used.
@@ -17,13 +17,13 @@
 #'                      plotly. If NULL no slider is used.
 #' @param facets        A string from names(x), defining which column is used for grouping. A small plot (facet) is
 #'                      shown for each group. If NULL facets are not used.
-#' @return A list of plotly plots, if returnGgplots is TRUE a list of ggplots
+#' @return A list of plotly plots, if returnGgplots is TRUE a list of ggplots instead
 #' @author Pascal Führlich
 #' @seealso \code{\link{getPlotData}}
 #' @importFrom ggplot2 ggplot aes_string geom_line ylab facet_wrap ggtitle
 #' @importFrom plotly ggplotly
 #' @export
-mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
+mipIterations <- function(plotData, returnGgplots = FALSE,
                           xAxis = "year", color = NULL, slider = "iteration", facets = "region") {
   nonNullArgs <- Filter(Negate(is.null), c(xAxis, color, slider, facets))
   if (any(!(nonNullArgs %in% c(names(plotData), "year", "region")))) {
@@ -67,7 +67,12 @@ mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
   # int is plotted more appropriately than factor when plotting e.g. years
   plotData[xAxis] <- as.integer(as.character(plotData[[xAxis]]))
 
-  aestheticsArgs <- list(x = xAxis, y = "value")
+  valueColumnName <- tail(names(plotData), 1)
+  if (!is.double(plotData[[valueColumnName]])) {
+    warning("Expected the type of the last column (", valueColumnName, ") to be double, but it is ",
+            typeof(plotData[[valueColumnName]]))
+  }
+  aestheticsArgs <- list(x = xAxis, y = valueColumnName)
   if (!is.null(color)) {
     aestheticsArgs <- c(aestheticsArgs, list(color = color))
     plotData[color] <- as.factor(plotData[[color]])
@@ -80,15 +85,11 @@ mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
   }
 
   # all combinations of values of columns not plotted (not mapped to x/y/color etc.)
-  plottedColumns <- c(xAxis, color, slider, facets, "value")
+  plottedColumns <- c(xAxis, color, slider, facets, valueColumnName)
   unplottedCombinations <- unique(plotData[!(names(plotData) %in% plottedColumns)])
   unplottedCombinations <- lapply(split(unplottedCombinations, seq_len(nrow(unplottedCombinations))), as.list)
 
-  if (length(unplottedCombinations) > maxPlots) {
-    warning("Generating ", maxPlots, " plots instead of ", length(unplottedCombinations),
-            ", run mip::mipIterations(..., maxPlots = ", length(unplottedCombinations), ") to catch them all.\n")
-    unplottedCombinations <- unplottedCombinations[seq_len(maxPlots)]
-  } else if (length(unplottedCombinations) == 0) {
+  if (identical(length(unplottedCombinations), 0L)) {
     unplottedCombinations <- list(list())
   }
 
@@ -99,15 +100,14 @@ mipIterations <- function(plotData, returnGgplots = FALSE, maxPlots = 20L,
       return(filteredData[filteredData[[names(unplottedCombination)[[index]]]] == unplottedCombination[[index]], ])
     }, seq_along(unplottedCombination), plotData)
 
-    heading <- attr(plotData, "symName")
+    heading <- tail(names(plotData), 1)
     if (length(unplottedCombination) > 0) {
       heading <- paste(heading, substring(paste0(list(lapply(unplottedCombination, as.character))), 5))
     }
 
     plot <- ggplot(x, do.call(aes_string, aestheticsArgs)) +
       geom_line() +
-      ggtitle(heading) +
-      ylab("") # clear y-label, because the column name "value" is not helpful
+      ggtitle(heading)
     if (!is.null(facets)) {
       # create small plot for each region, always show all facets, even if empty
       plot <- plot + facet_wrap(facets, drop = FALSE)

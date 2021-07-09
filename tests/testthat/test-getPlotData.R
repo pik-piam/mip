@@ -16,9 +16,8 @@ test_that("getPlotData works for a single gdx file", {
     iteration = rep(1:4, each = 4),
     year = c("2000", "2000", "3000", "3000"),
     region = c("ABC", "XYZ"),
-    value = rep(1:4, each = 4) + 0.1
+    testSymbolName = rep(1:4, each = 4) + 0.1
   )
-  attr(expected, "symName") <- "testSymbolName"
 
   expect_equal(getPlotData("testSymbolName", testFile), expected)
   expect_equal(getPlotData("testSymbolName", dirname(testFile)), expected)
@@ -48,10 +47,9 @@ test_that("getPlotData works for multiple gdx files", {
   expected <- data.frame(
     year = as.character(c(rep(2000 + 0:7, each = 2), rep(2000 + 0:7, each = 2))),
     region = c("ABC", "XYZ"),
-    value = c(rep(1:4, each = 4) + 0.1, rep(1:4, each = 4) + 0.2),
-    iteration = rep(1:2, each = 16)
+    iteration = rep(1:2, each = 16),
+    testSymbolName = c(rep(1:4, each = 4) + 0.1, rep(1:4, each = 4) + 0.2)
   )
-  attr(expected, "symName") <- "testSymbolName"
 
   actual <- getPlotData("testSymbolName", file.path(testDir, paste0("fulldata_", 1:2, ".gdx")))
   expect_equal(actual, expected)

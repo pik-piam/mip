@@ -15,7 +15,7 @@
 #' @export
 sideBySidePlots <- function(ggplots, margin = 0.05) {
   if (identical(length(ggplots), 0L)) {
-    return(taglist())
+    return(tagList())
   }
   # check that elements in ggplots argument have classes gg and ggplot
   stopifnot(all(vapply(ggplots, function(aGgplot) identical(attr(aGgplot, "class"), c("gg", "ggplot")), logical(1))))

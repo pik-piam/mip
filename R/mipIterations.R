@@ -22,6 +22,7 @@
 #' @seealso \code{\link{getPlotData}}
 #' @importFrom ggplot2 ggplot aes_string geom_line ylab facet_wrap ggtitle
 #' @importFrom plotly ggplotly
+#' @importFrom utils tail
 #' @export
 mipIterations <- function(plotData, returnGgplots = FALSE,
                           xAxis = "year", color = NULL, slider = "iteration", facets = "region") {

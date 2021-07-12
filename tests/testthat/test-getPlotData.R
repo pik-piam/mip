@@ -1,7 +1,4 @@
 test_that("getPlotData works for a single gdx file", {
-  # initialize gdxrrw
-  mip:::.onLoad(NULL, NULL)
-
   testData <- data.frame(
     iteration = as.factor(rep(1:4, each = 4)),
     year = as.factor(c(2000, 2000, 3000, 3000)),
@@ -27,9 +24,6 @@ test_that("getPlotData works for a single gdx file", {
 })
 
 test_that("getPlotData works for multiple gdx files", {
-  # initialize gdxrrw
-  mip:::.onLoad(NULL, NULL)
-
   testData1 <- data.frame(
     year = as.factor(rep(2000 + 0:7, each = 2)),
     region = as.factor(c("ABC", "XYZ")),

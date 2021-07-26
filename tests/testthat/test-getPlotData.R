@@ -1,4 +1,6 @@
 test_that("getPlotData works for a single gdx file", {
+  skip_if_not_installed("gdxrrw")
+
   testData <- data.frame(
     iteration = as.factor(rep(1:4, each = 4)),
     year = as.factor(c(2000, 2000, 3000, 3000)),
@@ -24,6 +26,8 @@ test_that("getPlotData works for a single gdx file", {
 })
 
 test_that("getPlotData works for multiple gdx files", {
+  skip_if_not_installed("gdxrrw")
+
   testData1 <- data.frame(
     year = as.factor(rep(2000 + 0:7, each = 2)),
     region = as.factor(c("ABC", "XYZ")),

@@ -4,7 +4,7 @@ author: "David Klein"
 date: "16 April 2020"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{MIF file format description}
+  %\VignetteIndexEntry{Model Intercomparison File Format (MIF)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

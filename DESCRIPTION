@@ -1,38 +1,44 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.130.0
-Date: 2021-06-16
+Version: 0.131.1
+Date: 2021-08-09
 Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c("aut","cre")),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut")),
              person("Lavinia", "Baumstark", email = "baumstark@pik-potsdam.de", role = "aut"),
              person("Florian", "Humpenoeder", email = "humpenoeder@pik-potsdam.de", role = "aut"),
              person("Miodrag", "Stevanovic", email = "miodrag@pik-potsdam.de", role = "aut"),
-             person("Stephen", "Wirth", email = "wirth@pik-potsdam.de", role = "aut"))
+             person("Stephen", "Wirth", email = "wirth@pik-potsdam.de", role = "aut"),
+             person("Pascal", "Führlich", email = "pascal.fuehrlich@pik-potsdam.de", role = "aut"))
 Description: Package contains generic functions to produce comparison plots of multi-model runs.
 License: BSD_2_clause + file LICENSE
-Depends: R(>= 2.10.0),
-         quitte(>= 0.3072), 
-         magclass
-Imports: ggplot2, 
-         dplyr, 
-         RColorBrewer, 
-         plotly, 
-         shiny, 
-         reshape2, 
-         data.table, 
-         lusweave (>= 1.43.2), 
-         trafficlight, 
-         gridExtra,
-         tidyr
+Depends:
+  R(>= 2.10.0),
+  quitte(>= 0.3072),
+  magclass
+Imports:
+  ggplot2,
+  dplyr,
+  RColorBrewer,
+  plotly,
+  shiny,
+  reshape2,
+  data.table,
+  lusweave (>= 1.43.2),
+  trafficlight,
+  gridExtra,
+  tidyr,
+  rlang,
+  htmltools
+Suggests: 
+  testthat,
+  knitr,
+  covr,
+  gdxrrw,
+  rmarkdown
 URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
 BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 LazyData: yes
-Suggests: 
-    testthat,
-    knitr,
-    covr,
-    rmarkdown
 VignetteBuilder: knitr

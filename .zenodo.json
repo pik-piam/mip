@@ -1,6 +1,6 @@
 {
   "title": "mip: Comparison of multi-model runs",
-  "version": "0.130.0",
+  "version": "0.131.1",
   "description": "<p>Package contains generic functions to produce comparison plots of multi-model runs.<\/p>",
   "creators": [
     {
@@ -20,6 +20,9 @@
     },
     {
       "name": "Wirth, Stephen"
+    },
+    {
+      "name": "Führlich, Pascal"
     }
   ]
 }

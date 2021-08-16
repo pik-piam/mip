@@ -1,6 +1,6 @@
 test_that("getPlotData works for a single gdx file", {
   skip_if_not_installed("gdxrrw")
-  skip_if_not(gdxrrw::igdx())
+  skip_if_not(as.logical(gdxrrw::igdx(silent = TRUE)))
 
   testData <- data.frame(
     iteration = as.factor(rep(1:4, each = 4)),
@@ -28,7 +28,7 @@ test_that("getPlotData works for a single gdx file", {
 
 test_that("getPlotData works for multiple gdx files", {
   skip_if_not_installed("gdxrrw")
-  skip_if_not(gdxrrw::igdx())
+  skip_if_not(as.logical(gdxrrw::igdx(silent = TRUE)))
 
   testData1 <- data.frame(
     year = as.factor(rep(2000 + 0:7, each = 2)),

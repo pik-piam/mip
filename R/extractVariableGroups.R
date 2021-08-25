@@ -53,7 +53,7 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
     prev<-1
     for (i in x) prev <- max(nchar(gsub("[^|]","",i))+1,prev)
     tmp <- sapply(x,spltM)
-    out <- NULL
+    out <- list()
     for (k in prev:2) {
       for (i in which(sapply(tmp,length)==k)) {
         for (j in which(sapply(tmp,length)==k-1)) {

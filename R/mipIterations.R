@@ -79,7 +79,7 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
   }
   if (!is.null(slider)) {
     aestheticsArgs <- c(aestheticsArgs, list(frame = slider))
-    if (!returnGgplots) {
+    if (returnGgplots) {
       message("Make sure to run lapply(ggplots, plotly::ggplotly) to show the slider.")
     }
   }

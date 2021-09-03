@@ -30,11 +30,11 @@
 #' p <- p + facet_grid(region~scenario)
 #' @importFrom magclass is.magpie getSets
 #' @importFrom quitte is.quitte
-#' @importFrom ggplot2 ggplot geom_area aes_ geom_line scale_linetype_discrete 
+#' @importFrom ggplot2 ggplot geom_area aes_ geom_line scale_linetype_discrete
 #'   facet_wrap facet_grid theme scale_fill_manual xlab expand_limits
-#' @importFrom dplyr group_by_ summarise_ ungroup
+#' @importFrom dplyr group_by summarise ungroup
+#' @importFrom rlang .data
 #' @export
-#'
 mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, scales="fixed", shorten = TRUE, hist = NULL, hist_source = "first"){
 
   # library(ggplot2)
@@ -123,11 +123,11 @@ mipArea <- function(x, stack_priority=c("variable", "region"), total=TRUE, scale
   # if not provided by user calculate total by summing over dim_to_stack
   if (isTRUE(total)) {
     dim_to_group <- setdiff(c("model","scenario","region","variable","unit","period"),dim_to_stack)
-    total <- x %>% group_by_(as.formula(paste("~",dim_to_group[1])),
-                             as.formula(paste("~",dim_to_group[2])),
-                             as.formula(paste("~",dim_to_group[3])),
-                             as.formula(paste("~",dim_to_group[4])),
-                             as.formula(paste("~",dim_to_group[5]))) %>% summarise_(value = ~sum(value,na.rm=TRUE)) %>% ungroup()
+    total <- x %>%
+      group_by(.data[[dim_to_group[1]]], .data[[dim_to_group[2]]], .data[[dim_to_group[3]]],
+               .data[[dim_to_group[4]]], .data[[dim_to_group[5]]]) %>%
+      summarise(value = sum(.data[["value"]], na.rm = TRUE)) %>%
+      ungroup()
     # add missing column dim_to_stack to make it convertable to quitte
     total[,dim_to_stack] <- "Total"
   }

@@ -31,8 +31,7 @@
 #' @importFrom magclass is.magpie
 #' @importFrom ggplot2 ggplot aes_ guides guide_legend scale_x_continuous 
 #'             ggtitle geom_col scale_shape_manual
-#' @importFrom dplyr %>% select_ distinct_ mutate_ mutate filter 
-#'             inner_join group_by summarise select n sym arrange
+#' @importFrom dplyr %>% mutate filter inner_join group_by summarise select n sym arrange
 #' @importFrom tidyr crossing unite 
 #' @importFrom stats setNames
 #' @importFrom quitte order.levels

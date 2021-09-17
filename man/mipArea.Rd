@@ -15,24 +15,25 @@ mipArea(
 )
 }
 \arguments{
-\item{x}{Data to plot. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 
+\item{x}{Data to plot. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects,
 the dimension that contains the variables must have one of the following names: variable, scenario, or model.}
 
-\item{stack_priority}{Name of column you want to stack. If you provide more than one column name the 
-function will scan the columns in the given order and use the first dimension for stacking that has 
+\item{stack_priority}{Name of column you want to stack. If you provide more than one column name the
+function will scan the columns in the given order and use the first dimension for stacking that has
 more than one element.}
 
 \item{total}{total data to plot. Allowed inputs: magpie, quitte or boolean. If total data is
-provided by user in magpie or quitte format it will be added to the plot. If user sets total to 
-TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot 
+provided by user in magpie or quitte format it will be added to the plot. If user sets total to
+TRUE total will be calculated by the function and added to the plot. If total is FALSE the plot
 will ignore it.}
 
-\item{scales}{Should scales be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?}
+\item{scales}{scales can be fixed ("fixed", default), free ("free"), or free in one dimension ("free_x", "free_y")?}
 
-\item{shorten}{Shorten variable names (default is TRUE) by removing categories only if they are identical (for short names in the legend)}
+\item{shorten}{Shorten variable names (default is TRUE) by removing categories only if they are identical (for short
+names in the legend)}
 
-\item{hist}{Historical data. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte objects, 
-the dimension that contains the variables must have one of the following names: variable, scenario, or model.}
+\item{hist}{Historical data. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte
+objects, the dimension that contains the variables must have one of the following names: variable, scenario, model.}
 
 \item{hist_source}{If there are multiple historical sources the name of the source that you want to be plotted.}
 }
@@ -45,16 +46,16 @@ Generic area plot function. Automatically creates facet grid from data. Optional
 }
 
 \examples{
-p <- mipArea(x=mip_example_data)
+p <- mipArea(x = mip_example_data)
 # create plot with best-guess design (internally using theme_mip(size=12))
 p <- mipArea(mip_example_data)
 # override default theme with theme_grey and move legend to top
 library(ggplot2)
-p <- p + theme_grey() + theme(legend.position="top")
+p <- p + theme_grey() + theme(legend.position = "top")
 # go back to theme_mip and increase font size
-p <- p + theme_mip(size=18)
+p <- p + theme_mip(size = 18)
 # change facetting
-p <- p + facet_grid(region~scenario)
+p <- p + facet_grid(region ~ scenario)
 }
 \author{
 David Klein, Jan Philipp Dietrich

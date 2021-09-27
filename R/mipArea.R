@@ -199,7 +199,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
                        color = "#000000", size = 1)
     p <- p + scale_linetype_discrete(labels = "Total", name = "")
     if (!is.null(hist)) {
-      p <- p + geom_line(data = total_h, aes_(~period, ~value, linetype = as.formula(paste("~", dimToStack))),
+      p <- p + geom_line(data = totalH, aes_(~period, ~value, linetype = as.formula(paste("~", dimToStack))),
                          color = "#000000", size = 1, alpha = 0.3)
     }
   }

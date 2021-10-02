@@ -28,7 +28,8 @@ mipLineHistorical(
   facet.ncol = 3,
   legend.ncol = 1,
   hlines = NULL,
-  hlines.labels = NULL
+  hlines.labels = NULL,
+  color.dim.manual = NULL
 )
 }
 \arguments{
@@ -79,6 +80,8 @@ mipLineHistorical(
 \item{hlines}{optional horizontal lines to be added to the plot, Allowed data formats: magpie, Default is \code{NULL}.}
 
 \item{hlines.labels}{optional labels for horizontal lines, Allowed data formats: named vector, where each name corresponds to exactly one variable in hlines, Default is \code{NULL}.}
+
+\item{color.dim.manual}{optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.}
 }
 \description{
 Compares data by producing line plot

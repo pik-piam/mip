@@ -109,6 +109,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   
   if(!is.null(xlim)) p <- p + coord_cartesian(xlim=xlim)
   
+  #avoid overlapping x-axis labels
+  p <- p + scale_x_continuous(guide = guide_axis(check.overlap = TRUE))
+  
   # facet
   if(!is.null(facet.dim)) p <- p + facet_wrap(facet.dim, ncol=facet.ncol, scales=scales) 
   

@@ -38,7 +38,7 @@
 #'   }
 #' @importFrom gridExtra arrangeGrob grid.arrange
 #' @importFrom ggplot2 ggplot aes_ geom_point scale_color_hue element_line aes_string geom_vline geom_hline geom_text %+replace% scale_color_manual ggtitle theme_bw scale_alpha_manual coord_cartesian
-#' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans expand_limits
+#' margin element_rect ggplot_gtable ggplot_build scale_y_log10 coord_trans expand_limits guide_axis
 #' @export
 #' 
 

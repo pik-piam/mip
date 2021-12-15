@@ -213,8 +213,12 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   p <- p + theme_mip(size = 12)
   p <- p + theme(axis.title.x = element_blank())
 
+  # If data that is to be stacked are not factors, convert it to factors.
+  # This is useful since we can use the same call of plotstyle as in other mip functions and thus 
+  # get the same order of colors for elements that are not defined in plotstyle.
+  if (!is.factor(x[[dimToStack]])) x[[dimToStack]] <- factor(x[[dimToStack]], levels = unique(x[[dimToStack]]))
   # use plotstyle colours and labels by default
-  p <- p + scale_fill_manual(values = plotstyle(as.character(unique(x[[dimToStack]]))),
+  p <- p + scale_fill_manual(values = plotstyle(levels(x[[dimToStack]])),
                              name   = "")
 
   # increase y-axis limits to hide all-zero data that was set to -1e-36

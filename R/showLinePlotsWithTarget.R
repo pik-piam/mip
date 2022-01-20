@@ -1,0 +1,68 @@
+# Creates a line plot showing single line plot of vars over time
+# Additionally target values given in variables of the form
+# <vars>|target|<sth> are shown. The plot is shown and NULL is returned
+# invisibly.
+showLinePlotsWithTarget <- function(
+  data, vars, scales = "free_y"
+) {
+  
+  # Validate function arguments.
+  data <- validateData(data, removeSuperfluousCols=TRUE)
+  stopifnot(is.character(vars))
+  stopifnot(is.character(scales) && length(scales) == 1)
+  
+  vars %>%
+    paste0("|target|") %>%
+    str_replace_all(fixed("|"), fixed("\\|")) %>%
+    paste0(collapse = "|") ->
+    targetPattern
+  
+  data %>%
+    filter(str_detect(variable, targetPattern)) ->
+    dTar
+  regionsWithTarget <- unique(dTar$region)
+  data %>%
+    filter(variable %in% vars, region %in% regionsWithTarget) ->
+    d
+  warnMissingVars(d, vars)
+  if (NROW(d) == 0) {
+    warning("Nothing to plot.", call. = FALSE)
+    return(invisible(NULL))
+  }
+  
+  label <- paste0(vars, " [", paste0(unique(d$unit), collapse = ","), "]")
+  d %>%
+    filter(scenario != "historical") %>%
+    mipLineHistorical(
+      x_hist = d %>% filter(scenario == "historical"),
+      ylab = label,
+      scales = scales,
+      plot.priority = c("x_hist", "x", "x_proj"),
+      facet.ncol = 3
+    ) +
+    geom_hline(
+      data = dTar,
+      aes(yintercept = value),
+      linetype = 2,
+      color = "coral"
+    ) +
+    geom_vline(
+      data = dTar,
+      aes(xintercept = period),
+      linetype = 2,
+      color = "coral"
+    ) +
+    geom_text(data = dTar, aes(
+      x = max(d$period) - (max(d$period) - min(d$period)) / 4,
+      y = value,
+      label = paste(variable, period)
+    )) ->
+    p
+  
+  # Show plot.
+  print(p)
+  cat("\n\n")
+  
+  return(invisible(NULL))
+}
+

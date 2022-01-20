@@ -1,10 +1,32 @@
-# Creates 2 area plots (main region + others) and to bar plots (main region +
-# others) of the variables specified in vars over time. For area plots,
-# faceting is done by region and scenario; for bar plots over region. If a
-# variables is given in tot, this is shown as a black line. If not the sum of
-# the values of vars is drawn. If fill=TRUE, the values of vars are divided by
-# the values of tot to show share of total. The plots arranged and shown and
-# NULL is returned invisibly.
+#' Show Area and Bar Plots
+#'
+#' Creates 4 sets of plots from scenario data and shows them.
+#'
+#' Creates 2 sets of area plots (main region + others) and 2 sets of bar plots
+#' (main region + others) of the variables specified in vars over time. For area
+#' plots, faceting is done by region and scenario; for bar plots over region. If
+#' a variables is given in tot, this is shown as a black line. If not the sum of
+#' the values of vars is drawn. If \code{fill=TRUE}, the values of vars are
+#' divided by the values of tot to show share of total. The plots arranged and
+#' shown.
+#' 
+#' @param data A data frame created by loading scenario and historical mifs.
+#' @param vars A character vector. The variables to be plotted.
+#' @param tot A single string. A total value to be shown in the area plots.
+#' @param fill Logical. Should the vars be normalized so that their values add to 1? (Plot shares instead of absolute values.)
+#' @param mainReg A single string. The plots for this region are shown enlarged. Use \code{options(mip.mainReg=<value>)} to set globally.
+#' @param yearsBarPlot A numeric vector. The years shown in the bar plots. Use \code{options(mip.yearsBarPlot=<value>)} to set globally.
+#' @return \code{NULL} is returned invisible.
+#' @examples
+#' \dontrun{
+#' items <- c(
+#'   "FE|CDR",
+#'   "FE|Transport",
+#'   "FE|Buildings",
+#'   "FE|Industry")
+#' showAreaAndBarPlots(data, items)
+#' }
+#' @export
 showAreaAndBarPlots <- function(
   data, vars, tot = NULL, fill = FALSE,
   mainReg = getOption("mip.mainReg"),

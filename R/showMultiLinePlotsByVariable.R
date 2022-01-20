@@ -1,6 +1,28 @@
-# Same as showMultiLinePlots() but with GDP on x-axis. When plotting by GDP,
-# data from historical.mif is only shown for years where historical GDP is
-# available. The plots arranged and shown and NULL is returned invisibly.
+#' Show Multi-Line Plots by Variable
+#'
+#' Show plots with different regions in the same plot; x-axis variable chosen by
+#' user.
+#'
+#' Same as \code{\link{showMultiLinePlots}} but with the variable specified by
+#' \code{xVar} on x-axis. For every y-axis-value, we need a unique x-axis-value.
+#' For historical data, there may be several sources / models of the same
+#' variable. For the x-axis-variable a unique historical source / model is
+#' chosen via \code{histRefModel}.
+#'
+#' @param xVar A single string. The variable for the x-axis.
+#' @param histRefModel A named character vector identifying the unique model to be
+#'   chosen for historical data. Use \code{options(mip.histRefModel=<value>)} to
+#'   set globally.
+#' @inheritParams showMultiLinePlots
+#' @return \code{NULL} is returned invisible.
+#' \dontrun{
+#' items <- c(
+#'   "FE|Transport pCap",
+#'   "FE|Buildings pCap",
+#'   "FE|Industry pCap")
+#' showMultiLinePlotsByVariable(data, items, "GDP|PPP pCap")
+#' }
+#' @export
 showMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   mainReg = getOption("mip.mainReg"),

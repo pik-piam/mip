@@ -1,6 +1,23 @@
-# Creates two plots (main region + others) with the values of vars over time.
-# Different regions are shown in the same plot. Faceting is done by variable.
-# The plots arranged and shown and NULL is returned invisibly.
+#' Show Multi-Line Plots
+#'
+#' Show 2 sets of plots with different regions in the same plot (value over time).
+#'
+#' Creates two plots (main region + others) with the values of \code{vars} over
+#' time. Different regions are shown in the same plot. Faceting is done by
+#' \code{variable}. The plots arranged and shown.
+#'
+#' @param vars A character vector. The variables to be plotted.
+#' @inheritParams showLinePlots
+#' @return \code{NULL} is returned invisible.
+#' @examples
+#' \dontrun{
+#' items <- c(
+#'   "FE|Transport pCap",
+#'   "FE|Buildings pCap",
+#'   "FE|Industry pCap")
+#' showMultiLinePlots(data, items)
+#' }
+#' @export
 showMultiLinePlots <- function(
   data, vars, scales = "free_y",
   mainReg = getOption("mip.mainReg")

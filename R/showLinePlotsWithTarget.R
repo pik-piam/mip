@@ -1,7 +1,19 @@
-# Creates a line plot showing single line plot of vars over time
-# Additionally target values given in variables of the form
-# <vars>|target|<sth> are shown. The plot is shown and NULL is returned
-# invisibly.
+#' Show Line Plots With Target
+#'
+#' Shows line plots of a variable with additional target data.
+#'
+#' Creates a line plot showing single line plot of vars over time. Additionally
+#' target values given in variables of the form \code{<vars>|target|<sth>} are
+#' shown. The plot is shown.
+#' @param vars A character vector. Usually just a single string. The variables
+#'   to be plotted.
+#' @inheritParams showLinePlots
+#' @return \code{NULL} is returned invisible.
+#' @examples
+#' \dontrun{
+#' showLinePlotsWithTarget(data, "Emi|GHG")
+#' }
+#' @export
 showLinePlotsWithTarget <- function(
   data, vars, scales = "free_y"
 ) {

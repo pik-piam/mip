@@ -1,7 +1,21 @@
-# Two lineplots are shown (main region + others), depicting the values in
-# vars over time. Faceting is done by region. For scales, choose either
-# "free_y" or "fixed". The plots arranged and shown and NULL is returned
-# invisibly.
+#' Show Line Plots
+#'
+#' Creates 2 sets of line plots from scenario data and shows them.
+#'
+#' Two sets of line plots are shown (main region + others), depicting the values
+#' in \code{vars} over time. Faceting is done by \code{region}. The plots
+#' arranged and shown.
+#'
+#' @param vars A character vector. Usually just a single string. The variables
+#'   to be plotted. If \code{NULL} all rows from \code{data} are plotted.
+#' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
+#' @inheritParams showAreaAndBarPlots
+#' @return \code{NULL} is returned invisible.
+#' @examples
+#' \dontrun{
+#' showLinePlots(data, "Policy Cost|GDP Loss")
+#' }
+#' @export
 showLinePlots <- function(
   data, vars = NULL, scales = "free_y",
   mainReg = getOption("mip.mainReg")

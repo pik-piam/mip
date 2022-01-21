@@ -15,6 +15,7 @@
 #'   set globally.
 #' @inheritParams showMultiLinePlots
 #' @return \code{NULL} is returned invisible.
+#' @example 
 #' \dontrun{
 #' items <- c(
 #'   "FE|Transport pCap",

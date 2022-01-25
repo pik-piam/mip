@@ -35,13 +35,16 @@ showLinePlots <- function(
       filter(.data$variable %in% .env$vars) %>% 
       droplevels() ->
       d
-    label <- paste0(vars, " [", paste0(levels(d$unit), collapse = ","), "]")
+    label <- paste0(
+      paste0(vars, collapse = ","),
+      " [", paste0(levels(d$unit), collapse = ","), "]")
   } else {
     data %>% 
       droplevels() ->
       d
-    label <- paste0(paste0(levels(d$variable), collapse = ","),
-                    " [", paste0(levels(d$unit), collapse = ","), "]")
+    label <- paste0(
+      paste0(levels(d$variable), collapse = ","),
+      " [", paste0(levels(d$unit), collapse = ","), "]")
   }
   d %>%
     filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 

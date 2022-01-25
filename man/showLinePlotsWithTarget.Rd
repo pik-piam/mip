@@ -7,7 +7,7 @@
 showLinePlotsWithTarget(data, vars, scales = "free_y")
 }
 \arguments{
-\item{data}{A data frame created by loading scenario and historical mifs.}
+\item{data}{A quitte object.}
 
 \item{vars}{A character vector. Usually just a single string. The variables
 to be plotted.}

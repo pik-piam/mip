@@ -16,20 +16,22 @@
 #' showLinePlots(data, "Policy Cost|GDP Loss")
 #' }
 #' @export
+#' @importFrom rlang .data .env
+#' @importFrom dplyr bind_rows
 showLinePlots <- function(
   data, vars = NULL, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
   
   # Validate function arguments.
-  data <- validateData(data, removeSuperfluousCols=TRUE)
+  stopifnot(is.quitte(data))
   stopifnot(is.character(vars) || is.null(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   
   if (!is.null(vars)) {
-    d <- filter(data, variable %in% vars)
+    d <- filter(data, .data$variable %in% .env$vars)
     label <- paste0(vars, " [", paste0(unique(d$unit), collapse = ","), "]")
   } else {
     d <- data
@@ -37,16 +39,16 @@ showLinePlots <- function(
                     " [", paste0(unique(d$unit), collapse = ","), "]")
   }
   d %>%
-    filter(region == mainReg, scenario != "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") ->
     dMainScen
   d %>%
-    filter(region == mainReg, scenario == "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") ->
     dMainHist
   d %>%
-    filter(region != mainReg, scenario != "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") ->
     dRegiScen
   d %>%
-    filter(region != mainReg, scenario == "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") ->
     dRegiHist
   
   if (!is.null(vars))
@@ -60,7 +62,7 @@ showLinePlots <- function(
   } else {
     dMainScen %>%
       mipLineHistorical(
-        x_hist = d %>% filter(region == mainReg, scenario == "historical"),
+        x_hist = dMainHist,
         ylab = label,
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj")
@@ -72,7 +74,7 @@ showLinePlots <- function(
   } else {
     dRegiScen %>%
       mipLineHistorical(
-        x_hist = d %>% filter(region != mainReg, scenario == "historical"),
+        x_hist = dRegiHist,
         ylab = NULL,
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj"),

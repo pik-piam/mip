@@ -14,12 +14,14 @@
 #' showLinePlotsWithTarget(data, "Emi|GHG")
 #' }
 #' @export
+#' @importFrom rlang .data .env
+#' @importFrom stringr str_detect
 showLinePlotsWithTarget <- function(
   data, vars, scales = "free_y"
 ) {
   
   # Validate function arguments.
-  data <- validateData(data, removeSuperfluousCols=TRUE)
+  stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
   
@@ -30,11 +32,11 @@ showLinePlotsWithTarget <- function(
     targetPattern
   
   data %>%
-    filter(str_detect(variable, targetPattern)) ->
+    filter(str_detect(.data$variable, .env$targetPattern)) ->
     dTar
   regionsWithTarget <- unique(dTar$region)
   data %>%
-    filter(variable %in% vars, region %in% regionsWithTarget) ->
+    filter(.data$variable %in% .env$vars, .data$region %in% .env$regionsWithTarget) ->
     d
   warnMissingVars(d, vars)
   if (NROW(d) == 0) {
@@ -44,9 +46,9 @@ showLinePlotsWithTarget <- function(
   
   label <- paste0(vars, " [", paste0(unique(d$unit), collapse = ","), "]")
   d %>%
-    filter(scenario != "historical") %>%
+    filter(.data$scenario != "historical") %>%
     mipLineHistorical(
-      x_hist = d %>% filter(scenario == "historical"),
+      x_hist = d %>% filter(.data$scenario == "historical"),
       ylab = label,
       scales = scales,
       plot.priority = c("x_hist", "x", "x_proj"),
@@ -54,20 +56,20 @@ showLinePlotsWithTarget <- function(
     ) +
     geom_hline(
       data = dTar,
-      aes(yintercept = value),
+      aes(yintercept = .data$value),
       linetype = 2,
       color = "coral"
     ) +
     geom_vline(
       data = dTar,
-      aes(xintercept = period),
+      aes(xintercept = .data$period),
       linetype = 2,
       color = "coral"
     ) +
     geom_text(data = dTar, aes(
-      x = max(d$period) - (max(d$period) - min(d$period)) / 4,
-      y = value,
-      label = paste(variable, period)
+      x = max(.env$d$period) - (max(.env$d$period) - min(.env$d$period)) / 4,
+      y = .data$value,
+      label = paste(.data$variable, .data$period)
     )) ->
     p
   

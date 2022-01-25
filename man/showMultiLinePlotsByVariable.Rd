@@ -14,7 +14,7 @@ showMultiLinePlotsByVariable(
 )
 }
 \arguments{
-\item{data}{A data frame created by loading scenario and historical mifs.}
+\item{data}{A quitte object.}
 
 \item{vars}{A character vector. The variables to be plotted.}
 
@@ -30,13 +30,6 @@ set globally.}
 }
 \value{
 \code{NULL} is returned invisible.
-\dontrun{
-items <- c(
-  "FE|Transport pCap",
-  "FE|Buildings pCap",
-  "FE|Industry pCap")
-showMultiLinePlotsByVariable(data, items, "GDP|PPP pCap")
-}
 }
 \description{
 Show plots with different regions in the same plot; x-axis variable chosen by
@@ -48,4 +41,13 @@ Same as \code{\link{showMultiLinePlots}} but with the variable specified by
 For historical data, there may be several sources / models of the same
 variable. For the x-axis-variable a unique historical source / model is
 chosen via \code{histRefModel}.
+}
+\examples{
+\dontrun{
+items <- c(
+  "FE|Transport pCap",
+  "FE|Buildings pCap",
+  "FE|Industry pCap")
+showMultiLinePlotsByVariable(data, items, "GDP|PPP pCap")
+}
 }

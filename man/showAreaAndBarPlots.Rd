@@ -14,7 +14,7 @@ showAreaAndBarPlots(
 )
 }
 \arguments{
-\item{data}{A data frame created by loading scenario and historical mifs.}
+\item{data}{A quitte object.}
 
 \item{vars}{A character vector. The variables to be plotted.}
 

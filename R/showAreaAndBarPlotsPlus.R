@@ -18,6 +18,7 @@
 #' showAreaAndBarPlotsPlus(data, "SE|Liquids")
 #' }
 #' @export
+#' @importFrom stringr str_dup str_starts str_replace_all fixed
 showAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
@@ -26,7 +27,7 @@ showAreaAndBarPlotsPlus <- function(
   
   # Validate function arguments. 
   # fill, mainReg, yearsBarPlot are not used directly and validated in showAreaAndBarPlots()
-  data <- validateData(data, removeSuperfluousCols=TRUE)
+  stopifnot(is.quitte(data))
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
   stopifnot(is.numeric(plusNum) && length(tot) == 1)
   

@@ -50,28 +50,32 @@ getLegend <- function(plt) {
   tmp$grobs[[legIdx[1]]]
 }
 
-#' Calculate Ratios for mif Data Frame.
+#' Calculate Ratios for Quitte Objects.
 #'
 #' Changes the value of variables given in \code{numerators} by dividing by
 #' \code{denominator} and multiplying \code{conversionFactor}. Sets \code{unit}
 #' of these variables to \code{newUnit}.
 #'
-#' @param data A mif data frame with columns \code{variable}, \code{model},
-#'   \code{scenario}, \code{region}, \code{period}.
-#' @return A mif data frame with changed values and new unit.
+#' @param data A quitte object.
+#' @param numerators A character vector. Entries in the variable column of data.
+#' @param denominator A single string. An entry in the variable column of data.
+#' @param newUnit A single string.
+#' @param conversionFactor A single numerical value.
+#' @return A quitte object with changed values and new unit.
+#' @importFrom rlang .data .env
 calacuateRatio <- function(
   data, numerators, denominator, newUnit = "1", conversionFactor = 1
 ) {
   data %>%
-    filter(variable == denominator) %>%
-    rename(denom_value = value) %>%
-    select(model, scenario, region, period, denom_value) ->
+    filter(.data$variable == .env$denominator) %>%
+    rename(denom_value = .data$value) %>%
+    select(.data$model, .data$scenario, .data$region, .data$period, .data$denom_value) ->
     denom
   data %>%
-    filter(variable %in% numerators) %>%
+    filter(.data$variable %in% .env$numerators) %>%
     left_join(denom) %>%
-    mutate(value = value / denom_value * conversionFactor,
-           unit = newUnit)
+    mutate(value = .data$value / .data$denom_value * .env$conversionFactor,
+           unit = .env$newUnit)
 }
 
 #' Longest Common Prefix
@@ -84,49 +88,4 @@ longestCommonPrefix <- function(x) {
     if (any(ss != ss[1])) return(substr(x[1], 1, i - 1))
   }
   substr(x[1], 1, i)
-}
-
-
-# TODO: Use is.quitte()?
-#' Validate mif Data Frame
-#'
-#' Checks whether \code{data} is a data frame and has the right columns to be a
-#' mif data frame. Throws error if not ok.
-#'
-#' @param data The object to be checked.
-#' @param removeSuperfluousCols A single truth-value. Should unrecognized
-#'   columns be removed? Set this to \code{TRUE} to make sure that the data
-#'   frame does not contain columns that create unforeseen results when using
-#'   non-standard evaluation in \code{dplyr}-functions.
-#' @return Returns \code{data} (with less columns if required).
-validateData <- function(data, removeSuperfluousCols=FALSE) {
-  stopifnot(is.data.frame(data))
-  requiredCols <- c("model", "scenario", "region", "variable", "unit", "period", "value", "variable")
-  optionalCols <- c("gdp", "variablePlus")
-  superfluousCols <- setdiff(names(data), c(requiredCols, optionalCols))
-  stopifnot(requiredCols %in% names(data))
-  if (length(superfluousCols) > 0) {
-    warning(
-      "There are superfluousCols columns in data object: ", 
-      paste0(superfluousCols, sep=", "))
-    if (removeSuperfluousCols)
-      data <- data[setdiff(names(data), superfluousCols)]
-  }
-  
-  # Check type of required columns.
-  stopifnot(is.character(data$model) || is.factor(data$model))
-  stopifnot(is.character(data$scenario) || is.factor(data$scenario))
-  stopifnot(is.character(data$region) || is.factor(data$region))
-  stopifnot(is.character(data$variable) || is.factor(data$variable))
-  stopifnot(is.character(data$unit) || is.factor(data$unit))
-  stopifnot(is.numeric(data$period) || methods::is(data$period, "POSIXct"))
-  stopifnot(is.numeric(data$value))
-  
-  # Check type of optional columns.
-  if ("gdp" %in% names(data)) 
-    stopifnot(is.numeric(data$gdp))
-  if ("variablePlus" %in% names(data)) 
-    stopifnot(is.character(data$variablePlus) || is.factor(data$variablePlus))
-  
-  return(data)
 }

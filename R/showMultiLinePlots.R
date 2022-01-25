@@ -18,33 +18,36 @@
 #' showMultiLinePlots(data, items)
 #' }
 #' @export
+#' @importFrom rlang .data .env
+#' @importFrom ggplot2 ylim
 showMultiLinePlots <- function(
   data, vars, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
   
   # Validate function arguments.
-  data <- validateData(data, removeSuperfluousCols=TRUE)
+  stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   
   data %>%
-    filter(variable %in% vars) ->
+    filter(.data$variable %in% .env$vars) ->
     d
   d %>%
-    filter(region == mainReg, scenario != "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") ->
     dMainScen
   d %>%
-    filter(region == mainReg, scenario == "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") ->
     dMainHist
   d %>%
-    filter(region != mainReg, scenario != "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") ->
     dRegiScen
   d %>%
-    filter(region != mainReg, scenario == "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") ->
     dRegiHist
+  regions <- unique(dRegiScen$region)
   
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
@@ -55,11 +58,11 @@ showMultiLinePlots <- function(
   label <- paste0("[", paste0(unique(d$unit), collapse = ","), "]")
   
   dMainScen %>%
-    ggplot(aes(period, value)) +
-    geom_line(aes(linetype = scenario)) +
-    geom_point(data = dMainHist, aes(shape = model)) +
-    geom_line(data = dMainHist, aes(group = paste0(model, region)), alpha = 0.5) +
-    facet_wrap(vars(variable), scales = scales) +
+    ggplot(aes(.data$period, .data$value)) +
+    geom_line(aes(linetype = .data$scenario)) +
+    geom_point(data = dMainHist, aes(shape = .data$model)) +
+    geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
+    facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     ylim(0, NA) +
     ylab(label) ->
@@ -67,11 +70,11 @@ showMultiLinePlots <- function(
   
   regions <- unique(dRegiScen$region)
   dRegiScen %>%
-    ggplot(aes(period, value, color = region)) +
-    geom_line(aes(linetype = scenario)) +
-    geom_point(data = dRegiHist, aes(shape = model)) +
-    geom_line(data = dRegiHist, aes(group = paste0(model, region)), alpha = 0.5) +
-    facet_wrap(vars(variable), scales = scales) +
+    ggplot(aes(.data$period, .data$value, color = .data$region)) +
+    geom_line(aes(linetype = .data$scenario)) +
+    geom_point(data = dRegiHist, aes(shape = .data$model)) +
+    geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
+    facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     ylim(0, NA) +

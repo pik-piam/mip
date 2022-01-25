@@ -14,7 +14,7 @@ showAreaAndBarPlotsPlus(
 )
 }
 \arguments{
-\item{data}{A data frame created by loading scenario and historical mifs.}
+\item{data}{A quitte object.}
 
 \item{tot}{A single string. A total value to be shown in the area plots.}
 

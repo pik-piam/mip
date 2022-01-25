@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{calacuateRatio}
 \alias{calacuateRatio}
-\title{Calculate Ratios for mif Data Frame.}
+\title{Calculate Ratios for Quitte Objects.}
 \usage{
 calacuateRatio(
   data,
@@ -13,11 +13,18 @@ calacuateRatio(
 )
 }
 \arguments{
-\item{data}{A mif data frame with columns \code{variable}, \code{model},
-\code{scenario}, \code{region}, \code{period}.}
+\item{data}{A quitte object.}
+
+\item{numerators}{A character vector. Entries in the variable column of data.}
+
+\item{denominator}{A single string. An entry in the variable column of data.}
+
+\item{newUnit}{A single string.}
+
+\item{conversionFactor}{A single numerical value.}
 }
 \value{
-A mif data frame with changed values and new unit.
+A quitte object with changed values and new unit.
 }
 \description{
 Changes the value of variables given in \code{numerators} by dividing by

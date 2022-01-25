@@ -15,7 +15,7 @@
 #'   set globally.
 #' @inheritParams showMultiLinePlots
 #' @return \code{NULL} is returned invisible.
-#' @example 
+#' @examples
 #' \dontrun{
 #' items <- c(
 #'   "FE|Transport pCap",
@@ -24,6 +24,9 @@
 #' showMultiLinePlotsByVariable(data, items, "GDP|PPP pCap")
 #' }
 #' @export
+#' @importFrom rlang .data .env
+#' @importFrom tidyr drop_na 
+#' @importFrom ggplot2 ylim
 showMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   mainReg = getOption("mip.mainReg"),
@@ -31,7 +34,7 @@ showMultiLinePlotsByVariable <- function(
 ) {
   
   # Validate function arguments.
-  data <- validateData(data, removeSuperfluousCols=TRUE)
+  stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(xVar) && length(xVar) == 1)
   stopifnot(is.character(scales) && length(scales) == 1)
@@ -41,29 +44,30 @@ showMultiLinePlotsByVariable <- function(
   stopifnot(xVar %in% names(histRefModel))
   
   data %>%
-    filter(variable %in% vars) ->
+    filter(.data$variable %in% .env$vars) ->
     dy
   data %>%
-    filter(variable %in% xVar) %>% 
-    filter(scenario != "historical" | model == histRefModel[xVar]) ->
+    filter(.data$variable %in% .env$xVar) %>% 
+    filter(.data$scenario != "historical" | .data$model == .env$histRefModel[.env$xVar]) ->
     dx
   dy %>% 
     left_join(dx, by=c("scenario", "region", "period"), suffix=c("", ".x")) %>% 
     drop_na() %>% 
-    arrange(period) ->
+    arrange(.data$period) ->
     d
   d %>%
-    filter(region == mainReg, scenario != "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") ->
     dMainScen
   d %>%
-    filter(region == mainReg, scenario == "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") ->
     dMainHist
   d %>%
-    filter(region != mainReg, scenario != "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") ->
     dRegiScen
   d %>%
-    filter(region != mainReg, scenario == "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") ->
     dRegiHist
+  regions <- unique(dRegiScen$region)
   
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
@@ -75,22 +79,22 @@ showMultiLinePlotsByVariable <- function(
   xLabel <- paste0(xVar, " [", paste0(unique(d$unit.x), collapse = ","), "]")
   
   dMainScen %>%
-    ggplot(aes(value.x, value)) +
-    geom_line(aes(linetype = scenario)) +
-    geom_point(data = dMainHist, aes(shape = model)) +
-    geom_line(data = dMainHist, aes(group = paste0(model, region)), alpha = 0.5) +
-    facet_wrap(vars(variable), scales = scales) +
+    ggplot(aes(.data$value.x, .data$value)) +
+    geom_line(aes(linetype = .data$scenario)) +
+    geom_point(data = dMainHist, aes(shape = .data$model)) +
+    geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
+    facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     ylim(0, NA) +
     ylab(label) + xlab(xLabel) ->
     p1
   
   dRegiScen %>%
-    ggplot(aes(value.x, value, color = region)) +
-    geom_line(aes(linetype = scenario)) +
-    geom_point(data = dRegiHist, aes(shape = model)) +
-    geom_line(data = dRegiHist, aes(group = paste0(model, region)), alpha = 0.5) +
-    facet_wrap(vars(variable), scales = scales) +
+    ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
+    geom_line(aes(linetype = .data$scenario)) +
+    geom_point(data = dRegiHist, aes(shape = .data$model)) +
+    geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
+    facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     ylim(0, NA) +

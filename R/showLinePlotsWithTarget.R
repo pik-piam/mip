@@ -32,11 +32,13 @@ showLinePlotsWithTarget <- function(
     targetPattern
   
   data %>%
-    filter(str_detect(.data$variable, .env$targetPattern)) ->
+    filter(str_detect(.data$variable, .env$targetPattern)) %>% 
+    droplevels() ->
     dTar
-  regionsWithTarget <- unique(dTar$region)
+  regionsWithTarget <- levels(dTar$region)
   data %>%
-    filter(.data$variable %in% .env$vars, .data$region %in% .env$regionsWithTarget) ->
+    filter(.data$variable %in% .env$vars, .data$region %in% .env$regionsWithTarget) %>% 
+    droplevels() ->
     d
   warnMissingVars(d, vars)
   if (NROW(d) == 0) {
@@ -44,11 +46,12 @@ showLinePlotsWithTarget <- function(
     return(invisible(NULL))
   }
   
-  label <- paste0(vars, " [", paste0(unique(d$unit), collapse = ","), "]")
+  label <- paste0(vars, " [", paste0(levels(d$unit), collapse = ","), "]")
   d %>%
     filter(.data$scenario != "historical") %>%
+    droplevels() %>% 
     mipLineHistorical(
-      x_hist = d %>% filter(.data$scenario == "historical"),
+      x_hist = d %>% filter(.data$scenario == "historical") %>% droplevels(),
       ylab = label,
       scales = scales,
       plot.priority = c("x_hist", "x", "x_proj"),

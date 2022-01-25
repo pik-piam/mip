@@ -33,21 +33,26 @@ showMultiLinePlots <- function(
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   
   data %>%
-    filter(.data$variable %in% .env$vars) ->
+    filter(.data$variable %in% .env$vars) %>% 
+    droplevels() ->
     d
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 
+    droplevels() ->
     dMainScen
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>% 
+    droplevels() ->
     dMainHist
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% 
+    droplevels() ->
     dRegiScen
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>% 
+    droplevels() ->
     dRegiHist
-  regions <- unique(dRegiScen$region)
+  regions <- levels(dRegiScen$region)
   
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
@@ -55,7 +60,7 @@ showMultiLinePlots <- function(
     return(invisible(NULL))
   }
   
-  label <- paste0("[", paste0(unique(d$unit), collapse = ","), "]")
+  label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
   
   dMainScen %>%
     ggplot(aes(.data$period, .data$value)) +
@@ -68,7 +73,6 @@ showMultiLinePlots <- function(
     ylab(label) ->
     p1
   
-  regions <- unique(dRegiScen$region)
   dRegiScen %>%
     ggplot(aes(.data$period, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +

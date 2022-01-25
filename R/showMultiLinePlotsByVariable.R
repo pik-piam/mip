@@ -52,22 +52,27 @@ showMultiLinePlotsByVariable <- function(
     dx
   dy %>% 
     left_join(dx, by=c("scenario", "region", "period"), suffix=c("", ".x")) %>% 
-    drop_na() %>% 
-    arrange(.data$period) ->
+    drop_na(.data$value, .data$value.x) %>% 
+    arrange(.data$period) %>% 
+    droplevels() ->
     d
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 
+    droplevels() ->
     dMainScen
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>% 
+    droplevels() ->
     dMainHist
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% 
+    droplevels() ->
     dRegiScen
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>% 
+    droplevels() ->
     dRegiHist
-  regions <- unique(dRegiScen$region)
+  regions <- levels(dRegiScen$region)
   
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
@@ -75,8 +80,8 @@ showMultiLinePlotsByVariable <- function(
     return(invisible(NULL))
   }
   
-  label <- paste0("[", paste0(unique(d$unit), collapse = ","), "]")
-  xLabel <- paste0(xVar, " [", paste0(unique(d$unit.x), collapse = ","), "]")
+  label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
+  xLabel <- paste0(xVar, " [", paste0(levels(d$unit.x), collapse = ","), "]")
   
   dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +

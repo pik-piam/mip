@@ -24,7 +24,7 @@ calacuateRatio(
 \item{conversionFactor}{A single numerical value.}
 }
 \value{
-A quitte object with changed values and new unit.
+A quitte object with changed values and new unit. Unused levels are dropped.
 }
 \description{
 Changes the value of variables given in \code{numerators} by dividing by

@@ -31,24 +31,33 @@ showLinePlots <- function(
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   
   if (!is.null(vars)) {
-    d <- filter(data, .data$variable %in% .env$vars)
-    label <- paste0(vars, " [", paste0(unique(d$unit), collapse = ","), "]")
+    data %>% 
+      filter(.data$variable %in% .env$vars) %>% 
+      droplevels() ->
+      d
+    label <- paste0(vars, " [", paste0(levels(d$unit), collapse = ","), "]")
   } else {
-    d <- data
-    label <- paste0(paste0(unique(d$variable), collapse = ","),
-                    " [", paste0(unique(d$unit), collapse = ","), "]")
+    data %>% 
+      droplevels() ->
+      d
+    label <- paste0(paste0(levels(d$variable), collapse = ","),
+                    " [", paste0(levels(d$unit), collapse = ","), "]")
   }
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 
+    droplevels() ->
     dMainScen
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") ->
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>% 
+    droplevels() ->
     dMainHist
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% 
+    droplevels() ->
     dRegiScen
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") ->
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>% 
+    droplevels() ->
     dRegiHist
   
   if (!is.null(vars))
@@ -85,8 +94,8 @@ showLinePlots <- function(
   
   # If a legend of the plots can be used as common legend for both plots,
   # show that legend below mainReg-plot and only that legend.
-  mainHistModels <- unique(dMainHist$model)
-  regiHistModels <- unique(dRegiHist$model)
+  mainHistModels <- levels(dMainHist$model)
+  regiHistModels <- levels(dRegiHist$model)
   if (length(mainHistModels) == 0 || identical(mainHistModels, regiHistModels)) {
     lgnd <- getLegend(p2)
   } else if (length(regiHistModels) == 0) {

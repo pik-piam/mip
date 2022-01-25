@@ -7,7 +7,7 @@
 warnMissingVars(data, vars)
 }
 \arguments{
-\item{data}{A data frame with a column named \code{variable}.}
+\item{data}{A quitte object.}
 
 \item{vars}{A character vector.}
 }

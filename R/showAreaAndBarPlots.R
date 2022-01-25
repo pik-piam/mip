@@ -55,9 +55,7 @@ showAreaAndBarPlots <- function(
   }
   
   data %>%
-    filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>% 
-    # Remove unused levels, eg "historical".
-    mutate(scenario = factor(.data$scenario)) ->
+    filter(.data$variable %in% .env$vars, .data$scenario != "historical") ->
     d
   warnMissingVars(d, vars)
   if (!is.null(tot)) warnMissingVars(data, tot)
@@ -68,17 +66,19 @@ showAreaAndBarPlots <- function(
   
   # Order variables by mean value.
   d %>%
-    mutate(variable = fct_reorder(.data$variable, .data$value, mean, na.rm=TRUE)) ->
+    mutate(variable = fct_reorder(.data$variable, .data$value, mean, na.rm=TRUE)) %>% 
+    droplevels() ->
     d
   
   # Common label for y-axis.
   lcp <- str_remove(longestCommonPrefix(vars), "\\|$")
-  label <- paste0(lcp, " [", paste0(unique(d$unit), collapse = ","), "]")
+  label <- paste0(lcp, " [", paste0(levels(d$unit), collapse = ","), "]")
   
   # Create plots.
   
   d %>%
     filter(.data$region == .env$mainReg) %>%
+    droplevels() %>% 
     mipArea(scales = "free_y", total = is.null(tot)) +
     ylab(NULL) +
     theme(legend.position = "none") ->
@@ -86,6 +86,7 @@ showAreaAndBarPlots <- function(
   
   d %>%
     filter(.data$region == .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
+    droplevels() %>% 
     mipBarYearData() +
     ylab(NULL) +
     theme(legend.position = "none") ->
@@ -93,6 +94,7 @@ showAreaAndBarPlots <- function(
   
   d %>%
     filter(.data$region != .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
+    droplevels() %>% 
     mipBarYearData() +
     ylab(NULL) +
     guides(fill = guide_legend(reverse = TRUE, ncol = 3)) ->
@@ -100,21 +102,36 @@ showAreaAndBarPlots <- function(
   
   d %>%
     filter(.data$region != .env$mainReg) %>%
+    droplevels() %>% 
     mipArea(scales = "free_y", total = is.null(tot)) +
     guides(fill = guide_legend(reverse = TRUE)) ->
     p4
   
   # Add black lines in area plots from variable tot if provided.
   if (!is.null(tot) && !fill) {
+    data %>% 
+      filter(
+        .data$region == .env$mainReg, 
+        .data$variable == .env$tot, 
+        .data$scenario != "historical") %>% 
+      droplevels() ->
+      dMainTot
     p1 <- p1 +
       geom_line(
-        data = data %>% filter(.data$region == .env$mainReg, .data$variable == .env$tot, .data$scenario != "historical"),
+        data = dMainTot,
         mapping = aes(.data$period, .data$value),
         size = 1.3
       )
+    data %>% 
+      filter(
+        .data$region != .env$mainReg, 
+        .data$variable == .env$tot, 
+        .data$scenario != "historical") %>% 
+      droplevels() ->
+      dRegiTot
     p4 <- p4 +
       geom_line(
-        data = data %>% filter(.data$region != .env$mainReg, .data$variable == .env$tot, .data$scenario != "historical"),
+        data = dRegiTot,
         mapping = aes(.data$period, .data$value),
         size = 1.3
       )

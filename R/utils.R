@@ -3,11 +3,11 @@
 #' Generates a warning if some of the variable names in \code{vars} vars are not
 #' entries of the variables-column of \code{data}.
 #'
-#' @param data A data frame with a column named \code{variable}.
+#' @param data A quitte object.
 #' @param vars A character vector.
 #' @return Returns \code{NULL} invisibly.
 warnMissingVars <- function(data, vars) {
-  available <- vars %in% unique(data$variable)
+  available <- vars %in% levels(data$variable)
   missingVars <- vars[!available]
   if (length(missingVars) > 0)
     warning("Variables not found: ", paste(missingVars, collapse = ", "),
@@ -61,7 +61,7 @@ getLegend <- function(plt) {
 #' @param denominator A single string. An entry in the variable column of data.
 #' @param newUnit A single string.
 #' @param conversionFactor A single numerical value.
-#' @return A quitte object with changed values and new unit.
+#' @return A quitte object with changed values and new unit. Unused levels are dropped.
 #' @importFrom rlang .data .env
 calacuateRatio <- function(
   data, numerators, denominator, newUnit = "1", conversionFactor = 1
@@ -75,7 +75,10 @@ calacuateRatio <- function(
     filter(.data$variable %in% .env$numerators) %>%
     left_join(denom) %>%
     mutate(value = .data$value / .data$denom_value * .env$conversionFactor,
-           unit = .env$newUnit)
+           unit = factor(.env$newUnit)) %>% 
+    droplevels() ->
+    res
+  return(res)
 }
 
 #' Longest Common Prefix

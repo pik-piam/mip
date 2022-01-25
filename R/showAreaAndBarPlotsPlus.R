@@ -30,8 +30,8 @@ showAreaAndBarPlotsPlus <- function(
   stopifnot(is.quitte(data))
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
   stopifnot(is.numeric(plusNum) && length(tot) == 1)
-  
-  if (!"variablePlus" %in% names(data)) stop("Require 'variablePlus' column.")
+  stopifnot("variablePlus" %in% names(data))
+  stopifnot(is.character("variablePlus"))
   
   allVarsPlus <- unique(data$variablePlus)
   prefix <- paste0(tot, "|", str_dup("+", plusNum), "|")

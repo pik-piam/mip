@@ -19,7 +19,8 @@ to be plotted. If \code{NULL} all rows from \code{data} are plotted.}
 
 \item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
 
-\item{mainReg}{A single string. The plots for this region are shown enlarged. Use \code{options(mip.mainReg=<value>)} to set globally.}
+\item{mainReg}{A single string. The plots for this region are shown enlarged.
+Use \code{options(mip.mainReg=<value>)} to set globally.}
 }
 \value{
 \code{NULL} is returned invisible.

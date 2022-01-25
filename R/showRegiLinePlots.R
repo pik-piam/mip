@@ -23,7 +23,7 @@ showRegiLinePlots <- function(
   excludeMainRegion = TRUE,
   mainReg = getOption("mip.mainReg")
 ) {
-  
+
   # Validate function arguments.
   stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
@@ -31,34 +31,34 @@ showRegiLinePlots <- function(
   stopifnot(is.logical(excludeMainRegion) && length(excludeMainRegion) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
-  
+
   data %>%
-    filter(.data$variable %in% .env$vars) %>% 
+    filter(.data$variable %in% .env$vars) %>%
     droplevels() ->
     d
   if (excludeMainRegion) {
     d %>%
-      filter(.data$region != .env$mainReg) %>% 
+      filter(.data$region != .env$mainReg) %>%
       droplevels() ->
       d
   }
   d %>%
-    filter(.data$scenario != "historical") %>% 
+    filter(.data$scenario != "historical") %>%
     droplevels() ->
     dScen
   regions <- levels(dScen$region)
-  
+
   warnMissingVars(dScen, vars)
   if (NROW(dScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
-  
+
   label <- paste0(
     paste0(vars, collapse = ","),
     " [", paste0(levels(d$unit), collapse = ","), "]")
-  
-  dScen %>% 
+
+  dScen %>%
     mipLineHistorical(
       ylab = label,
       scales = scales,
@@ -67,13 +67,13 @@ showRegiLinePlots <- function(
       facet.dim = "scenario",
       facet.ncol = 2) +
     theme(legend.position = "right") +
-    scale_color_manual(values = plotstyle(regions)) + 
+    scale_color_manual(values = plotstyle(regions)) +
     theme_minimal() ->
     p
-  
+
   # Show plots.
   print(p)
   cat("\n\n")
-  
+
   return(invisible(NULL))
 }

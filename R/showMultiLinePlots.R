@@ -24,44 +24,44 @@ showMultiLinePlots <- function(
   data, vars, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
-  
+
   # Validate function arguments.
   stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
-  
+
   data %>%
-    filter(.data$variable %in% .env$vars) %>% 
+    filter(.data$variable %in% .env$vars) %>%
     droplevels() ->
     d
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
     droplevels() ->
     dMainScen
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>% 
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
     droplevels() ->
     dMainHist
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% 
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
     droplevels() ->
     dRegiScen
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>% 
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels() ->
     dRegiHist
   regions <- levels(dRegiScen$region)
-  
+
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
-  
+
   label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
-  
+
   dMainScen %>%
     ggplot(aes(.data$period, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
@@ -72,7 +72,6 @@ showMultiLinePlots <- function(
     ylim(0, NA) +
     ylab(label) ->
     p1
-  
   dRegiScen %>%
     ggplot(aes(.data$period, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
@@ -84,12 +83,12 @@ showMultiLinePlots <- function(
     ylim(0, NA) +
     ylab(label) ->
     p2
-  
+
   # Show plots.
   print(p1)
   cat("\n\n")
   print(p2)
   cat("\n\n")
-  
+
   return(invisible(NULL))
 }

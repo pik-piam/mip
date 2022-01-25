@@ -20,11 +20,14 @@ showAreaAndBarPlotsPlus(
 
 \item{plusNum}{A single number. Number of "+"symbols for disaggregation.}
 
-\item{fill}{Logical. Should the vars be normalized so that their values add to 1? (Plot shares instead of absolute values.)}
+\item{fill}{Logical. Should the vars be normalized so that their values add
+to 1? (Plot shares instead of absolute values.)}
 
-\item{mainReg}{A single string. The plots for this region are shown enlarged. Use \code{options(mip.mainReg=<value>)} to set globally.}
+\item{mainReg}{A single string. The plots for this region are shown enlarged.
+Use \code{options(mip.mainReg=<value>)} to set globally.}
 
-\item{yearsBarPlot}{A numeric vector. The years shown in the bar plots. Use \code{options(mip.yearsBarPlot=<value>)} to set globally.}
+\item{yearsBarPlot}{A numeric vector. The years shown in the bar plots. Use
+\code{options(mip.yearsBarPlot=<value>)} to set globally.}
 }
 \value{
 \code{NULL} is returned invisible.

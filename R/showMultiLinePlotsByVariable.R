@@ -25,14 +25,14 @@
 #' }
 #' @export
 #' @importFrom rlang .data .env
-#' @importFrom tidyr drop_na 
+#' @importFrom tidyr drop_na
 #' @importFrom ggplot2 ylim
 showMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel")
 ) {
-  
+
   # Validate function arguments.
   stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
@@ -42,47 +42,47 @@ showMultiLinePlotsByVariable <- function(
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   stopifnot(is.character(histRefModel) && !is.null(names(histRefModel)))
   stopifnot(xVar %in% names(histRefModel))
-  
+
   data %>%
     filter(.data$variable %in% .env$vars) ->
     dy
   data %>%
-    filter(.data$variable %in% .env$xVar) %>% 
+    filter(.data$variable %in% .env$xVar) %>%
     filter(.data$scenario != "historical" | .data$model == .env$histRefModel[.env$xVar]) ->
     dx
-  dy %>% 
-    left_join(dx, by=c("scenario", "region", "period"), suffix=c("", ".x")) %>% 
-    drop_na(.data$value, .data$value.x) %>% 
-    arrange(.data$period) %>% 
+  dy %>%
+    left_join(dx, by = c("scenario", "region", "period"), suffix = c("", ".x")) %>%
+    drop_na(.data$value, .data$value.x) %>%
+    arrange(.data$period) %>%
     droplevels() ->
     d
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
     droplevels() ->
     dMainScen
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>% 
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
     droplevels() ->
     dMainHist
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% 
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
     droplevels() ->
     dRegiScen
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>% 
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels() ->
     dRegiHist
   regions <- levels(dRegiScen$region)
-  
+
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
-  
+
   label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
   xLabel <- paste0(xVar, " [", paste0(levels(d$unit.x), collapse = ","), "]")
-  
+
   dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
@@ -93,7 +93,6 @@ showMultiLinePlotsByVariable <- function(
     ylim(0, NA) +
     ylab(label) + xlab(xLabel) ->
     p1
-  
   dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
@@ -105,12 +104,12 @@ showMultiLinePlotsByVariable <- function(
     ylim(0, NA) +
     ylab(label) + xlab(xLabel) ->
     p2
-  
+
   # Show plots.
   print(p1)
   cat("\n\n")
   print(p2)
   cat("\n\n")
-  
+
   return(invisible(NULL))
 }

@@ -22,53 +22,55 @@ showLinePlots <- function(
   data, vars = NULL, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
-  
+
   # Validate function arguments.
   stopifnot(is.quitte(data))
   stopifnot(is.character(vars) || is.null(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
-  
+
   if (!is.null(vars)) {
-    data %>% 
-      filter(.data$variable %in% .env$vars) %>% 
+    data %>%
+      filter(.data$variable %in% .env$vars) %>%
       droplevels() ->
       d
     label <- paste0(
       paste0(vars, collapse = ","),
       " [", paste0(levels(d$unit), collapse = ","), "]")
   } else {
-    data %>% 
+    data %>%
       droplevels() ->
       d
     label <- paste0(
       paste0(levels(d$variable), collapse = ","),
       " [", paste0(levels(d$unit), collapse = ","), "]")
   }
+
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% 
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
     droplevels() ->
     dMainScen
   d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>% 
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
     droplevels() ->
     dMainHist
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% 
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
     droplevels() ->
     dRegiScen
   d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>% 
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels() ->
     dRegiHist
-  
+
   if (!is.null(vars))
     warnMissingVars(bind_rows(dMainScen, dRegiScen), vars)
   if (NROW(dMainScen) == 0 && NROW(dRegiScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
+
   if (NROW(dMainScen) == 0) {
     p1 <- ggplot() + theme_minimal()
   } else {
@@ -94,7 +96,7 @@ showLinePlots <- function(
       ) ->
       p2
   }
-  
+
   # If a legend of the plots can be used as common legend for both plots,
   # show that legend below mainReg-plot and only that legend.
   mainHistModels <- levels(dMainHist$model)
@@ -115,10 +117,10 @@ showLinePlots <- function(
     )
     p2 <- p2 + theme(legend.position = "none")
   }
-  
+
   # Show plots.
   grid.arrange(p1, p2, nrow = 1)
   cat("\n\n")
-  
+
   return(invisible(NULL))
 }

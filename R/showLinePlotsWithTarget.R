@@ -19,37 +19,37 @@
 showLinePlotsWithTarget <- function(
   data, vars, scales = "free_y"
 ) {
-  
+
   # Validate function arguments.
   stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
-  
+
   vars %>%
     paste0("|target|") %>%
     str_replace_all(fixed("|"), fixed("\\|")) %>%
     paste0(collapse = "|") ->
     targetPattern
-  
   data %>%
-    filter(str_detect(.data$variable, .env$targetPattern)) %>% 
+    filter(str_detect(.data$variable, .env$targetPattern)) %>%
     droplevels() ->
     dTar
-  regionsWithTarget <- levels(dTar$region)
   data %>%
-    filter(.data$variable %in% .env$vars, .data$region %in% .env$regionsWithTarget) %>% 
+    filter(.data$variable %in% .env$vars, .data$region %in% levels(.env$dTar$region)) %>%
     droplevels() ->
     d
+
   warnMissingVars(d, vars)
   if (NROW(d) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
-  
+
   label <- paste0(vars, " [", paste0(levels(d$unit), collapse = ","), "]")
+
   d %>%
     filter(.data$scenario != "historical") %>%
-    droplevels() %>% 
+    droplevels() %>%
     mipLineHistorical(
       x_hist = d %>% filter(.data$scenario == "historical") %>% droplevels(),
       ylab = label,
@@ -75,11 +75,10 @@ showLinePlotsWithTarget <- function(
       label = paste(.data$variable, .data$period)
     )) ->
     p
-  
+
   # Show plot.
   print(p)
   cat("\n\n")
-  
+
   return(invisible(NULL))
 }
-

@@ -26,7 +26,7 @@ warnMissingVars <- function(data, vars) {
 #' @return Returns \code{NULL} invisibly.
 checkGlobalOptionsProvided <- function(optNames, envir=rlang::caller_env()) {
   for (on in optNames) {
-    if (is.null(get0(on, envir=envir))) {
+    if (is.null(get0(on, envir = envir))) {
       stop(
         on, " must be provided, ",
         "either as a function argument or ",
@@ -38,18 +38,17 @@ checkGlobalOptionsProvided <- function(optNames, envir=rlang::caller_env()) {
 }
 
 #' Get Legend of a ggplot.
-#' 
+#'
 #' The function extracts the legend of a ggplot object.
-#' 
+#'
 #' @param plt A ggplot object.
 #' @return The legend of \code{plt} or \code{NULL} if no legend was found.
 getLegend <- function(plt) {
   tmp <- ggplot_gtable(ggplot_build(plt))
-  legIdx <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legIdx <- which(vapply(tmp$grobs, function(x) x$name, "") == "guide-box")
   if (length(legIdx) == 0) return(NULL)
   tmp$grobs[[legIdx[1]]]
 }
-
 #' Calculate Ratios for Quitte Objects.
 #'
 #' Changes the value of variables given in \code{numerators} by dividing by
@@ -75,15 +74,15 @@ calacuateRatio <- function(
     filter(.data$variable %in% .env$numerators) %>%
     left_join(denom) %>%
     mutate(value = .data$value / .data$denom_value * .env$conversionFactor,
-           unit = factor(.env$newUnit)) %>% 
+           unit = factor(.env$newUnit)) %>%
     droplevels() ->
     res
   return(res)
 }
 
 #' Longest Common Prefix
-#' 
-#' @param x A character vector. 
+#'
+#' @param x A character vector.
 #' @return A single string. The longest common prefix of \code{x}.
 longestCommonPrefix <- function(x) {
   for (i in 1:min(nchar(x))) {

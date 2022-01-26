@@ -37,11 +37,11 @@ Automatically infers disaggregation of a variable using the '+'-notaion and
 calls \code{\link{showAreaAndBarPlots}}.
 }
 \details{
-The function requires \code{data} to have to column named \code{variablePlus}
-containing variable names that use the '+'-notaion. The function searches for
-values in \code{variablePlus} that start with \code{tot} followed by
-\code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}. These variables
-are then used in a call to \code{\link{showAreaAndBarPlots}}.
+The function requires \code{data} to have a character column named
+\code{varplus} containing variable names that use the '+'-notaion. The
+function searches for values in \code{varplus} that start with \code{tot}
+followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
+These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
 }
 \examples{
 \dontrun{

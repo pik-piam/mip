@@ -3,11 +3,11 @@
 #' Automatically infers disaggregation of a variable using the '+'-notaion and
 #' calls \code{\link{showAreaAndBarPlots}}.
 #'
-#' The function requires \code{data} to have to column named \code{variablePlus}
-#' containing variable names that use the '+'-notaion. The function searches for
-#' values in \code{variablePlus} that start with \code{tot} followed by
-#' \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}. These variables
-#' are then used in a call to \code{\link{showAreaAndBarPlots}}.
+#' The function requires \code{data} to have a character column named
+#' \code{varplus} containing variable names that use the '+'-notaion. The
+#' function searches for values in \code{varplus} that start with \code{tot}
+#' followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
+#' These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
 #'
 #' @param tot A single string. A total value to be shown in the area plots.
 #' @param plusNum A single number. Number of "+"symbols for disaggregation.
@@ -30,10 +30,10 @@ showAreaAndBarPlotsPlus <- function(
   stopifnot(is.quitte(data))
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
   stopifnot(is.numeric(plusNum) && length(tot) == 1)
-  stopifnot("variablePlus" %in% names(data))
-  stopifnot(is.character("variablePlus"))
+  stopifnot("varplus" %in% names(data))
+  stopifnot(is.character("varplus"))
 
-  allVarsPlus <- unique(data$variablePlus)
+  allVarsPlus <- unique(data$varplus)
   prefix <- paste0(tot, "|", str_dup("+", plusNum), "|")
   varsPlus <- allVarsPlus[str_starts(allVarsPlus, fixed(prefix))]
   vars <- str_replace_all(varsPlus, "\\|\\++\\|", "|")

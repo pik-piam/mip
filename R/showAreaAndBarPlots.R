@@ -53,7 +53,7 @@ showAreaAndBarPlots <- function(
     if (is.null(tot))
       stop("fill=TRUE without explicit tot variable is not implemented yet")
     data %>%
-      calacuateRatio(vars, tot) ->
+      calculateRatio(vars, tot) ->
       data
   }
 

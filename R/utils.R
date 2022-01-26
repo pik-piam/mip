@@ -62,7 +62,7 @@ getLegend <- function(plt) {
 #' @param conversionFactor A single numerical value.
 #' @return A quitte object with changed values and new unit. Unused levels are dropped.
 #' @importFrom rlang .data .env
-calacuateRatio <- function(
+calculateRatio <- function(
   data, numerators, denominator, newUnit = "1", conversionFactor = 1
 ) {
   data %>%

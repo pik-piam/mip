@@ -49,6 +49,7 @@ getLegend <- function(plt) {
   if (length(legIdx) == 0) return(NULL)
   tmp$grobs[[legIdx[1]]]
 }
+
 #' Calculate Ratios for Quitte Objects.
 #'
 #' Changes the value of variables given in \code{numerators} by dividing by
@@ -85,9 +86,13 @@ calculateRatio <- function(
 #' @param x A character vector.
 #' @return A single string. The longest common prefix of \code{x}.
 longestCommonPrefix <- function(x) {
-  for (i in 1:min(nchar(x))) {
+  stopifnot(is.character(x))
+  if (length(x) == 0 || any(is.na(x))) return(NA_character_)
+  n <- min(nchar(x))
+  if (n == 0) return("")
+  for (i in 1:n) {
     ss <- substr(x, 1, i)
     if (any(ss != ss[1])) return(substr(x[1], 1, i - 1))
   }
-  substr(x[1], 1, i)
+  return(substr(x[1], 1, n))
 }

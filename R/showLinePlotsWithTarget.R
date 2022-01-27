@@ -18,7 +18,6 @@
 #' }
 #' @export
 #' @importFrom rlang .data .env
-#' @importFrom stringr str_detect str_replace_all
 showLinePlotsWithTarget <- function(
   data, vars, scales = "free_y"
 ) {
@@ -31,10 +30,10 @@ showLinePlotsWithTarget <- function(
 
   targetPattern <- vars %>%
     paste0("|target|") %>%
-    str_replace_all(fixed("|"), fixed("\\|")) %>%
+    gsub("\\|", "\\\\|", .) %>%
     paste0(collapse = "|")
   dTar <- data %>%
-    filter(str_detect(.data$variable, .env$targetPattern)) %>%
+    filter(grepl(.env$targetPattern, .data$variable)) %>%
     droplevels()
   d <- data %>%
     filter(.data$variable %in% .env$vars, .data$region %in% levels(.env$dTar$region)) %>%

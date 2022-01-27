@@ -21,7 +21,6 @@
 #' showAreaAndBarPlotsPlus(data, "SE|Liquids")
 #' }
 #' @export
-#' @importFrom stringr str_dup str_starts fixed
 showAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
@@ -38,14 +37,14 @@ showAreaAndBarPlotsPlus <- function(
   stopifnot(is.character("varplus"))
 
   allVarsPlus <- unique(data$varplus)
-  prefix <- paste0(tot, "|", str_dup("+", plusNum), "|")
-  varsPlus <- allVarsPlus[str_starts(allVarsPlus, fixed(prefix))]
+  prefix <- paste0(tot, "|", strrep("+", plusNum), "|")
+  varsPlus <- allVarsPlus[startsWith(allVarsPlus, prefix)]
   
   # TODO: Want to use
   # vars <- remind2::deletePlus(varsPlus)
   # Does not work as remind2 imports mip, i.e., circular imports.
   # Instead:
-  vars <- str_replace_all(varsPlus, "\\|\\++\\|", "|")
+  vars <- gsub("\\|\\++\\|", "|", varsPlus)
 
   showAreaAndBarPlots(data, vars, tot, fill, mainReg, yearsBarPlot)
 }

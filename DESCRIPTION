@@ -29,9 +29,7 @@ Imports:
     gridExtra,
     tidyr,
     rlang,
-    htmltools,
-    stringr,
-    forcats
+    htmltools
 Suggests: 
     testthat,
     knitr,

@@ -40,9 +40,7 @@
 #' }
 #' @export
 #' @importFrom rlang .data .env
-#' @importFrom dplyr rename left_join
-#' @importFrom forcats fct_reorder
-#' @importFrom stringr str_remove
+#' @importFrom dplyr rename left_join summarize group_by arrange
 showAreaAndBarPlots <- function(
   data, vars, tot = NULL, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
@@ -67,7 +65,8 @@ showAreaAndBarPlots <- function(
   }
 
   d <- data %>%
-    filter(.data$variable %in% .env$vars, .data$scenario != "historical")
+    filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>% 
+    droplevels()
   warnMissingVars(d, vars)
   if (!is.null(tot)) warnMissingVars(data, tot)
   if (NROW(d) == 0) {
@@ -76,12 +75,16 @@ showAreaAndBarPlots <- function(
   }
 
   # Order variables by mean value.
-  d <- d %>%
-    mutate(variable = fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE)) %>%
-    droplevels()
+  # d <- mutate(d, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
+  # To not use the additional package forcats, implement own version of that line:
+  means <- d %>% 
+    group_by(.data$variable) %>% 
+    summarize(mean_value = mean(.data$value, na.rm=TRUE)) %>% 
+    arrange(.data$mean_value)
+  d$variable <- factor(d$variable, levels = means$variable)
 
   # Common label for y-axis.
-  lcp <- str_remove(longestCommonPrefix(vars), "\\|$")
+  lcp <- gsub("\\|$", "", longestCommonPrefix(vars))
   label <- paste0(lcp, " [", paste0(levels(d$unit), collapse = ","), "]")
 
   # Create plots.

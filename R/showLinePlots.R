@@ -36,38 +36,32 @@ showLinePlots <- function(
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
   if (!is.null(vars)) {
-    data %>%
+    d <- data %>%
       filter(.data$variable %in% .env$vars) %>%
-      droplevels() ->
-      d
+      droplevels()
     label <- paste0(
       paste0(vars, collapse = ","),
       " [", paste0(levels(d$unit), collapse = ","), "]")
   } else {
-    data %>%
-      droplevels() ->
-      d
+    d <- data %>%
+      droplevels()
     label <- paste0(
       paste0(levels(d$variable), collapse = ","),
       " [", paste0(levels(d$unit), collapse = ","), "]")
   }
 
-  d %>%
+  dMainScen <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
-    droplevels() ->
-    dMainScen
-  d %>%
+    droplevels()
+  dMainHist <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
-    droplevels() ->
-    dMainHist
-  d %>%
+    droplevels()
+  dRegiScen <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
-    droplevels() ->
-    dRegiScen
-  d %>%
+    droplevels()
+  dRegiHist <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
-    droplevels() ->
-    dRegiHist
+    droplevels()
 
   if (!is.null(vars))
     warnMissingVars(bind_rows(dMainScen, dRegiScen), vars)
@@ -79,27 +73,25 @@ showLinePlots <- function(
   if (NROW(dMainScen) == 0) {
     p1 <- ggplot() + theme_minimal()
   } else {
-    dMainScen %>%
+    p1 <- dMainScen %>%
       mipLineHistorical(
         x_hist = dMainHist,
         ylab = label,
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj")
-      ) ->
-      p1
+      )
   }
   if (NROW(dRegiScen) == 0) {
     p2 <- ggplot() + theme_minimal()
   } else {
-    dRegiScen %>%
+    p2 <- dRegiScen %>%
       mipLineHistorical(
         x_hist = dRegiHist,
         ylab = NULL,
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj"),
         facet.ncol = 3
-      ) ->
-      p2
+      )
   }
 
   # If a legend of the plots can be used as common legend for both plots,

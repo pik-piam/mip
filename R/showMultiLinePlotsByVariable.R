@@ -49,35 +49,29 @@ showMultiLinePlotsByVariable <- function(
   stopifnot(is.character(histRefModel) && !is.null(names(histRefModel)))
   stopifnot(xVar %in% names(histRefModel))
 
-  data %>%
-    filter(.data$variable %in% .env$vars) ->
-    dy
-  data %>%
+  dy <- data %>%
+    filter(.data$variable %in% .env$vars)
+  dx <- data %>%
     filter(.data$variable %in% .env$xVar) %>%
-    filter(.data$scenario != "historical" | .data$model == .env$histRefModel[.env$xVar]) ->
-    dx
-  dy %>%
+    filter(.data$scenario != "historical" | .data$model == .env$histRefModel[.env$xVar])
+  d <- dy %>%
     left_join(dx, by = c("scenario", "region", "period"), suffix = c("", ".x")) %>%
     drop_na(.data$value, .data$value.x) %>%
     arrange(.data$period) %>%
-    droplevels() ->
-    d
-  d %>%
+    droplevels()
+  dMainScen <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
-    droplevels() ->
-    dMainScen
-  d %>%
+    droplevels()
+  dMainHist <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
-    droplevels() ->
-    dMainHist
-  d %>%
+    droplevels()
+  dRegiScen <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
-    droplevels() ->
-    dRegiScen
-  d %>%
+    droplevels()
+  dRegiHist <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
-    droplevels() ->
-    dRegiHist
+    droplevels()
+    
   regions <- levels(dRegiScen$region)
 
   warnMissingVars(dMainScen, vars)
@@ -89,7 +83,7 @@ showMultiLinePlotsByVariable <- function(
   label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
   xLabel <- paste0(xVar, " [", paste0(levels(d$unit.x), collapse = ","), "]")
 
-  dMainScen %>%
+  p1 <- dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
     geom_point(data = dMainHist, aes(shape = .data$model)) +
@@ -97,9 +91,8 @@ showMultiLinePlotsByVariable <- function(
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     ylim(0, NA) +
-    ylab(label) + xlab(xLabel) ->
-    p1
-  dRegiScen %>%
+    ylab(label) + xlab(xLabel)
+  p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
     geom_point(data = dRegiHist, aes(shape = .data$model)) +
@@ -108,8 +101,7 @@ showMultiLinePlotsByVariable <- function(
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     ylim(0, NA) +
-    ylab(label) + xlab(xLabel) ->
-    p2
+    ylab(label) + xlab(xLabel)
 
   # Show plots.
   print(p1)

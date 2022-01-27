@@ -38,26 +38,21 @@ showMultiLinePlots <- function(
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
-  data %>%
+  d <- data %>%
     filter(.data$variable %in% .env$vars) %>%
-    droplevels() ->
-    d
-  d %>%
+    droplevels()
+  dMainScen <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
-    droplevels() ->
-    dMainScen
-  d %>%
+    droplevels()
+  dMainHist <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
-    droplevels() ->
-    dMainHist
-  d %>%
+    droplevels()
+  dRegiScen <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
-    droplevels() ->
-    dRegiScen
-  d %>%
+    droplevels()
+  dRegiHist <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
-    droplevels() ->
-    dRegiHist
+    droplevels()
   regions <- levels(dRegiScen$region)
 
   warnMissingVars(dMainScen, vars)
@@ -68,7 +63,7 @@ showMultiLinePlots <- function(
 
   label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
 
-  dMainScen %>%
+  p1 <- dMainScen %>%
     ggplot(aes(.data$period, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
     geom_point(data = dMainHist, aes(shape = .data$model)) +
@@ -76,9 +71,8 @@ showMultiLinePlots <- function(
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     ylim(0, NA) +
-    ylab(label) ->
-    p1
-  dRegiScen %>%
+    ylab(label)
+  p2 <- dRegiScen %>%
     ggplot(aes(.data$period, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
     geom_point(data = dRegiHist, aes(shape = .data$model)) +
@@ -87,8 +81,7 @@ showMultiLinePlots <- function(
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     ylim(0, NA) +
-    ylab(label) ->
-    p2
+    ylab(label)
 
   # Show plots.
   print(p1)

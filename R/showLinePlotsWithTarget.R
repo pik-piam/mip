@@ -29,19 +29,16 @@ showLinePlotsWithTarget <- function(
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
 
-  vars %>%
+  targetPattern <- vars %>%
     paste0("|target|") %>%
     str_replace_all(fixed("|"), fixed("\\|")) %>%
-    paste0(collapse = "|") ->
-    targetPattern
-  data %>%
+    paste0(collapse = "|")
+  dTar <- data %>%
     filter(str_detect(.data$variable, .env$targetPattern)) %>%
-    droplevels() ->
-    dTar
-  data %>%
+    droplevels()
+  d <- data %>%
     filter(.data$variable %in% .env$vars, .data$region %in% levels(.env$dTar$region)) %>%
-    droplevels() ->
-    d
+    droplevels()
 
   warnMissingVars(d, vars)
   if (NROW(d) == 0) {
@@ -51,7 +48,7 @@ showLinePlotsWithTarget <- function(
 
   label <- paste0(vars, " [", paste0(levels(d$unit), collapse = ","), "]")
 
-  d %>%
+  p <- d %>%
     filter(.data$scenario != "historical") %>%
     droplevels() %>%
     mipLineHistorical(
@@ -77,8 +74,7 @@ showLinePlotsWithTarget <- function(
       x = max(.env$d$period) - (max(.env$d$period) - min(.env$d$period)) / 4,
       y = .data$value,
       label = paste(.data$variable, .data$period)
-    )) ->
-    p
+    ))
 
   # Show plot.
   print(p)

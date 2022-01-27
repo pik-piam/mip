@@ -12,7 +12,8 @@ showLinePlots(
 )
 }
 \arguments{
-\item{data}{A quitte object.}
+\item{data}{A quitte object or an object that can be transformed into a
+quitte object.}
 
 \item{vars}{A character vector. Usually just a single string. The variables
 to be plotted. If \code{NULL} all rows from \code{data} are plotted.}

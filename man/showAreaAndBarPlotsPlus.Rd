@@ -14,7 +14,8 @@ showAreaAndBarPlotsPlus(
 )
 }
 \arguments{
-\item{data}{A quitte object.}
+\item{data}{A quitte object or an object that can be transformed into a
+quitte object.}
 
 \item{tot}{A single string. A total value to be shown in the area plots.}
 

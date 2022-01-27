@@ -66,18 +66,16 @@ getLegend <- function(plt) {
 calculateRatio <- function(
   data, numerators, denominator, newUnit = "1", conversionFactor = 1
 ) {
-  data %>%
+  denom <- data %>%
     filter(.data$variable == .env$denominator) %>%
     rename(denom_value = .data$value) %>%
-    select(.data$model, .data$scenario, .data$region, .data$period, .data$denom_value) ->
-    denom
-  data %>%
+    select(.data$model, .data$scenario, .data$region, .data$period, .data$denom_value)
+  res <- data %>%
     filter(.data$variable %in% .env$numerators) %>%
     left_join(denom) %>%
     mutate(value = .data$value / .data$denom_value * .env$conversionFactor,
            unit = factor(.env$newUnit)) %>%
-    droplevels() ->
-    res
+    droplevels()
   return(res)
 }
 

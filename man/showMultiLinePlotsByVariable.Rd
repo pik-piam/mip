@@ -14,7 +14,8 @@ showMultiLinePlotsByVariable(
 )
 }
 \arguments{
-\item{data}{A quitte object.}
+\item{data}{A quitte object or an object that can be transformed into a
+quitte object.}
 
 \item{vars}{A character vector. The variables to be plotted.}
 

@@ -28,9 +28,10 @@ showAreaAndBarPlotsPlus <- function(
   yearsBarPlot = getOption("mip.yearsBarPlot")
 ) {
 
+  data <- as.quitte(data)
+  
   # Validate function arguments.
   # fill, mainReg, yearsBarPlot are not used directly and validated in showAreaAndBarPlots()
-  stopifnot(is.quitte(data))
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
   stopifnot(is.numeric(plusNum) && length(tot) == 1)
   stopifnot("varplus" %in% names(data))

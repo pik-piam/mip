@@ -10,7 +10,8 @@
 #' divided by the values of tot to show share of total. The plots arranged and
 #' shown.
 #'
-#' @param data A quitte object.
+#' @param data A quitte object or an object that can be transformed into a
+#'   quitte object.
 #' @param vars A character vector. The variables to be plotted.
 #' @param tot A single string. A total value to be shown in the area plots.
 #' @param fill Logical. Should the vars be normalized so that their values add
@@ -48,8 +49,9 @@ showAreaAndBarPlots <- function(
   yearsBarPlot = getOption("mip.yearsBarPlot")
 ) {
 
+  data <- as.quitte(data)
+    
   # Validate function arguments.
-  stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
   stopifnot(is.logical(fill) && length(fill) == 1)

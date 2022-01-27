@@ -29,9 +29,10 @@ showMultiLinePlots <- function(
   data, vars, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
+  
+  data <- as.quitte(data)
 
   # Validate function arguments.
-  stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")

@@ -37,9 +37,10 @@ showMultiLinePlotsByVariable <- function(
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel")
 ) {
+  
+  data <- as.quitte(data)
 
   # Validate function arguments.
-  stopifnot(is.quitte(data))
   stopifnot(is.character(vars))
   stopifnot(is.character(xVar) && length(xVar) == 1)
   stopifnot(is.character(scales) && length(scales) == 1)

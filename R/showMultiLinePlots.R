@@ -9,13 +9,18 @@
 #' @param vars A character vector. The variables to be plotted.
 #' @inheritParams showLinePlots
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{page 1: \figure{showMultiLinePlots1.png}{options: width="100\%"}}
+#' \if{html}{page 2: \figure{showMultiLinePlots2.png}{options: width="100\%"}}
 #' @examples
 #' \dontrun{
-#' items <- c(
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
+#' vars <- c(
 #'   "FE|Transport pCap",
 #'   "FE|Buildings pCap",
 #'   "FE|Industry pCap")
-#' showMultiLinePlots(data, items)
+#' showMultiLinePlots(data, vars)
 #' }
 #' @export
 #' @importFrom rlang .data .env

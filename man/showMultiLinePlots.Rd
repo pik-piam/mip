@@ -32,12 +32,20 @@ Creates two plots (main region + others) with the values of \code{vars} over
 time. Different regions are shown in the same plot. Faceting is done by
 \code{variable}. The plots arranged and shown.
 }
+\section{Example Plots}{
+
+\if{html}{page 1: \figure{showMultiLinePlots1.png}{options: width="100\%"}}
+\if{html}{page 2: \figure{showMultiLinePlots2.png}{options: width="100\%"}}
+}
+
 \examples{
 \dontrun{
-items <- c(
+options(mip.mainReg = "World")
+data <- as.quitte(data)
+vars <- c(
   "FE|Transport pCap",
   "FE|Buildings pCap",
   "FE|Industry pCap")
-showMultiLinePlots(data, items)
+showMultiLinePlots(data, vars)
 }
 }

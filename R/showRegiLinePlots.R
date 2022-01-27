@@ -9,10 +9,15 @@
 #'
 #' @param excludeMainRegion A single logical value. Should the main region be
 #'   excluded (or shown in the same plot)?
+#' @param mainReg A single string. Use options(mip.mainReg=<value>) to set globally.
 #' @inheritParams showMultiLinePlots
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{\figure{showRegiLinePlots.png}{options: width="100\%"}}
 #' @examples
 #' \dontrun{
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
 #' showRegiLinePlots(data, "Price|Carbon")
 #' }
 #' @export

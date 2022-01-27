@@ -15,13 +15,18 @@
 #'   set globally.
 #' @inheritParams showMultiLinePlots
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{page 1: \figure{showMultiLinePlotsByVariable1.png}{options: width="100\%"}}
+#' \if{html}{page 2: \figure{showMultiLinePlotsByVariable2.png}{options: width="100\%"}}
 #' @examples
 #' \dontrun{
-#' items <- c(
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
+#' vars <- c(
 #'   "FE|Transport pCap",
 #'   "FE|Buildings pCap",
 #'   "FE|Industry pCap")
-#' showMultiLinePlotsByVariable(data, items, "GDP|PPP pCap")
+#' showMultiLinePlotsByVariable(data, vars, "GDP|PPP pCap")
 #' }
 #' @export
 #' @importFrom rlang .data .env

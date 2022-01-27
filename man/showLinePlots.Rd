@@ -33,8 +33,15 @@ Two sets of line plots are shown (main region + others), depicting the values
 in \code{vars} over time. Faceting is done by \code{region}. The plots
 arranged and shown.
 }
+\section{Example Plots}{
+
+\if{html}{\figure{showLinePlots.png}{options: width="100\%"}}
+}
+
 \examples{
 \dontrun{
+options(mip.mainReg = "World")
+data <- as.quitte(data)
 showLinePlots(data, "Policy Cost|GDP Loss")
 }
 }

@@ -20,14 +20,22 @@
 #' @param yearsBarPlot A numeric vector. The years shown in the bar plots. Use
 #'   \code{options(mip.yearsBarPlot=<value>)} to set globally.
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}
+#' \if{html}{page 2 - \code{fill=FALSE}: \figure{showAreaAndBarPlots2.png}{options: width="100\%"}}
+#' \if{html}{page 1 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill1.png}{options: width="100\%"} }
+#' \if{html}{page 2 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill2.png}{options: width="100\%"} }
 #' @examples
 #' \dontrun{
-#' items <- c(
+#' options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
+#' vars <- c(
 #'   "FE|CDR",
 #'   "FE|Transport",
 #'   "FE|Buildings",
 #'   "FE|Industry")
-#' showAreaAndBarPlots(data, items)
+#' showAreaAndBarPlots(data, vars)
 #' }
 #' @export
 #' @importFrom rlang .data .env

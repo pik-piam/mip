@@ -25,8 +25,14 @@ Creates a line plot showing single line plot of vars over time. Additionally
 target values given in variables of the form \code{<vars>|target|<sth>} are
 shown. The plot is shown.
 }
+\section{Example Plots}{
+
+\if{html}{\figure{showLinePlotsWithTarget.png}{options: width="100\%"}}
+}
+
 \examples{
 \dontrun{
+data <- as.quitte(data)
 showLinePlotsWithTarget(data, "Emi|GHG")
 }
 }

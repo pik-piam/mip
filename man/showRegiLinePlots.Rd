@@ -22,8 +22,7 @@ showRegiLinePlots(
 \item{excludeMainRegion}{A single logical value. Should the main region be
 excluded (or shown in the same plot)?}
 
-\item{mainReg}{A single string. The plots for this region are shown enlarged.
-Use \code{options(mip.mainReg=<value>)} to set globally.}
+\item{mainReg}{A single string. Use options(mip.mainReg=<value>) to set globally.}
 }
 \value{
 \code{NULL} is returned invisible.
@@ -37,8 +36,15 @@ Creates one set of plots with the values of \code{vars} over time. Does not
 show historical data. Different regions are shown in the same plot. Faceting
 is done by \code{scenario}. The plots arranged and shown.
 }
+\section{Example Plots}{
+
+\if{html}{\figure{showRegiLinePlots.png}{options: width="100\%"}}
+}
+
 \examples{
 \dontrun{
+options(mip.mainReg = "World")
+data <- as.quitte(data)
 showRegiLinePlots(data, "Price|Carbon")
 }
 }

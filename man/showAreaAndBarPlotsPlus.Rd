@@ -45,6 +45,9 @@ These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
 }
 \examples{
 \dontrun{
+options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
+options(mip.mainReg = "World")
+data <- as.quitte(data)
 showAreaAndBarPlotsPlus(data, "SE|Liquids")
 }
 }

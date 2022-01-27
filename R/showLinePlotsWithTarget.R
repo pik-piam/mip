@@ -9,13 +9,16 @@
 #'   to be plotted.
 #' @inheritParams showLinePlots
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{\figure{showLinePlotsWithTarget.png}{options: width="100\%"}}
 #' @examples
 #' \dontrun{
+#' data <- as.quitte(data)
 #' showLinePlotsWithTarget(data, "Emi|GHG")
 #' }
 #' @export
 #' @importFrom rlang .data .env
-#' @importFrom stringr str_detect
+#' @importFrom stringr str_detect str_replace_all
 showLinePlotsWithTarget <- function(
   data, vars, scales = "free_y"
 ) {

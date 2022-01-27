@@ -11,8 +11,12 @@
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
 #' @inheritParams showAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{\figure{showLinePlots.png}{options: width="100\%"}}
 #' @examples
 #' \dontrun{
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
 #' showLinePlots(data, "Policy Cost|GDP Loss")
 #' }
 #' @export

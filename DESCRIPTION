@@ -13,9 +13,9 @@ Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c(
 Description: Package contains generic functions to produce comparison plots of multi-model runs.
 License: BSD_2_clause + file LICENSE
 Depends:
-  R(>= 2.10.0),
-  quitte(>= 0.3072),
-  magclass
+    R(>= 2.10.0),
+    quitte(>= 0.3072),
+    magclass
 Imports:
     ggplot2,
     dplyr,
@@ -33,11 +33,11 @@ Imports:
     stringr,
     forcats
 Suggests: 
-  testthat,
-  knitr,
-  covr,
-  gdxrrw,
-  rmarkdown
+    testthat,
+    knitr,
+    covr,
+    gdxrrw,
+    rmarkdown
 URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
 BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 7.1.2

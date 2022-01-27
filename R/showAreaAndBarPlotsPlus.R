@@ -15,10 +15,13 @@
 #' @return \code{NULL} is returned invisible.
 #' @examples
 #' \dontrun{
+#' options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
 #' showAreaAndBarPlotsPlus(data, "SE|Liquids")
 #' }
 #' @export
-#' @importFrom stringr str_dup str_starts str_replace_all fixed
+#' @importFrom stringr str_dup str_starts fixed
 showAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
@@ -36,6 +39,11 @@ showAreaAndBarPlotsPlus <- function(
   allVarsPlus <- unique(data$varplus)
   prefix <- paste0(tot, "|", str_dup("+", plusNum), "|")
   varsPlus <- allVarsPlus[str_starts(allVarsPlus, fixed(prefix))]
+  
+  # TODO: Want to use
+  # vars <- remind2::deletePlus(varsPlus)
+  # Does not work as remind2 imports mip, i.e., circular imports.
+  # Instead:
   vars <- str_replace_all(varsPlus, "\\|\\++\\|", "|")
 
   showAreaAndBarPlots(data, vars, tot, fill, mainReg, yearsBarPlot)

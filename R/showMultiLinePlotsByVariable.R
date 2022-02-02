@@ -90,7 +90,7 @@ showMultiLinePlotsByVariable <- function(
     geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
-    ylim(0, NA) +
+    expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
   p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
@@ -100,7 +100,7 @@ showMultiLinePlotsByVariable <- function(
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
-    ylim(0, NA) +
+    expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
 
   # Show plots.

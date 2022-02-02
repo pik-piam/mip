@@ -70,7 +70,7 @@ showMultiLinePlots <- function(
     geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
-    ylim(0, NA) +
+    expand_limits(y = 0) +
     ylab(label)
   p2 <- dRegiScen %>%
     ggplot(aes(.data$period, .data$value, color = .data$region)) +
@@ -80,7 +80,7 @@ showMultiLinePlots <- function(
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
-    ylim(0, NA) +
+    expand_limits(y = 0) +
     ylab(label)
 
   # Show plots.

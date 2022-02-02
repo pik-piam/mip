@@ -28,7 +28,7 @@ showAreaAndBarPlotsPlus <- function(
 ) {
 
   data <- as.quitte(data)
-  
+
   # Validate function arguments.
   # fill, mainReg, yearsBarPlot are not used directly and validated in showAreaAndBarPlots()
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
@@ -39,7 +39,7 @@ showAreaAndBarPlotsPlus <- function(
   allVarsPlus <- unique(data$varplus)
   prefix <- paste0(tot, "|", strrep("+", plusNum), "|")
   varsPlus <- allVarsPlus[startsWith(allVarsPlus, prefix)]
-  
+
   # TODO: Want to use
   # vars <- remind2::deletePlus(varsPlus)
   # Does not work as remind2 imports mip, i.e., circular imports.

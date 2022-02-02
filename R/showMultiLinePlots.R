@@ -29,7 +29,7 @@ showMultiLinePlots <- function(
   data, vars, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
-  
+
   data <- as.quitte(data)
 
   # Validate function arguments.

@@ -37,7 +37,7 @@ showMultiLinePlotsByVariable <- function(
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel")
 ) {
-  
+
   data <- as.quitte(data)
 
   # Validate function arguments.
@@ -71,7 +71,7 @@ showMultiLinePlotsByVariable <- function(
   dRegiHist <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels()
-    
+
   regions <- levels(dRegiScen$region)
 
   warnMissingVars(dMainScen, vars)

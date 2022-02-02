@@ -48,7 +48,7 @@ showAreaAndBarPlots <- function(
 ) {
 
   data <- as.quitte(data)
-    
+
   # Validate function arguments.
   stopifnot(is.character(vars))
   stopifnot((is.character(tot) && length(tot) == 1) || is.null(tot))
@@ -65,7 +65,7 @@ showAreaAndBarPlots <- function(
   }
 
   d <- data %>%
-    filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>% 
+    filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>%
     droplevels()
   warnMissingVars(d, vars)
   if (!is.null(tot)) warnMissingVars(data, tot)
@@ -77,9 +77,9 @@ showAreaAndBarPlots <- function(
   # Order variables by mean value.
   # d <- mutate(d, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
   # To not use the additional package forcats, implement own version of that line:
-  means <- d %>% 
-    group_by(.data$variable) %>% 
-    summarize(mean_value = mean(.data$value, na.rm=TRUE)) %>% 
+  means <- d %>%
+    group_by(.data$variable) %>%
+    summarize(mean_value = mean(.data$value, na.rm = TRUE)) %>%
     arrange(.data$mean_value)
   d$variable <- factor(d$variable, levels = means$variable)
 

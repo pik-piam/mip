@@ -21,7 +21,7 @@
 showLinePlotsWithTarget <- function(
   data, vars, scales = "free_y"
 ) {
-  
+
   data <- as.quitte(data)
 
   # Validate function arguments.

@@ -26,7 +26,7 @@ showLinePlots <- function(
   data, vars = NULL, scales = "free_y",
   mainReg = getOption("mip.mainReg")
 ) {
-  
+
   data <- as.quitte(data)
 
   # Validate function arguments.

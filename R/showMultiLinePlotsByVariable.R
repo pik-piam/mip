@@ -37,7 +37,7 @@ showMultiLinePlotsByVariable <- function(
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel")
 ) {
-  
+
   data <- as.quitte(data)
 
   # Validate function arguments.
@@ -71,7 +71,7 @@ showMultiLinePlotsByVariable <- function(
   dRegiHist <- d %>%
     filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels()
-    
+
   regions <- levels(dRegiScen$region)
 
   warnMissingVars(dMainScen, vars)
@@ -90,7 +90,7 @@ showMultiLinePlotsByVariable <- function(
     geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
-    ylim(0, NA) +
+    expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
   p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
@@ -100,7 +100,7 @@ showMultiLinePlotsByVariable <- function(
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
-    ylim(0, NA) +
+    expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
 
   # Show plots.

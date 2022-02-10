@@ -113,28 +113,40 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE, verbosit
   # replace NA
   if (nna != 0) {
     if (is.null(unknown)) {
-      # The following list contains 19 easily distinguishable colors. If you
-      # need n < 20 colors, choose the first n colors from that list. If you
-      # need more colors, colorRampPalette() is used to create interpolated
-      # colors. This may result in a poor choice of colors. A warning is
-      # produced, as the elements of a plot with these color may not be
-      # distinguishable by color.
-      tmpcols <- c(
-        "#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#469990",
-        "#9A6324", "#800000", "#808000", "#000075", "#f032e6", "#ffd610",
-        "#404040", "#42d4f4", "#bfef45", "#B0B0B0", "#dcbeff", "#aaffc3",
-        "#fabed4")
-      if (nna < 20) {
-        tmpcols <- tmpcols[1:nna]
-      } else {
-        warning("Need to choose 20 colors or more. The colors will be difficult to distinguish.")
-      }
-      colorPalette <- colorRampPalette(tmpcols)
       if (!is.null(verbosity)) {
         cat("Brewed colors for", nna, "unknown entities:\n")
         cat(row.names(res)[ina], sep = "\n")
       }
-      suppressWarnings(res$color[is.na(res$color)] <- colorPalette(nna))
+      # The following vector goodColors contains easily distinguishable colors.
+      # If you need n <= length(goodColors) colors, choose the first n colors
+      # from this vector. If you need more colors, additional colors are
+      # appended. But this may result in a poor choice of colors. A warning is
+      # produced, as the elements of a plot with these colors may not be
+      # distinguishable by color.
+      goodColors <- c(
+        "#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#469990",
+        "#9A6324", "#800000", "#808000", "#000075", "#f032e6", "#ffd610",
+        "#404040", "#42d4f4", "#bfef45", "#B0B0B0", "#dcbeff", "#aaffc3",
+        "#fabed4")
+      if (nna > length(goodColors)) {
+        warning(paste(
+          "Need to choose", nna, "colors, but only", length(goodColors),
+          "are well supported. The colors will be difficult to distinguish."))
+        delta <- nna - length(goodColors)
+
+        # Get more colors via the random number generator, but with a fixed
+        # seed, to make it deterministic. Also do not change the state of the
+        # random number generator in the process.
+        oldRandomSeed <- get(".Random.seed", globalenv(), mode = "integer", inherits = FALSE)
+        set.seed(0)
+        rgbValues <- matrix(runif(3 * delta), nrow = 3)
+        assign(".Random.seed", oldRandomSeed, globalenv())
+
+        moreColors <- grDevices::rgb(r = rgbValues[1, ], g = rgbValues[2, ], b = rgbValues[3, ])
+      } else {
+        moreColors <- character(0)
+      }
+      res$color[ina] <- c(goodColors, moreColors)[seq_len(nna)]
       # replace NA in legends with row names (= entity name)
       res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend), ])
     } else {

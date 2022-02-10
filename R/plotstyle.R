@@ -1,15 +1,15 @@
 #' Returns plot styles for given entities
 #' 
-#' Returns a named vector (using entitiy names) with style codes (e.g. colors) for given entities.
+#' Returns a named vector (using entity names) with style codes (e.g. colors) for given entities.
 #' 
 #' @param ... One or more strings or a vector of strings with names of entities (regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be ignored. If left empty all available entities will be used
 #' @param out Switch defining which type of plot style you want to get: Currently you can choose between "color", "legend" and "all" (the latter will return a dataframe with all available plot styles)
 #' @param unknown Optional data frame defining plot styles for unknown entities. A default color map will be used for unknown entities if nothing is provided here
-#' @param plot If TRUE plots with all given entities and their colors will be produced (to produce plots with all available entitities leave the \code{...} entry empty!)
+#' @param plot If TRUE plots with all given entities and their colors will be produced (to produce plots with all available entities leave the \code{...} entry empty!)
 #' @param verbosity Set to 1 if you want to know for which unknown entities plotstyle brewed colors
 #' @param regexp If \code{TRUE}, match entities as regular expressions. 
 #'        Matching entities are expanded, non-matching entities are returned as 
-#'        the original expression.  Does not generate default colour maps. 
+#'        the original expression.  Does not generate default color maps. 
 #'        Implies \code{plot = FALSE} and \code{verbosity = 0}. 
 #' @return Plot styles for given entities
 #' @author David Klein, Jan Philipp Dietrich
@@ -71,7 +71,7 @@ plotstyle <- function(..., out="color", unknown=NULL, plot=FALSE, verbosity = ge
   res <- luplot$plotstyle[uq_entity,]
   row.names(res) <- uq_entity
   
-  # ignore rest of function of regexp is used
+  # ignore rest of function if regexp is used
   if (regexp) {
     res <- data.frame()
     for (r in uq_entity) {

@@ -22,6 +22,8 @@
 #'   expression.  Does not generate default color maps. Implies \code{plot =
 #'   FALSE} and \code{verbosity = 0}.
 #' @return Plot styles for given entities
+#' @section Colors for unknown entities:
+#' \if{html}{\figure{colors.png}{options: width="100\%"}}
 #' @author David Klein, Jan Philipp Dietrich
 #' @seealso \code{\link{plotstyle.add}}
 #' @examples
@@ -111,21 +113,29 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE, verbosit
   # replace NA
   if (nna != 0) {
     if (is.null(unknown)) {
-      # If you need less than 10 colors, brew and ramp for the exact number of
-      # colors: min(9,nna) -> nna (ramping has no effect -> take the original
-      # brewer colors). Only if you need more than 9 colors start ramping between
-      # maximal 9 brewer colors, effectively replace NA in color with freshly
-      # brewed colors from "Set1".
-      tmpcols <- brewer.pal(9, "Set1")
-      tmpcols[6] <- "#00CED1" # replace yellow with turquoise as it was to light for many applications
-      if (nna < 9) tmpcols <- tmpcols[1:nna]
-      set1 <- colorRampPalette(tmpcols)
+      # The following list contains 19 easily distinguishable colors. If you
+      # need n < 20 colors, choose the first n colors from that list. If you
+      # need more colors, colorRampPalette() is used to create interpolated
+      # colors. This may result in a poor choice of colors. A warning is
+      # produced, as the elements of a plot with these color may not be
+      # distinguishable by color.
+      tmpcols <- c(
+        '#e6194B', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#469990', 
+        '#9A6324', '#800000', '#808000', '#000075', '#f032e6', '#ffd610', 
+        '#404040', '#42d4f4', '#bfef45', '#B0B0B0', '#dcbeff', '#aaffc3', 
+        '#fabed4')
+      if (nna < 20) {
+        tmpcols <- tmpcols[1:nna]
+      } else {
+        warning("Need to choose 20 colors or more. The colors will be difficult to distinguish.")
+      }
+      colorPalette <- colorRampPalette(tmpcols)
       if (!is.null(verbosity)) {
         cat("Brewed colors for", nna, "unknown entities:\n")
         cat(row.names(res)[ina], sep = "\n")
       }
-      suppressWarnings(res$color[is.na(res$color)] <- set1(nna))
-      # replace NA in legends with row names (= entitiy name)
+      suppressWarnings(res$color[is.na(res$color)] <- colorPalette(nna))
+      # replace NA in legends with row names (= entity name)
       res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend), ])
     } else {
       if (out == "all") {

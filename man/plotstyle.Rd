@@ -14,42 +14,57 @@ plotstyle(
 )
 }
 \arguments{
-\item{...}{One or more strings or a vector of strings with names of entities (regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be ignored. If left empty all available entities will be used}
+\item{...}{One or more strings or a vector of strings with names of entities
+(regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be
+ignored. If left empty all available entities will be used}
 
-\item{out}{Switch defining which type of plot style you want to get: Currently you can choose between "color", "legend" and "all" (the latter will return a dataframe with all available plot styles)}
+\item{out}{Switch defining which type of plot style you want to get:
+Currently you can choose between "color", "legend" and "all" (the latter
+will return a dataframe with all available plot styles)}
 
-\item{unknown}{Optional data frame defining plot styles for unknown entities. A default color map will be used for unknown entities if nothing is provided here}
+\item{unknown}{Optional data frame defining plot styles for unknown entities.
+A default color map will be used for unknown entities if nothing is
+provided here}
 
-\item{plot}{If TRUE plots with all given entities and their colors will be produced (to produce plots with all available entitities leave the \code{...} entry empty!)}
+\item{plot}{If TRUE plots with all given entities and their colors will be
+produced (to produce plots with all available entities leave the \code{...}
+entry empty!)}
 
-\item{verbosity}{Set to 1 if you want to know for which unknown entities plotstyle brewed colors}
+\item{verbosity}{Set to 1 if you want to know for which unknown entities
+plotstyle brewed colors}
 
-\item{regexp}{If \code{TRUE}, match entities as regular expressions. 
-Matching entities are expanded, non-matching entities are returned as 
-the original expression.  Does not generate default colour maps. 
-Implies \code{plot = FALSE} and \code{verbosity = 0}.}
+\item{regexp}{If \code{TRUE}, match entities as regular expressions. Matching
+entities are expanded, non-matching entities are returned as the original
+expression.  Does not generate default color maps. Implies \code{plot =
+FALSE} and \code{verbosity = 0}.}
 }
 \value{
 Plot styles for given entities
 }
 \description{
-Returns a named vector (using entitiy names) with style codes (e.g. colors) for given entities.
+Returns a named vector (using entity names) with style codes (e.g. colors)
+for given entities.
 }
+\section{Colors for unknown entities}{
+
+\if{html}{\figure{colors.png}{options: width="100\%"}}
+}
+
 \examples{
-entities <- c("AFR","AAA","AFR","UNKNOWN_ELEMENT2")
+entities <- c("AFR", "AAA", "AFR", "UNKNOWN_ELEMENT2")
 plotstyle(entities)
-unknown=data.frame(row.names=c("AAA","UNKNOWN_ELEMENT2"),
-                   color=c("#123456","#345678"),
-                   legend=c("l_AAA","l_UNKNOWN_ELEMENT2"))
-plotstyle(entities,unknown=unknown)
-plotstyle(entities,out="legend")
-plotstyle(entities,out="all")
+unknown <- data.frame(row.names = c("AAA", "UNKNOWN_ELEMENT2"),
+                   color = c("#123456", "#345678"),
+                   legend = c("l_AAA", "l_UNKNOWN_ELEMENT2"))
+plotstyle(entities, unknown = unknown)
+plotstyle(entities, out = "legend")
+plotstyle(entities, out = "all")
 
 # search for all 'Final Energy Biomass' entities
-plotstyle('^Final Energy\\\\|.*Biomass', regexp = TRUE)
+plotstyle("^Final Energy\\\\|.*Biomass", regexp = TRUE)
 
 # search for all three-letter entities (a.k.a. regions)
-plotstyle('^[A-Z]{3}$', regexp = TRUE, out = 'all')
+plotstyle("^[A-Z]{3}$", regexp = TRUE, out = "all")
 }
 \seealso{
 \code{\link{plotstyle.add}}

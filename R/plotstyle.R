@@ -120,10 +120,10 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE, verbosit
       # produced, as the elements of a plot with these color may not be
       # distinguishable by color.
       tmpcols <- c(
-        '#e6194B', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#469990', 
-        '#9A6324', '#800000', '#808000', '#000075', '#f032e6', '#ffd610', 
-        '#404040', '#42d4f4', '#bfef45', '#B0B0B0', '#dcbeff', '#aaffc3', 
-        '#fabed4')
+        "#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#469990",
+        "#9A6324", "#800000", "#808000", "#000075", "#f032e6", "#ffd610",
+        "#404040", "#42d4f4", "#bfef45", "#B0B0B0", "#dcbeff", "#aaffc3",
+        "#fabed4")
       if (nna < 20) {
         tmpcols <- tmpcols[1:nna]
       } else {

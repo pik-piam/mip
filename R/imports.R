@@ -1,0 +1,2 @@
+#' @import quitte magclass
+NULL

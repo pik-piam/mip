@@ -32,7 +32,6 @@
 #'             ggtitle geom_col scale_shape_manual
 #' @importFrom dplyr %>% mutate filter inner_join group_by summarise select n sym arrange
 #' @importFrom tidyr crossing unite
-#' @importFrom stats setNames
 #' @importFrom quitte order.levels
 #' @export
 #
@@ -94,7 +93,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
   }
 
   if (scenarioMarkers) {
-    scenarioMarkers <- setNames((1:20)[seq_along(unique(x$scenario))],
+    scenarioMarkers <- stats::setNames((1:20)[seq_along(unique(x$scenario))],
                                  levels(x$scenario))
   }
 

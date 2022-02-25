@@ -35,15 +35,16 @@ showLinePlots <- function(
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
-  unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" [", paste0(levels(d$unit), collapse = ","), "]"))
   if (!is.null(vars)) {
     d <- data %>%
       filter(.data$variable %in% .env$vars) %>%
       droplevels()
+    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" [", paste0(levels(d$unit), collapse = ","), "]"))
     label <- paste0(paste0(vars, collapse = ","), unitlabel)
   } else {
     d <- data %>%
       droplevels()
+    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" [", paste0(levels(d$unit), collapse = ","), "]"))
     label <- paste0(paste0(levels(d$variable), collapse = ","), unitlabel)
   }
 

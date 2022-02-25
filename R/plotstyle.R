@@ -47,6 +47,7 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggplot2 ggplot geom_bar coord_flip theme element_blank labs aes
 #' @importFrom grDevices colorRampPalette
+#' @importFrom stats runif
 
 plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE, verbosity = getOption("plotstyle.verbosity"),
                       regexp = FALSE) {

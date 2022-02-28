@@ -62,6 +62,8 @@ showAreaAndBarPlots <- function(
       stop("fill=TRUE without explicit tot variable is not implemented yet")
     data <- data %>%
       calculateRatio(vars, tot)
+    # `data` does not contain `tot` anymore, but its normalized values are all 1 anyway
+    tot <- NULL
   }
 
   d <- data %>%
@@ -113,7 +115,7 @@ showAreaAndBarPlots <- function(
     guides(fill = guide_legend(reverse = TRUE))
 
   # Add black lines in area plots from variable tot if provided.
-  if (!is.null(tot) && !fill) {
+  if (!is.null(tot)) {
     dMainTot <- data %>%
       filter(
         .data$region == .env$mainReg,

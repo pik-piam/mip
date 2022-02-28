@@ -5,3 +5,5 @@
 ^.*\.zenodo.json$
 ^\.github$
 ^codecov\.yml$
+^\.pre-commit-config\.yaml$
+^workflow$

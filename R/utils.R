@@ -72,7 +72,7 @@ calculateRatio <- function(
     select(.data$model, .data$scenario, .data$region, .data$period, .data$denom_value)
   res <- data %>%
     filter(.data$variable %in% .env$numerators) %>%
-    left_join(denom) %>%
+    left_join(denom, by = c("model", "scenario", "region", "period")) %>%
     mutate(value = .data$value / .data$denom_value * .env$conversionFactor,
            unit = factor(.env$newUnit)) %>%
     droplevels()

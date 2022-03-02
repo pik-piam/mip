@@ -9,6 +9,7 @@ showAreaAndBarPlots(
   vars,
   tot = NULL,
   fill = FALSE,
+  orderVars = c("mean", "user", "userRev"),
   mainReg = getOption("mip.mainReg"),
   yearsBarPlot = getOption("mip.yearsBarPlot")
 )
@@ -23,6 +24,20 @@ quitte object.}
 
 \item{fill}{Logical. Should the vars be normalized so that their values add
 to 1? (Plot shares instead of absolute values.)}
+
+\item{orderVars}{In what order should the variables be shown? 
+\describe{
+  \item{\code{"mean"}}{
+    Order by mean value 
+    (largest mean at bottom). 
+    The default.}
+  \item{\code{"user"}}{
+    As supplied by the user 
+    (first element of \code{vars} at top).}
+  \item{\code{"userRev"}}{
+    Reverse order of the one supplied by the user 
+    (first element of \code{vars} at bottom).}
+}}
 
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
@@ -64,5 +79,6 @@ vars <- c(
   "FE|Buildings",
   "FE|Industry")
 showAreaAndBarPlots(data, vars)
+showAreaAndBarPlots(data, vars, orderVars = "user")
 }
 }

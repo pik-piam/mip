@@ -16,6 +16,19 @@
 #' @param tot A single string. A total value to be shown in the area plots.
 #' @param fill Logical. Should the vars be normalized so that their values add
 #'   to 1? (Plot shares instead of absolute values.)
+#' @param orderVars In what order should the variables be shown? 
+#'   \describe{
+#'     \item{\code{"mean"}}{
+#'       Order by mean value 
+#'       (largest mean at bottom). 
+#'       The default.}
+#'     \item{\code{"user"}}{
+#'       As supplied by the user 
+#'       (first element of \code{vars} at top).}
+#'     \item{\code{"userRev"}}{
+#'       Reverse order of the one supplied by the user 
+#'       (first element of \code{vars} at bottom).}
+#'   }
 #' @param mainReg A single string. The plots for this region are shown enlarged.
 #'   Use \code{options(mip.mainReg=<value>)} to set globally.
 #' @param yearsBarPlot A numeric vector. The years shown in the bar plots. Use
@@ -37,17 +50,20 @@
 #'   "FE|Buildings",
 #'   "FE|Industry")
 #' showAreaAndBarPlots(data, vars)
+#' showAreaAndBarPlots(data, vars, orderVars = "user")
 #' }
 #' @export
 #' @importFrom rlang .data .env
 #' @importFrom dplyr rename left_join summarize group_by arrange
 showAreaAndBarPlots <- function(
-  data, vars, tot = NULL, fill = FALSE,
+  data, vars, tot = NULL, fill = FALSE, 
+  orderVars = c("mean", "user", "userRev"),
   mainReg = getOption("mip.mainReg"),
   yearsBarPlot = getOption("mip.yearsBarPlot")
 ) {
 
   data <- as.quitte(data)
+  orderVars <- match.arg(orderVars)
 
   # Validate function arguments.
   stopifnot(is.character(vars))
@@ -75,15 +91,26 @@ showAreaAndBarPlots <- function(
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
-
-  # Order variables by mean value.
-  # d <- mutate(d, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
-  # To not use the additional package forcats, implement own version of that line:
-  means <- d %>%
-    group_by(.data$variable) %>%
-    summarize(mean_value = mean(.data$value, na.rm = TRUE)) %>%
-    arrange(.data$mean_value)
-  d$variable <- factor(d$variable, levels = means$variable)
+  
+  switch(
+    orderVars,
+    mean = {
+      # Order variables by mean value.
+      # d <- mutate(d, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
+      # To not use the additional package forcats, implement own version of that line:
+      means <- d %>%
+        group_by(.data$variable) %>%
+        summarize(mean_value = mean(.data$value, na.rm = TRUE)) %>%
+        arrange(.data$mean_value)
+      d$variable <- factor(d$variable, levels = means$variable)
+    },
+    user = {
+      d$variable <- factor(d$variable, levels = vars)
+    },
+    userRev = {
+      d$variable <- factor(d$variable, levels = rev(vars))
+    }
+  )
 
   # Common label for y-axis.
   lcp <- gsub("\\|$", "", longestCommonPrefix(vars))

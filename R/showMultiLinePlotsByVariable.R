@@ -10,9 +10,14 @@
 #' chosen via \code{histRefModel}.
 #'
 #' @param xVar A single string. The variable for the x-axis.
-#' @param histRefModel A named character vector identifying the unique model to be
-#'   chosen for historical data. Use \code{options(mip.histRefModel=<value>)} to
-#'   set globally.
+#' @param showHistorical A single logical value. Should historical data be
+#'   shown? It is not recommended to set this to \code{TRUE} as the resulting
+#'   plot we probably be quite confusing.
+#' @param histRefModel A named character vector identifying the unique model to
+#'   be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
+#'   to set globally.
+#' @param yearsByVariable A numeric vector. The years to be marked in the plots.
+#'   As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.
 #' @inheritParams showMultiLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -21,6 +26,8 @@
 #' @examples
 #' \dontrun{
 #' options(mip.mainReg = "World")
+#' options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
+#' options(mip.histRefModel = c("GDP|PPP pCap" = "James_IMF"))
 #' data <- as.quitte(data)
 #' vars <- c(
 #'   "FE|Transport pCap",
@@ -34,8 +41,10 @@
 #' @importFrom ggplot2 ylim
 showMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
+  showHistorical = FALSE,
   mainReg = getOption("mip.mainReg"),
-  histRefModel = getOption("mip.histRefModel")
+  histRefModel = getOption("mip.histRefModel"),
+  yearsByVariable = getOption("mip.yearsBarPlot")
 ) {
 
   data <- as.quitte(data)
@@ -44,6 +53,8 @@ showMultiLinePlotsByVariable <- function(
   stopifnot(is.character(vars))
   stopifnot(is.character(xVar) && length(xVar) == 1)
   stopifnot(is.character(scales) && length(scales) == 1)
+  stopifnot(identical(showHistorical, TRUE) || identical(showHistorical, FALSE))
+  stopifnot(is.null(yearsByVariable) || is.numeric(yearsByVariable))
   checkGlobalOptionsProvided(c("mainReg", "histRefModel"))
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   stopifnot(is.character(histRefModel) && !is.null(names(histRefModel)))
@@ -86,8 +97,6 @@ showMultiLinePlotsByVariable <- function(
   p1 <- dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
-    geom_point(data = dMainHist, aes(shape = .data$model)) +
-    geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     expand_limits(y = 0) +
@@ -95,13 +104,34 @@ showMultiLinePlotsByVariable <- function(
   p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
-    geom_point(data = dRegiHist, aes(shape = .data$model)) +
-    geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
     facet_wrap(vars(.data$variable), scales = scales) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
+  if (showHistorical) {
+    p1 <- p1 + 
+      geom_point(data = dMainHist, aes(shape = .data$model)) +
+      geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)
+    p2 <- p2 +
+      geom_point(data = dRegiHist, aes(shape = .data$model)) +
+      geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)
+  } 
+  # Add markers for certain years.
+  if (length(yearsByVariable) > 0) {
+    p1 <- p1 +
+      geom_point(
+      data = dMainScen %>% 
+        filter(.data$period %in% .env$yearsByVariable) %>% 
+        mutate(year = factor(.data$period)),
+      mapping = aes(.data$value.x, .data$value, shape = .data$year))
+    p2 <- p2 +
+      geom_point(
+        data = dRegiScen %>% 
+          filter(.data$period %in% .env$yearsByVariable) %>% 
+          mutate(year = factor(.data$period)),
+        mapping = aes(.data$value.x, .data$value, shape = .data$year))
+  }
 
   # Show plots.
   print(p1)

@@ -110,25 +110,25 @@ showMultiLinePlotsByVariable <- function(
     expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
   if (showHistorical) {
-    p1 <- p1 + 
+    p1 <- p1 +
       geom_point(data = dMainHist, aes(shape = .data$model)) +
       geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)
     p2 <- p2 +
       geom_point(data = dRegiHist, aes(shape = .data$model)) +
       geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)
-  } 
+  }
   # Add markers for certain years.
   if (length(yearsByVariable) > 0) {
     p1 <- p1 +
       geom_point(
-      data = dMainScen %>% 
-        filter(.data$period %in% .env$yearsByVariable) %>% 
+      data = dMainScen %>%
+        filter(.data$period %in% .env$yearsByVariable) %>%
         mutate(year = factor(.data$period)),
       mapping = aes(.data$value.x, .data$value, shape = .data$year))
     p2 <- p2 +
       geom_point(
-        data = dRegiScen %>% 
-          filter(.data$period %in% .env$yearsByVariable) %>% 
+        data = dRegiScen %>%
+          filter(.data$period %in% .env$yearsByVariable) %>%
           mutate(year = factor(.data$period)),
         mapping = aes(.data$value.x, .data$value, shape = .data$year))
   }

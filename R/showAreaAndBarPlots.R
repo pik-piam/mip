@@ -16,17 +16,17 @@
 #' @param tot A single string. A total value to be shown in the area plots.
 #' @param fill Logical. Should the vars be normalized so that their values add
 #'   to 1? (Plot shares instead of absolute values.)
-#' @param orderVars In what order should the variables be shown? 
+#' @param orderVars In what order should the variables be shown?
 #'   \describe{
 #'     \item{\code{"mean"}}{
-#'       Order by mean value 
-#'       (largest mean at bottom). 
+#'       Order by mean value
+#'       (largest mean at bottom).
 #'       The default.}
 #'     \item{\code{"user"}}{
-#'       As supplied by the user 
+#'       As supplied by the user
 #'       (first element of \code{vars} at top).}
 #'     \item{\code{"userRev"}}{
-#'       Reverse order of the one supplied by the user 
+#'       Reverse order of the one supplied by the user
 #'       (first element of \code{vars} at bottom).}
 #'   }
 #' @param mainReg A single string. The plots for this region are shown enlarged.
@@ -56,7 +56,7 @@
 #' @importFrom rlang .data .env
 #' @importFrom dplyr rename left_join summarize group_by arrange
 showAreaAndBarPlots <- function(
-  data, vars, tot = NULL, fill = FALSE, 
+  data, vars, tot = NULL, fill = FALSE,
   orderVars = c("mean", "user", "userRev"),
   mainReg = getOption("mip.mainReg"),
   yearsBarPlot = getOption("mip.yearsBarPlot")
@@ -91,7 +91,7 @@ showAreaAndBarPlots <- function(
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
-  
+
   switch(
     orderVars,
     mean = {

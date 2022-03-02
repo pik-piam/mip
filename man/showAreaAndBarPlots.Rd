@@ -25,17 +25,17 @@ quitte object.}
 \item{fill}{Logical. Should the vars be normalized so that their values add
 to 1? (Plot shares instead of absolute values.)}
 
-\item{orderVars}{In what order should the variables be shown? 
+\item{orderVars}{In what order should the variables be shown?
 \describe{
   \item{\code{"mean"}}{
-    Order by mean value 
-    (largest mean at bottom). 
+    Order by mean value
+    (largest mean at bottom).
     The default.}
   \item{\code{"user"}}{
-    As supplied by the user 
+    As supplied by the user
     (first element of \code{vars} at top).}
   \item{\code{"userRev"}}{
-    Reverse order of the one supplied by the user 
+    Reverse order of the one supplied by the user
     (first element of \code{vars} at bottom).}
 }}
 

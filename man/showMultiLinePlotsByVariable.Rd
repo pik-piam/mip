@@ -12,7 +12,7 @@ showMultiLinePlotsByVariable(
   showHistorical = FALSE,
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel"),
-  yearsByVariable = getOption("mip.yearsByVariable")
+  yearsByVariable = getOption("mip.yearsBarPlot")
 )
 }
 \arguments{
@@ -37,7 +37,7 @@ be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
 to set globally.}
 
 \item{yearsByVariable}{A numeric vector. The years to be marked in the plots.
-Use \code{options(mip.yearsByVariable=<value>)} to set globally.}
+As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.}
 }
 \value{
 \code{NULL} is returned invisible.
@@ -62,7 +62,7 @@ chosen via \code{histRefModel}.
 \examples{
 \dontrun{
 options(mip.mainReg = "World")
-options(mip.yearsByVariable = c(2010, 2030, 2050, 2100))
+options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
 options(mip.histRefModel = c("GDP|PPP pCap" = "James_IMF"))
 data <- as.quitte(data)
 vars <- c(

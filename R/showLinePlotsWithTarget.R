@@ -28,10 +28,9 @@ showLinePlotsWithTarget <- function(
   stopifnot(is.character(vars))
   stopifnot(is.character(scales) && length(scales) == 1)
 
-  targetPattern <- vars %>%
-    paste0("|target|") %>%
-    gsub("\\|", "\\\\|", .) %>%
-    paste0(collapse = "|")
+  targetPattern <- paste0(vars, "|target|")
+  targetPattern <- gsub("\\|", "\\\\|", targetPattern)
+  targetPattern <- paste0(targetPattern, collapse = "|")
   dTar <- data %>%
     filter(grepl(.env$targetPattern, .data$variable)) %>%
     droplevels()

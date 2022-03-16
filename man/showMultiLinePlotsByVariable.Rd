@@ -9,8 +9,10 @@ showMultiLinePlotsByVariable(
   vars,
   xVar,
   scales = "free_y",
+  showHistorical = FALSE,
   mainReg = getOption("mip.mainReg"),
-  histRefModel = getOption("mip.histRefModel")
+  histRefModel = getOption("mip.histRefModel"),
+  yearsByVariable = getOption("mip.yearsBarPlot")
 )
 }
 \arguments{
@@ -23,12 +25,19 @@ quitte object.}
 
 \item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
 
+\item{showHistorical}{A single logical value. Should historical data be
+shown? It is not recommended to set this to \code{TRUE} as the resulting
+plot we probably be quite confusing.}
+
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
 
-\item{histRefModel}{A named character vector identifying the unique model to be
-chosen for historical data. Use \code{options(mip.histRefModel=<value>)} to
-set globally.}
+\item{histRefModel}{A named character vector identifying the unique model to
+be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
+to set globally.}
+
+\item{yearsByVariable}{A numeric vector. The years to be marked in the plots.
+As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.}
 }
 \value{
 \code{NULL} is returned invisible.
@@ -53,6 +62,8 @@ chosen via \code{histRefModel}.
 \examples{
 \dontrun{
 options(mip.mainReg = "World")
+options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
+options(mip.histRefModel = c("GDP|PPP pCap" = "James_IMF"))
 data <- as.quitte(data)
 vars <- c(
   "FE|Transport pCap",

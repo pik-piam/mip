@@ -46,5 +46,5 @@ showAreaAndBarPlotsPlus <- function(
   # Instead:
   vars <- gsub("\\|\\++\\|", "|", varsPlus)
 
-  showAreaAndBarPlots(data, vars, tot, fill, mainReg, yearsBarPlot)
+  showAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg, yearsBarPlot = yearsBarPlot)
 }

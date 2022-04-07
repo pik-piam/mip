@@ -1,6 +1,6 @@
 {
   "title": "mip: Comparison of multi-model runs",
-  "version": "0.136.0",
+  "version": "0.137.0",
   "description": "<p>Package contains generic functions to produce comparison plots of multi-model runs.<\/p>",
   "creators": [
     {

@@ -29,13 +29,13 @@ Imports:
     gridExtra,
     tidyr,
     rlang,
-    htmltools,
+    htmltools
 Suggests: 
     testthat,
     knitr,
     covr,
     gdxrrw,
-    rmarkdown,
+    rmarkdown
 URL: https://github.com/pik-piam/mip, https://doi.org/10.5281/zenodo.1158586
 BugReports: https://github.com/pik-piam/mip/issues
 RoxygenNote: 7.1.2

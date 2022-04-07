@@ -2,7 +2,7 @@ ValidationKey: '25976046'
 AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
 - 'Warning: namespace ''.*'' is not available and has been replaced'
-- ‘qpdf’ is needed for checks on size reduction of PDFs
+- '''.*'' is needed for checks on size reduction of PDFs'
 AcceptedNotes:
 - unable to verify current time
 - File .mip/R/onLoad\.R.:\W+\.onLoad calls:\W+packageStartupMessage

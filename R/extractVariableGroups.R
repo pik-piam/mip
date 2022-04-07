@@ -66,6 +66,3 @@ extractVariableGroups <- function(x,keepOrigNames=FALSE) {
   }
   return(out)
 }
-
-
-

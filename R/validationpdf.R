@@ -127,7 +127,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
       return(cbind(out,tmp))
     }
     out <- cbind(fullname, unit, .split(vars), .split(properties,TRUE))
-    out <- as.data.frame(out)
+    out <- as.data.frame(out, stringsAsFactors = TRUE)
     names(out) <- c("fullname","unit","name",paste0("level",1:nlevel),"props",paste0("prop",1:nlevel))
     return(out)
   }

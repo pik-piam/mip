@@ -1,11 +1,11 @@
-ValidationKey: '26239500'
+ValidationKey: '26262744'
 AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
 - 'Warning: namespace ''.*'' is not available and has been replaced'
 - '''.*'' is needed for checks on size reduction of PDFs'
 AcceptedNotes:
 - unable to verify current time
-- File .mip/R/onLoad\.R.:\W+\.onLoad calls:\W+packageStartupMessage
+- packageStartupMessage
 - no visible binding for global variable ‘.’
 AutocreateReadme: yes
 allowLinterWarnings: yes

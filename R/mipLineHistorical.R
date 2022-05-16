@@ -123,7 +123,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
 
   # internal functions for plotting of different types of data
   priority_x <- function(p){
-    p <- p + geom_line(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim),size=1)
+    p <- p + geom_line(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim,linetype=linetype.dim),size=1)
     p <- p + geom_point(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim),size=1.5)
     return(p)
   }

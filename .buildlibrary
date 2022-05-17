@@ -5,7 +5,7 @@ AcceptedWarnings:
 - '''.*'' is needed for checks on size reduction of PDFs'
 AcceptedNotes:
 - unable to verify current time
-- packageStartupMessage
+- File .mip/R/onLoad\.R.:\W+\.onLoad calls:\W+packageStartupMessage
 - no visible binding for global variable ‘.’
 AutocreateReadme: yes
 allowLinterWarnings: yes

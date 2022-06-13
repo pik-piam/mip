@@ -21,6 +21,8 @@
 #' @author Pascal Führlich
 #' @seealso \code{\link{getPlotData}}
 #' @importFrom ggplot2 ggplot aes_string geom_line ylab facet_wrap ggtitle
+#' scale_color_gradientn theme_bw theme element_blank
+#' @importFrom grDevices rainbow
 #' @importFrom plotly ggplotly
 #' @importFrom utils tail
 #' @export
@@ -107,10 +109,15 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
 
     plot <- ggplot(x, do.call(aes_string, aestheticsArgs)) +
       geom_line() +
-      ggtitle(heading)
+      ggtitle(heading) +
+      theme_bw() +
+      theme(strip.background = element_blank())
     if (!is.null(facets)) {
       # by default create a small plot for each region; always show all facets, even if empty
       plot <- plot + facet_wrap(facets, drop = FALSE)
+    }
+    if (!is.null(color) & is.numeric(plotData[[color]])) {
+      plot <- plot + scale_color_gradientn(colours = rainbow(5, v = 0.8))
     }
     return(plot)
   })

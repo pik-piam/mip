@@ -1,8 +1,8 @@
 Package: mip
 Type: Package
 Title: Comparison of multi-model runs
-Version: 0.137.3
-Date: 2022-05-16
+Version: 0.137.4
+Date: 2022-06-13
 Authors@R: c(person("David", "Klein", email = "dklein@pik-potsdam.de", role = c("aut","cre")),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut")),
              person("Lavinia", "Baumstark", email = "baumstark@pik-potsdam.de", role = "aut"),

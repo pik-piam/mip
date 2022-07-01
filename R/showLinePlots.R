@@ -23,8 +23,8 @@
 #' @importFrom rlang .data .env
 #' @importFrom dplyr bind_rows
 showLinePlots <- function(
-  data, vars = NULL, scales = "free_y",
-  mainReg = getOption("mip.mainReg")
+    data, vars = NULL, scales = "free_y",
+    mainReg = getOption("mip.mainReg")
 ) {
 
   data <- as.quitte(data)
@@ -61,6 +61,16 @@ showLinePlots <- function(
     filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels()
 
+  # make sure all plots use the same colors for historical models
+  mainHistModels <- levels(dMainHist$model)
+  regiHistModels <- levels(dRegiHist$model)
+
+  if (identical(mainHistModels, regiHistModels)) {
+    color.dim.manual.hist <- NULL
+  } else {
+    color.dim.manual.hist <- plotstyle(union(mainHistModels, regiHistModels))
+  }
+
   if (!is.null(vars))
     warnMissingVars(bind_rows(dMainScen, dRegiScen), vars)
   if (NROW(dMainScen) == 0 && NROW(dRegiScen) == 0) {
@@ -76,7 +86,8 @@ showLinePlots <- function(
         x_hist = dMainHist,
         ylab = label,
         scales = scales,
-        plot.priority = c("x_hist", "x", "x_proj")
+        plot.priority = c("x_hist", "x", "x_proj"),
+        color.dim.manual.hist = color.dim.manual.hist[mainHistModels]
       )
   }
   if (NROW(dRegiScen) == 0) {
@@ -88,21 +99,22 @@ showLinePlots <- function(
         ylab = NULL,
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj"),
-        facet.ncol = 3
+        facet.ncol = 3,
+        color.dim.manual.hist = color.dim.manual.hist[regiHistModels]
       )
   }
 
   # If a legend of the plots can be used as common legend for both plots,
   # show that legend below mainReg-plot and only that legend.
-  mainHistModels <- levels(dMainHist$model)
-  regiHistModels <- levels(dRegiHist$model)
-  if (length(mainHistModels) == 0 || identical(mainHistModels, regiHistModels)) {
-    lgnd <- getLegend(p2)
-  } else if (length(regiHistModels) == 0) {
+
+  if (length(setdiff(regiHistModels, mainHistModels)) == 0) {
     lgnd <- getLegend(p1)
+  } else if (length(setdiff(mainHistModels, regiHistModels)) == 0) {
+    lgnd <- getLegend(p2)
   } else {
     lgnd <- NULL
   }
+
   if (!is.null(lgnd)) {
     p1 <- arrangeGrob(
       p1 + theme(legend.position = "none"),

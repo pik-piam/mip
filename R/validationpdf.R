@@ -161,7 +161,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     # replace remaining .-separators
     x <- gsub(".", " | ", x, fixed=TRUE)
     # replace "%" with "percent" to avoid error in tex
-    x <- gsub("%", "percent", x, fixed=TRUE)
+    x <- gsub("%", "\\%", x, fixed = TRUE)
     return(x)
   }
 

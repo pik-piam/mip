@@ -603,7 +603,7 @@ pmod_av;Model availability;#f37735;;
 Range anxiety;Range anxiety;#ffc425;;
 prange;Range anxiety;#ffc425;;
 Ref. stations availability;Ref. stations availability;#8c8c8c;;
-pchar; Char. stations availability;#8c8c8c;;
+pchar;Char. stations availability;#8c8c8c;;
 pref;Ref. stations availability;#8c8c8c;;
 Risk;Risk;#d11141;;
 prisk;Risk aversion;#d11141;;

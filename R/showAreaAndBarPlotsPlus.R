@@ -1,6 +1,6 @@
 #' Show Area and Bar Plots Utilizing '+'-Notation
 #'
-#' Automatically infers disaggregation of a variable using the '+'-notaion and
+#' Automatically infers disaggregation of a variable using the '+'-notation and
 #' calls \code{\link{showAreaAndBarPlots}}.
 #'
 #' The function requires \code{data} to have a character column named
@@ -24,7 +24,8 @@
 showAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
-  yearsBarPlot = getOption("mip.yearsBarPlot")
+  yearsBarPlot = getOption("mip.yearsBarPlot"),
+  scales = "free_y"
 ) {
 
   data <- as.quitte(data)
@@ -46,5 +47,6 @@ showAreaAndBarPlotsPlus <- function(
   # Instead:
   vars <- gsub("\\|\\++\\|", "|", varsPlus)
 
-  showAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg, yearsBarPlot = yearsBarPlot)
+  showAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
+                      yearsBarPlot = yearsBarPlot, scales = scales)
 }

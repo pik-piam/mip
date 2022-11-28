@@ -10,7 +10,8 @@ showAreaAndBarPlotsPlus(
   plusNum = 1,
   fill = FALSE,
   mainReg = getOption("mip.mainReg"),
-  yearsBarPlot = getOption("mip.yearsBarPlot")
+  yearsBarPlot = getOption("mip.yearsBarPlot"),
+  scales = "free_y"
 )
 }
 \arguments{
@@ -29,12 +30,14 @@ Use \code{options(mip.mainReg=<value>)} to set globally.}
 
 \item{yearsBarPlot}{A numeric vector. The years shown in the bar plots. Use
 \code{options(mip.yearsBarPlot=<value>)} to set globally.}
+
+\item{scales}{adjusts how axes are harmonized. Default is free_y}
 }
 \value{
 \code{NULL} is returned invisible.
 }
 \description{
-Automatically infers disaggregation of a variable using the '+'-notaion and
+Automatically infers disaggregation of a variable using the '+'-notation and
 calls \code{\link{showAreaAndBarPlots}}.
 }
 \details{

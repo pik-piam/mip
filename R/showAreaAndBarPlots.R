@@ -33,6 +33,7 @@
 #'   Use \code{options(mip.mainReg=<value>)} to set globally.
 #' @param yearsBarPlot A numeric vector. The years shown in the bar plots. Use
 #'   \code{options(mip.yearsBarPlot=<value>)} to set globally.
+#' @param scales adjusts how axes are harmonized. Default is free_y
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}
@@ -59,7 +60,8 @@ showAreaAndBarPlots <- function(
   data, vars, tot = NULL, fill = FALSE,
   orderVars = c("mean", "user", "userRev"),
   mainReg = getOption("mip.mainReg"),
-  yearsBarPlot = getOption("mip.yearsBarPlot")
+  yearsBarPlot = getOption("mip.yearsBarPlot"),
+  scales = "free_y"
 ) {
 
   data <- as.quitte(data)
@@ -120,7 +122,7 @@ showAreaAndBarPlots <- function(
   p1 <- d %>%
     filter(.data$region == .env$mainReg) %>%
     droplevels() %>%
-    mipArea(scales = "free_y", total = is.null(tot)) +
+    mipArea(scales = scales, total = is.null(tot)) +
     ylab(NULL) +
     theme(legend.position = "none")
   p2 <- d %>%
@@ -138,7 +140,7 @@ showAreaAndBarPlots <- function(
   p4 <- d %>%
     filter(.data$region != .env$mainReg) %>%
     droplevels() %>%
-    mipArea(scales = "free_y", total = is.null(tot)) +
+    mipArea(scales = scales, total = is.null(tot)) +
     guides(fill = guide_legend(reverse = TRUE))
 
   # Add black lines in area plots from variable tot if provided.

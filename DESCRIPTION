@@ -1,8 +1,8 @@
 Type: Package
 Package: mip
 Title: Comparison of multi-model runs
-Version: 0.139.1
-Date: 2022-11-28
+Version: 0.140.0
+Date: 2022-12-05
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),
@@ -46,4 +46,4 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: yes
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2

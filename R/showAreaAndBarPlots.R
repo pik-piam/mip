@@ -140,7 +140,8 @@ showAreaAndBarPlots <- function(
   p4 <- d %>%
     filter(.data$region != .env$mainReg) %>%
     droplevels() %>%
-    mipArea(scales = scales, total = is.null(tot)) +
+    mipArea(scales = scales, total = is.null(tot),
+            stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
     guides(fill = guide_legend(reverse = TRUE))
 
   # Add black lines in area plots from variable tot if provided.

@@ -22,7 +22,7 @@ mipBarYearData(
 
 \item{xlab}{x-axis text}
 
-\item{title}{title appering at the top of the plot}
+\item{title}{title appearing at the top of the plot}
 
 \item{scenario_markers}{Use markers to conserve space with long scenario
 names.  Symbols are either picked automatically (default), or can be
@@ -33,8 +33,8 @@ and 20, or a ggplot2 shape name
 use markers.}
 }
 \description{
-Function for plotting (bar-plot) MAgPIE objects and compare different scenarios,
-on the x-axis for some time steps one bar for each scenario is generated
+Function for plotting (bar-plot) MAgPIE objects and compare different scenarios
+or models, on the x-axis for some time steps one bar for each scenario/model is generated
 }
 \section{Example Plot}{
 
@@ -51,5 +51,5 @@ plotCompBarYearData(EnInv, ylab = "Energy Investments|Elec (billion US$2005/yr)"
 
 }
 \author{
-Lavinia Baumstark
+Lavinia Baumstark, Oliver Richters
 }

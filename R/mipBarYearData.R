@@ -1,12 +1,12 @@
 #' @title mipBarYearData
-#' @description Function for plotting (bar-plot) MAgPIE objects and compare different scenarios,
-#' on the x-axis for some time steps one bar for each scenario is generated
+#' @description Function for plotting (bar-plot) MAgPIE objects and compare different scenarios
+#' or models, on the x-axis for some time steps one bar for each scenario/model is generated
 #'
 #'
 #' @param x Data to plot. Allowed data formats: magpie or quitte
 #' @param ylab y-axis text
 #' @param xlab x-axis text
-#' @param title title appering at the top of the plot
+#' @param title title appearing at the top of the plot
 #' @param colour Dimension to be colored, default: "Scenario"
 #' @param scenario_markers Use markers to conserve space with long scenario
 #'        names.  Symbols are either picked automatically (default), or can be
@@ -15,7 +15,7 @@
 #'        and 20, or a ggplot2 shape name
 #'        (see \code{vignette("ggplot2-specs")}).  Set to \code{FALSE} to not
 #'        use markers.
-#' @author Lavinia Baumstark
+#' @author Lavinia Baumstark, Oliver Richters
 #' @section Example Plot:
 #' \if{html}{\figure{mipBarYearData.png}{example plot}}
 #' \if{html}{\figure{mipBarYearData_oneRegi.png}{example plot}}
@@ -40,14 +40,20 @@
 mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = NULL,
                            scenario_markers = TRUE) { #nolint
   scenarioMarkers <- scenario_markers
-  x <- as.quitte(x)
+  x <- droplevels(as.quitte(x))
 
-  if (length(unique(x$model)) > 1) {
-    stop("this plot can only deal with data that have only one model")
-  }
+  x$identifier <- as.factor(paste0(if (nlevels(x$model) > 1) x$model,
+                                   if (nlevels(x$model) > 1 && nlevels(x$scenario) > 1) " ",
+                                   if (nlevels(x$scenario) > 1 || nlevels(x$model) == 1) x$scenario
+                           ))
 
   if (!is.integer(x$period)) {
     stop("this plot can only deal with data that have integer periods")
+  }
+
+  if (nrow(x) == 0) {
+    warning("Quitte object is empty.")
+    return()
   }
 
   # calculate y-axis label
@@ -61,19 +67,18 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
   }
 
   # add dummy-dimension for space between the time-steps
-  xpos <- crossing(period   = unique(x$period),
-                   scenario = factor(c(levels(x$scenario), "\x13"))) %>%
-    order.levels(scenario = c(levels(x$scenario), "\x13")) %>%
-    arrange(!!sym("period"), !!sym("scenario")) %>%
-    mutate(xpos = 1:n()) %>%
-    filter("\x13" != !!sym("scenario")) %>%
-    droplevels()
+  xpos <- crossing(period     = unique(x$period),
+                   identifier = factor(c(levels(x$identifier), "\x13"))) %>%
+          order.levels(identifier = c(levels(x$identifier), "\x13")) %>%
+          arrange(!!sym("period"), !!sym("identifier")) %>%
+          mutate(xpos = 1:n()) %>%
+          filter("\x13" != !!sym("identifier")) %>%
+          droplevels()
 
   x <- x %>%
     inner_join(
       xpos,
-
-      c("scenario", "period")
+      c("identifier", "period")
     )
 
   if (scenarioMarkers) {
@@ -93,8 +98,8 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
   }
 
   if (scenarioMarkers) {
-    scenarioMarkers <- stats::setNames((1:20)[seq_along(unique(x$scenario))],
-                                 levels(x$scenario))
+    scenarioMarkers <- stats::setNames((1:20)[seq_along(unique(x$identifier))],
+                                 levels(x$identifier))
   }
 
   # calculate positions of period labels
@@ -126,7 +131,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
                          labels = xpos$period) +
       geom_point(data = yMarker,
                  mapping = aes(x = !!sym("xpos"), y = !!sym("y"),
-                               shape = !!sym("scenario")),
+                               shape = !!sym("identifier")),
                  size = 1.5) +
       scale_shape_manual(values = scenarioMarkers, name = NULL) +
       theme(legend.box = "vertical")
@@ -134,7 +139,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
     p <- p +
       scale_x_continuous(breaks = xpos$xpos,
                          labels = xpos %>%
-                           unite(!!sym("label"), !!sym("scenario"),
+                           unite(!!sym("label"), !!sym("identifier"),
                                  !!sym("period"), sep = " ") %>%
                            getElement("label")) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))

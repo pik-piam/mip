@@ -1,8 +1,8 @@
 Type: Package
 Package: mip
 Title: Comparison of multi-model runs
-Version: 0.140.1
-Date: 2022-12-06
+Version: 0.141.0
+Date: 2023-01-02
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),
@@ -10,7 +10,8 @@ Authors@R: c(
     person("Florian", "Humpenoeder", , "humpenoeder@pik-potsdam.de", role = "aut"),
     person("Miodrag", "Stevanovic", , "miodrag@pik-potsdam.de", role = "aut"),
     person("Stephen", "Wirth", , "wirth@pik-potsdam.de", role = "aut"),
-    person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = "aut")
+    person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = "aut"),
+    person("Oliver", "Richters", role = "aut")
   )
 Description: Package contains generic functions to produce comparison
     plots of multi-model runs.
@@ -46,4 +47,4 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: yes
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

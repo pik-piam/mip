@@ -36,7 +36,8 @@ Imports:
     rlang,
     shiny,
     tidyr,
-    trafficlight
+    trafficlight,
+	ggpattern
 Suggests: 
     covr,
     gdxrrw,

@@ -3,6 +3,7 @@
 export(extractVariableGroups)
 export(getPlotData)
 export(mipArea)
+export(mipAreaPattern)
 export(mipBarYearData)
 export(mipIterations)
 export(mipLineHistorical)

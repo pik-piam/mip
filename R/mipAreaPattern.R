@@ -31,13 +31,21 @@
 #' p <- p + theme_mip(size = 18)
 #' # change facetting
 #' p <- p + facet_grid(region ~ scenario)
+#'
+#' # patterns and color scales can be added manually here:
+#' # p <- p + scale_pattern_manual(values = patternValues,
+#'                      labels = labels) +
+#' # p <- p + scale_pattern_spacing_manual(values= spacingValues,
+#'                                labels = labels)+
+#' # p <- p + scale_fill_manual(values=colorFillValues,
+#'                     labels = labels)
 #' @importFrom magclass is.magpie getSets
 #' @importFrom quitte is.quitte
-#' @importFrom ggplot2 ggplot geom_area_pattern aes_ geom_line scale_linetype_discrete
+#' @importFrom ggplot2 ggplot aes_ geom_line scale_linetype_discrete
 #'   facet_wrap facet_grid theme scale_fill_manual xlab expand_limits
 #' @importFrom dplyr group_by summarise ungroup
 #' @importFrom rlang .data
-#' @importFrom ggpattern
+#' @importFrom ggpattern geom_area_pattern scale_pattern_manual scale_pattern_spacing_manual
 #' @export
 mipAreaPattern <- function(x, stack_priority = c("variable", "region"), total = TRUE, scales = "fixed", shorten = TRUE, #nolint
                     hist = NULL, hist_source = "first", patternDensity = 0.35, patternKeyScale =0.6) { #nolint
@@ -221,8 +229,8 @@ mipAreaPattern <- function(x, stack_priority = c("variable", "region"), total = 
   # get the same order of colors for elements that are not defined in plotstyle.
   if (!is.factor(x[[dimToStack]])) x[[dimToStack]] <- factor(x[[dimToStack]], levels = unique(x[[dimToStack]]))
   # because of conflicts with patterns, dont use plotstyle colours and labels by default
-  # p <- p + scale_fill_manual(values = plotstyle(levels(x[[dimToStack]])),
-  #                          name   = "")
+  p <- p + scale_pattern_manual(values= rep("none", length(unique(x[[dimToStack]])))) +
+           scale_pattern_spacing_manual(values= rep(0.0, length(unique(x[[dimToStack]]))))
 
   # increase y-axis limits to hide all-zero data that was set to -1e-36
   p <- p +

@@ -190,6 +190,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
 
   # colors
   color_set <- plotstyle(sources)
+  names(color_set) <- sources
   if (!is.null(color.dim.manual)) {
     if (length(color.dim.manual) != length(color_set[model_output])) {
       stop(paste0("Number of provided colors for model data (#",length(color.dim.manual),") does not match number of items defined in color.dim (#",length(color_set[model_output]),")"))

@@ -2,6 +2,7 @@
 
 export(extractVariableGroups)
 export(getPlotData)
+export(harmonize)
 export(mipArea)
 export(mipBarYearData)
 export(mipIterations)

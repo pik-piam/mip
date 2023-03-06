@@ -42,10 +42,13 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
   scenarioMarkers <- scenario_markers
   x <- droplevels(as.quitte(x))
 
-  x$identifier <- as.factor(paste0(if (nlevels(x$model) > 1) x$model,
-                                   if (nlevels(x$model) > 1 && nlevels(x$scenario) > 1) " ",
-                                   if (nlevels(x$scenario) > 1 || nlevels(x$model) == 1) x$scenario
-                           ))
+  if (nlevels(x$model) > 1 && nlevels(x$scenario) == 1) {
+    x$identifier <- x$model
+  } else if (nlevels(x$scenario) > 1 && nlevels(x$model) == 1) {
+    x$identifier <- x$scenario
+  } else {
+    x$identifier <- as.factor(paste(x$model, x$scenario))
+  }
 
   if (!is.integer(x$period)) {
     stop("this plot can only deal with data that have integer periods")

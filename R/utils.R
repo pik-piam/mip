@@ -6,6 +6,7 @@
 #' @param data A quitte object.
 #' @param vars A character vector.
 #' @return Returns \code{NULL} invisibly.
+#' @export
 warnMissingVars <- function(data, vars) {
   available <- vars %in% levels(data$variable)
   missingVars <- vars[!available]
@@ -63,6 +64,7 @@ getLegend <- function(plt) {
 #' @param conversionFactor A single numerical value.
 #' @return A quitte object with changed values and new unit. Unused levels are dropped.
 #' @importFrom rlang .data .env
+#' @export
 calculateRatio <- function(
   data, numerators, denominator, newUnit = "1", conversionFactor = 1
 ) {

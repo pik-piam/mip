@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: 'mip: Comparison of multi-model runs'
+version: 0.142.0
+date-released: '2023-03-30'
+abstract: Package contains generic functions to produce comparison plots of multi-model
+  runs.
+authors:
+- family-names: Klein
+  given-names: David
+  email: dklein@pik-potsdam.de
+- family-names: Dietrich
+  given-names: Jan Philipp
+  email: dietrich@pik-potsdam.de
+- family-names: Baumstark
+  given-names: Lavinia
+  email: baumstark@pik-potsdam.de
+- family-names: Humpenoeder
+  given-names: Florian
+  email: humpenoeder@pik-potsdam.de
+- family-names: Stevanovic
+  given-names: Miodrag
+  email: miodrag@pik-potsdam.de
+- family-names: Wirth
+  given-names: Stephen
+  email: wirth@pik-potsdam.de
+- family-names: Führlich
+  given-names: Pascal
+  email: pascal.fuehrlich@pik-potsdam.de
+- family-names: Richters
+  given-names: Oliver
+license: BSD-2-Clause
+repository-code: https://github.com/pik-piam/mip
+doi: 10.5281/zenodo.1158586
+

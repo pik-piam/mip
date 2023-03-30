@@ -5,7 +5,9 @@
 #'
 #' @param data A quitte object.
 #' @param vars A character vector.
+#' @export
 #' @return Returns \code{NULL} invisibly.
+#' @export
 
 warnMissingVars <- function(data, vars) {
   available <- vars %in% levels(data$variable)
@@ -86,6 +88,7 @@ calculateRatio <- function(
 #'
 #' @param x A character vector.
 #' @return A single string. The longest common prefix of \code{x}.
+#' @export
 longestCommonPrefix <- function(x) {
   stopifnot(is.character(x))
   if (length(x) == 0 || any(is.na(x))) return(NA_character_)

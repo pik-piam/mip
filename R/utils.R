@@ -6,7 +6,7 @@
 #' @param data A quitte object.
 #' @param vars A character vector.
 #' @return Returns \code{NULL} invisibly.
-#' @export
+
 warnMissingVars <- function(data, vars) {
   available <- vars %in% levels(data$variable)
   missingVars <- vars[!available]
@@ -25,6 +25,7 @@ warnMissingVars <- function(data, vars) {
 #' @param optNames A character vector. The names of the variables.
 #' @param envir The environment where to look for the variables.
 #' @return Returns \code{NULL} invisibly.
+#' @export
 checkGlobalOptionsProvided <- function(optNames, envir=rlang::caller_env()) {
   for (on in optNames) {
     if (is.null(get0(on, envir = envir))) {

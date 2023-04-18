@@ -17,4 +17,11 @@ test_that("shorten_legend works", {
   expect_identical(attr(d$identifier, "deletedinfo"), levels(qe$scenario)[[1]])
   attr(d$identifier, "deletedinfo") <- NULL
   expect_identical(d$identifier, d$model)
+
+  d <- droplevels(dplyr::filter(qe, !!sym("scenario") == levels(qe$scenario)[[1]],
+                                    !!sym("model") == levels(qe$model)[[1]]))
+  d$identifier <- identifierModelScen(d)
+  expect_identical(attr(d$identifier, "deletedinfo"), levels(qe$model)[[1]])
+  attr(d$identifier, "deletedinfo") <- NULL
+  expect_identical(d$identifier, d$scenario)
 })

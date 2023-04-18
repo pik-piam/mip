@@ -11,7 +11,8 @@ mipArea(
   scales = "fixed",
   shorten = TRUE,
   hist = NULL,
-  hist_source = "first"
+  hist_source = "first",
+  ylab = NULL
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ names in the legend)}
 objects, the dimension that contains the variables must have one of the following names: variable, scenario, model.}
 
 \item{hist_source}{If there are multiple historical sources the name of the source that you want to be plotted.}
+
+\item{ylab}{y-axis text}
 }
 \description{
 Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.

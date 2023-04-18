@@ -100,3 +100,23 @@ longestCommonPrefix <- function(x) {
   }
   return(substr(x[1], 1, n))
 }
+
+
+
+#' add identifier based on model and scenario names
+#' @param x A quitte object
+#' @return A factor. If more than one model but only one scenario, use model.
+#' If more than one scenario but only one model, use scenario. Else, combine them.
+identifierModelScen <- function(x) {
+  x <- quitte::as.quitte(x)
+  if (nlevels(x$model) > 1 && nlevels(x$scenario) == 1) {
+    x$identifier <- x$model
+    attr(x$identifier, "deletedinfo") <- levels(x$scenario)[[1]]
+  } else if (nlevels(x$scenario) > 1 && nlevels(x$model) == 1) {
+    x$identifier <- x$scenario
+    attr(x$identifier, "deletedinfo") <- levels(x$model)[[1]]
+  } else {
+    x$identifier <- as.factor(paste(x$model, x$scenario))
+  }
+  return(x$identifier)
+}

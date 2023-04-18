@@ -115,32 +115,32 @@ showAreaAndBarPlots <- function(
   )
 
   # Common label for y-axis.
-  lcp <- gsub("\\|$", "", longestCommonPrefix(vars))
-  label <- paste0(lcp, " [", paste0(levels(d$unit), collapse = ","), "]")
+  lcp <- gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front"))
+  label <- paste0(lcp, " (", paste0(levels(d$unit), collapse = ","), ")")
 
   # Create plots.
   p1 <- d %>%
     filter(.data$region == .env$mainReg) %>%
     droplevels() %>%
-    mipArea(scales = scales, total = is.null(tot)) +
+    mipArea(scales = scales, total = is.null(tot), ylab = lcp) +
     ylab(NULL) +
     theme(legend.position = "none")
   p2 <- d %>%
     filter(.data$region == .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
     droplevels() %>%
-    mipBarYearData() +
+    mipBarYearData(ylab = lcp) +
     ylab(NULL) +
     theme(legend.position = "none")
   p3 <- d %>%
     filter(.data$region != .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
     droplevels() %>%
-    mipBarYearData() +
+    mipBarYearData(ylab = lcp) +
     ylab(NULL) +
     guides(fill = guide_legend(reverse = TRUE, ncol = 3))
   p4 <- d %>%
     filter(.data$region != .env$mainReg) %>%
     droplevels() %>%
-    mipArea(scales = scales, total = is.null(tot),
+    mipArea(scales = scales, total = is.null(tot), ylab = lcp,
             stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
     guides(fill = guide_legend(reverse = TRUE))
 

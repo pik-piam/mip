@@ -51,14 +51,14 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
 
   x <- as.quitte(x)
 
-  class(x) <- setdiff(class(x),"data.table")
+  class(x) <- setdiff(class(x), "data.table")
 
   x <- droplevels(x)
   x <- x[!is.na(x$value),]
   if(all(is.na(x$scenario))) x$scenario <- ""
   if(all(is.na(x$model))) x$model <- ""
-  # add a model.scenario column
-  x$moscen <- interaction(x$model,x$scenario)
+  x$moscen <- identifierModelScen(x)
+  color.dim.name <- paste(c(color.dim.name, attr(x$moscen, "deletedinfo")), collapse = " ")
 
   ## main data object
   a <- x
@@ -70,7 +70,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     x_hist <- as.quitte(x_hist)
     x_hist <- droplevels(x_hist)
     x_hist <- x_hist[!is.na(x_hist$value),]
-    x_hist$moscen <- interaction(x_hist$model,x_hist$scenario)
+    x_hist$moscen <- identifierModelScen(x_hist)
     x_hist$id <- ""
     x_hist[x_hist$scenario!="historical","id"] <- "x_proj"
     x_hist[x_hist$scenario=="historical","id"] <- "x_hist"
@@ -297,7 +297,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     } else col3 <- ifelse(is.null(x_proj),0,nrow(unique(x_proj[,"model", drop=FALSE])))
 
     # number of characters of each model-scenario for each data type
-    nch1 <- max(nchar(max(levels(x$moscen))),nchar("Model output"))
+    nch1 <- max(nchar(max(levels(x$moscen))), nchar(color.dim.name))
     nch2 <- ifelse(col2==0,0,max(nchar(max(levels(x_hist$model))),nchar("Historical data")))
     nch3 <- ifelse(col3==0,0,max(ifelse(leg.proj,nchar(max(levels(x_proj$moscen))),nchar(max(levels(x_proj$model)))),nchar("Other projections")))
     allnch <- nch1 + nch2 + nch3
@@ -327,7 +327,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     l1 <- l1 + scale_color_manual(values=color_set[1:lsh$col1],
                                   breaks=interaction(unlist(a[a$id=="x","model"]),unlist(a[a$id=="x","scenario"])),
                                 labels=shorten_legend(interaction(unlist(a[a$id=="x","model"]),unlist(a[a$id=="x","scenario"]),sep=" "),lsh$nchar[1]),
-                                name="Model output")
+                                name=color.dim.name)
     l1 <- l1 + theme_legend()
     leg[["results"]] <- suppressMessages(g_legend(l1))
   }

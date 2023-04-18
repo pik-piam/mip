@@ -12,3 +12,4 @@
 ^vignettes/.lintr$
 ^Makefile$
 ^.*CITATION.cff$
+^output$

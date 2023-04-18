@@ -36,19 +36,11 @@
 #' @export
 #
 
-
 mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = NULL,
                            scenario_markers = TRUE) { #nolint
   scenarioMarkers <- scenario_markers
   x <- droplevels(as.quitte(x))
-
-  if (nlevels(x$model) > 1 && nlevels(x$scenario) == 1) {
-    x$identifier <- x$model
-  } else if (nlevels(x$scenario) > 1 && nlevels(x$model) == 1) {
-    x$identifier <- x$scenario
-  } else {
-    x$identifier <- as.factor(paste(x$model, x$scenario))
-  }
+  x$identifier <- identifierModelScen(x)
 
   if (!is.integer(x$period)) {
     stop("this plot can only deal with data that have integer periods")
@@ -59,16 +51,9 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
     return()
   }
 
-  # calculate y-axis label
-  x$variable <- shorten_legend(x$variable, identical_only = TRUE)
-
-  if (is.null(ylab)) {
-     ylab <- paste0(sub(".$", "", attr(x$variable, "front")), attr(x$variable, "back"))
-     # add unit
-     unit <- unique(as.character(x$unit))
-     ylab <- paste0(ylab, " (", paste0(unit, collapse = " | "), ")")
-  }
-
+  # if not given derive y-axis label, shorten variables accordingly
+  x$variable <- shorten_legend(x$variable, ylab = ylab, identical_only = TRUE, unit = x$unit)
+  ylab <- attr(x$variable, "ylab")
   # add dummy-dimension for space between the time-steps
   xpos <- crossing(period     = unique(x$period),
                    identifier = factor(c(levels(x$identifier), "\x13"))) %>%

@@ -26,3 +26,5 @@ vignettes/*.R
 *.knit.md
 .Rproj.user
 inst/doc
+# output used to generate plots
+output

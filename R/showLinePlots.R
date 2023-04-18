@@ -39,12 +39,12 @@ showLinePlots <- function(
     d <- data %>%
       filter(.data$variable %in% .env$vars) %>%
       droplevels()
-    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" [", paste0(levels(d$unit), collapse = ","), "]"))
+    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
     label <- paste0(paste0(vars, collapse = ","), unitlabel)
   } else {
     d <- data %>%
       droplevels()
-    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" [", paste0(levels(d$unit), collapse = ","), "]"))
+    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
     label <- paste0(paste0(levels(d$variable), collapse = ","), unitlabel)
   }
 

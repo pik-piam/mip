@@ -15,6 +15,7 @@
 #' @param hist Historical data. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte
 #' objects, the dimension that contains the variables must have one of the following names: variable, scenario, model.
 #' @param hist_source If there are multiple historical sources the name of the source that you want to be plotted.
+#' @param ylab y-axis text
 #' @author David Klein, Jan Philipp Dietrich
 #' @section Example Plot:
 #' \if{html}{\figure{mipArea.png}{example plot}}
@@ -37,7 +38,7 @@
 #' @importFrom rlang .data
 #' @export
 mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, scales = "fixed", shorten = TRUE, #nolint
-                    hist = NULL, hist_source = "first") { #nolint
+                    hist = NULL, hist_source = "first", ylab = NULL) { #nolint
   ############################################
   ######  P R E P A R E   D A T A  ###########
   ############################################
@@ -51,24 +52,22 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   x <- as.quitte(x)
 
   # Add dummy scenario if data does not contain a scenario
-  # Otherwise selecting all scenarios that are not 'historicl' further down deletes ALL data
+  # Otherwise selecting all scenarios that are not 'historical' further down deletes ALL data
   if (all(is.na(x$scenario))) x$scenario <- "default"
 
-  # shorten variable names and calc ylab
-  if (shorten) x$variable <- shorten_legend(x$variable, identical_only = TRUE)
-  ylab <- paste0(sub(".$", "", attr(x$variable, "front")), attr(x$variable, "back"))
-  # add unit
-  unit <- unique(as.character(x$unit))
-  ylab <- paste0(ylab, " (", paste0(unit, collapse = " | "), ")")
+  # if not given derive y-axis label, shorten variables accordingly
+  shortenedVariables <- shorten_legend(x$variable, identical_only = TRUE, ylab = ylab, unit = x$unit)
+  if (shorten) x$variable <- shortenedVariables
+  ylab <- attr(shortenedVariables, "ylab")
 
   # Repeat the same for history
   if (!is.null(hist)) {
     if (is.magpie(hist) & !any(c("variable", "model", "scenario") %in% getSets(hist))) {
-      stop("MAgPIE objects with historical data need to have at least one dimension named 'variable' or 'model' or ",
-           "'scenario'.")
+      stop("MAgPIE objects with historical data need to have at least one ",
+           "dimension named 'variable' or 'model' or 'scenario'.")
     }
     hist <- as.quitte(hist)
-    if (shorten) hist$variable <- shorten_legend(hist$variable, identical_only = TRUE)
+    if (shorten) hist$variable <- shorten_legend(hist$variable, ylab = ylab, identical_only = TRUE)
     # select historical data source
     if (hist_source == "first") {
       hist <- hist[hist$model == levels(hist$model)[1], ]

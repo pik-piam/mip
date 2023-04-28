@@ -107,6 +107,7 @@ longestCommonPrefix <- function(x) {
 #' @param x A quitte object
 #' @return A factor. If more than one model but only one scenario, use model.
 #' If more than one scenario but only one model, use scenario. Else, combine them.
+#' @export
 identifierModelScen <- function(x) {
   x <- droplevels(quitte::as.quitte(x))
   if (nlevels(x$model) > 1 && nlevels(x$scenario) == 1) {

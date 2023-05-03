@@ -14,7 +14,7 @@ mipLineHistorical(
   ylab = NULL,
   xlab = "Year",
   title = NULL,
-  color.dim.name = "Model output",
+  color.dim.name = NULL,
   ybreaks = NULL,
   ylim = 0,
   ylog = NULL,

@@ -61,7 +61,7 @@ showMultiLinePlots <- function(
     return(invisible(NULL))
   }
 
-  label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
+  label <- paste0("(", paste0(levels(d$unit), collapse = ","), ")")
 
   p1 <- dMainScen %>%
     ggplot(aes(.data$period, .data$value)) +

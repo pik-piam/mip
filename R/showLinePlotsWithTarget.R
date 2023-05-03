@@ -19,7 +19,7 @@
 #' @export
 #' @importFrom rlang .data .env
 showLinePlotsWithTarget <- function(
-  data, vars, scales = "free_y"
+  data, vars, scales = "free_y", color.dim.name = NULL
 ) {
 
   data <- as.quitte(data)
@@ -54,7 +54,8 @@ showLinePlotsWithTarget <- function(
       ylab = label,
       scales = scales,
       plot.priority = c("x_hist", "x", "x_proj"),
-      facet.ncol = 3
+      facet.ncol = 3,
+      color.dim.name = color.dim.name
     ) +
     geom_hline(
       data = dTar,

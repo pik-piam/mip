@@ -4,7 +4,12 @@
 \alias{showLinePlotsWithTarget}
 \title{Show Line Plots With Target}
 \usage{
-showLinePlotsWithTarget(data, vars, scales = "free_y")
+showLinePlotsWithTarget(
+  data,
+  vars,
+  scales = "free_y",
+  color.dim.name = "Model output"
+)
 }
 \arguments{
 \item{data}{A quitte object or an object that can be transformed into a
@@ -14,6 +19,8 @@ quitte object.}
 to be plotted.}
 
 \item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+
+\item{color.dim.name}{name for the color-dimension used in the legend}
 }
 \value{
 \code{NULL} is returned invisible.

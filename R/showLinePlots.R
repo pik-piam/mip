@@ -9,6 +9,7 @@
 #' @param vars A character vector. Usually just a single string. The variables
 #'   to be plotted. If \code{NULL} all rows from \code{data} are plotted.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
+#' @param color.dim.name name for the color-dimension used in the legend
 #' @inheritParams showAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -23,7 +24,7 @@
 #' @importFrom rlang .data .env
 #' @importFrom dplyr bind_rows
 showLinePlots <- function(
-    data, vars = NULL, scales = "free_y",
+    data, vars = NULL, scales = "free_y", color.dim.name = NULL,
     mainReg = getOption("mip.mainReg")
 ) {
 
@@ -87,6 +88,7 @@ showLinePlots <- function(
         ylab = label,
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj"),
+        color.dim.name = color.dim.name,
         color.dim.manual.hist = color.dim.manual.hist[mainHistModels]
       )
   }
@@ -100,6 +102,7 @@ showLinePlots <- function(
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj"),
         facet.ncol = 3,
+        color.dim.name = color.dim.name,
         color.dim.manual.hist = color.dim.manual.hist[regiHistModels]
       )
   }

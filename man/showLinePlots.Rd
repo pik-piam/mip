@@ -8,6 +8,7 @@ showLinePlots(
   data,
   vars = NULL,
   scales = "free_y",
+  color.dim.name = "Model output",
   mainReg = getOption("mip.mainReg")
 )
 }
@@ -19,6 +20,8 @@ quitte object.}
 to be plotted. If \code{NULL} all rows from \code{data} are plotted.}
 
 \item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+
+\item{color.dim.name}{name for the color-dimension used in the legend}
 
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}

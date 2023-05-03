@@ -112,10 +112,10 @@ identifierModelScen <- function(x) {
   x <- droplevels(quitte::as.quitte(x))
   if (nlevels(x$model) > 1 && nlevels(x$scenario) == 1) {
     x$identifier <- x$model
-    attr(x$identifier, "deletedinfo") <- levels(x$scenario)[[1]]
+    attr(x$identifier, "deletedinfo") <- paste("Scenario:", levels(x$scenario)[[1]])
   } else if (nlevels(x$model) == 1) {
     x$identifier <- x$scenario
-    attr(x$identifier, "deletedinfo") <- levels(x$model)[[1]]
+    attr(x$identifier, "deletedinfo") <- paste("Model:", levels(x$model)[[1]])
   } else {
     x$identifier <- as.factor(paste(x$model, x$scenario))
   }

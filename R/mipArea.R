@@ -107,7 +107,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   # if there are three facet dimensions that have more than one element combine the two
   # smallest ones into the first one to be able to create a 2-D facet_grid later on
   if (length(facets) == 3) {
-    x[, facets[1]] <- interaction(x[[facets[1]]], x[[facets[2]]])
+    x[, facets[1]] <- paste(x[[facets[2]]], x[[facets[1]]])
   }
 
   # if not provided by user calculate total by summing over dimToStack
@@ -195,11 +195,11 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   # add total to plot as black line
   if (is.quitte(total)) {
     p <- p + geom_line(data = totalX, aes_(~period, ~value, linetype = as.formula(paste("~", dimToStack))),
-                       color = "#000000", size = 1)
+                       color = "#000000", linewidth = 1)
     p <- p + scale_linetype_discrete(labels = "Total", name = "")
     if (!is.null(hist)) {
       p <- p + geom_line(data = totalH, aes_(~period, ~value, linetype = as.formula(paste("~", dimToStack))),
-                         color = "#000000", size = 1, alpha = 0.3)
+                         color = "#000000", linewidth = 1, alpha = 0.3)
     }
   }
 

@@ -84,7 +84,11 @@ showAreaAndBarPlots <- function(
     tot <- NULL
   }
 
-  d <- data %>%
+  dnohist <- data %>%
+    filter(data$scenario != "historical") %>%
+    droplevels()
+  if (! "identifier" %in% names(dnohist)) dnohist$identifier <- identifierModelScen(dnohist)
+  d <- dnohist %>%
     filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>%
     droplevels()
   warnMissingVars(d, vars)
@@ -146,11 +150,10 @@ showAreaAndBarPlots <- function(
 
   # Add black lines in area plots from variable tot if provided.
   if (!is.null(tot)) {
-    dMainTot <- data %>%
+    dMainTot <- dnohist %>%
       filter(
         .data$region == .env$mainReg,
-        .data$variable == .env$tot,
-        .data$scenario != "historical") %>%
+        .data$variable == .env$tot) %>%
       droplevels()
     p1 <- p1 +
       geom_line(
@@ -158,12 +161,12 @@ showAreaAndBarPlots <- function(
         mapping = aes(.data$period, .data$value),
         size = 1.3
       )
-    dRegiTot <- data %>%
+    dRegiTot <- dnohist %>%
       filter(
         .data$region != .env$mainReg,
-        .data$variable == .env$tot,
-        .data$scenario != "historical") %>%
+        .data$variable == .env$tot) %>%
       droplevels()
+    dRegiTot$scenario <- dRegiTot$identifier
     p4 <- p4 +
       geom_line(
         data = dRegiTot,

@@ -2,7 +2,7 @@
 #'
 #' @param x           Data to plot. Allowed data formats: magpie or quitte
 #' @param x_hist      historical data to plot. Allowed data formats: magpie or quitte, If no historic information is provided the plot will ignore it.
-#' @param color.dim   dimension used for different colors, default="moscen"; can only be chosen freely if x_hist is NULL.
+#' @param color.dim   dimension used for different colors, default="identifier"; can only be chosen freely if x_hist is NULL.
 #' @param linetype.dim dimension used for different line types, default=NULL
 #' @param facet.dim   dimension used for the facets, default="region"
 #' @param funnel.dim  dimension used for different funnels, default=NULL
@@ -43,8 +43,8 @@
 #' @export
 #'
 
-mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
-                              ylab=NULL,xlab="Year",title=NULL,color.dim.name="Model output",ybreaks=NULL,ylim=0,
+mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
+                              ylab=NULL,xlab="Year",title=NULL,color.dim.name=NULL,ybreaks=NULL,ylim=0,
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj"),
                               ggobject=TRUE,paper_style=FALSE,xlim=NULL,facet.ncol=3,legend.ncol=1,hlines=NULL,hlines.labels=NULL,
                               color.dim.manual=NULL, color.dim.manual.hist=NULL) {
@@ -57,8 +57,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   x <- x[!is.na(x$value),]
   if(all(is.na(x$scenario))) x$scenario <- ""
   if(all(is.na(x$model))) x$model <- ""
-  x$moscen <- identifierModelScen(x)
-  color.dim.name <- paste(c(color.dim.name, attr(x$moscen, "deletedinfo")), collapse = " ")
+  if (! "identifier" %in% names(x)) x$identifier <- identifierModelScen(x)
+  if (is.null(color.dim.name)) color.dim.name <- c(attr(x$identifier, "deletedinfo"), "Model output")[[1]]
 
   ## main data object
   a <- x
@@ -70,7 +70,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     x_hist <- as.quitte(x_hist)
     x_hist <- droplevels(x_hist)
     x_hist <- x_hist[!is.na(x_hist$value),]
-    x_hist$moscen <- identifierModelScen(x_hist)
+    if (! "identifier" %in% names(x_hist)) x_hist$identifier <- identifierModelScen(x_hist)
     x_hist$id <- ""
     x_hist[x_hist$scenario!="historical","id"] <- "x_proj"
     x_hist[x_hist$scenario=="historical","id"] <- "x_hist"
@@ -91,7 +91,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
 
   # make line plot of data
   p <- ggplot()
-  if (color.dim!="moscen" && !is.null(x_hist)) stop("color.dim can only be choosen freely if x_hist is NULL!")
+  if (color.dim!="identifier" && !is.null(x_hist)) stop("color.dim can only be choosen freely if x_hist is NULL!")
 
   # log scale
   if(!is.null(ylog)) {
@@ -125,14 +125,14 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
 
   # internal functions for plotting of different types of data
   priority_x <- function(p){
-    p <- p + geom_line(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim,linetype=linetype.dim),size=1)
+    p <- p + geom_line(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim,linetype=linetype.dim),linewidth=1)
     p <- p + geom_point(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim),size=1.5)
     return(p)
   }
 
   priority_x_hist <- function(p,MarkerSize=2.5){
     if(any(a$id=="x_hist")) {
-      p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model"),size=1, alpha=0.3)
+      p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model"),linewidth=1, alpha=0.3)
       #plot for creating the legend
       p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model",fill="model"),size=0)
       #plot the data without legend
@@ -146,21 +146,21 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
       if(leg.proj){
         #plot for creating the legend
         p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,],
-                           aes_string(x="period",y="value",group="moscen", color="moscen",linetype=linetype.dim,alpha="moscen"),
-                           size=0)
+                           aes_string(x="period",y="value",group="identifier", color="identifier",linetype=linetype.dim,alpha="identifier"),
+                           linewidth=0)
         #plot the data
         p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,],
-                           aes_string(x="period",y="value",group="moscen", color="moscen",linetype=linetype.dim),
-                           size=0.8, alpha=.7,show.legend = TRUE)
+                           aes_string(x="period",y="value",group="identifier", color="identifier",linetype=linetype.dim),
+                           linewidth=0.8, alpha=.7,show.legend = TRUE)
       } else {
         #plot for creating the legend
         p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,],
-                           aes_string(x="period",y="value",group="moscen",linetype=linetype.dim,alpha="model"),
-                           size=0, color="white")
+                           aes_string(x="period",y="value",group="identifier",linetype=linetype.dim,alpha="model"),
+                           linewidth=0, color="white")
         #plot the data
         p <- p + geom_line(data=a[a$id=="x_proj" & a$period<=ymax,],
-                           aes_string(x="period",y="value",group="moscen",linetype=linetype.dim),
-                           size=0.8, alpha=.5, color="#A1A194",show.legend = TRUE)
+                           aes_string(x="period",y="value",group="identifier",linetype=linetype.dim),
+                           linewidth=0.8, alpha=.5, color="#A1A194",show.legend = TRUE)
       }
     }
     return(p)
@@ -181,7 +181,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   model_output <- as.vector(unlist(unique(a[a$id=="x",color.dim])))
   historical <- as.vector(unlist(unique(a[a$id=="x_hist","model"])))
   if(leg.proj) {
-    projection <- as.vector(unlist(unique(a[a$id=="x_proj","moscen"])))
+    projection <- as.vector(unlist(unique(a[a$id=="x_proj","identifier"])))
   } else {
     projection <- as.vector(unlist(unique(a[a$id=="x_proj","model"])))
   }
@@ -257,9 +257,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     #alpha: add colors for projection depending on leg.proj
     p <- p + scale_color_manual(color.dim.name,values = color_set, breaks=model_output,labels=sub("\\."," ",model_output),guide=guide_legend(order=1,title.position = "top", ncol=legend.ncol))
     p <- p + scale_fill_manual("Historical data",values = color_set[historical],breaks=historical,
-                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",linetype=0,size=5),order=2,title.position = "top", ncol=legend.ncol))
-    if(leg.proj) p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour=color_set[projection],shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
-    else p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour="#A1A194",shape=NULL,linetype=1,size=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
+                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",linetype=0,linewidth=5),order=2,title.position = "top", ncol=legend.ncol))
+    if(leg.proj) p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour=color_set[projection],shape=NULL,linetype=1,linewidth=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
+    else p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour="#A1A194",shape=NULL,linetype=1,linewidth=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
     p <- p + guides(linetype=guide_legend(order=4,title.position="top",ncol=legend.ncol))
 
     return(p)
@@ -297,9 +297,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
     } else col3 <- ifelse(is.null(x_proj),0,nrow(unique(x_proj[,"model", drop=FALSE])))
 
     # number of characters of each model-scenario for each data type
-    nch1 <- max(nchar(max(levels(x$moscen))), nchar(color.dim.name))
+    nch1 <- max(nchar(max(levels(x$identifier))), nchar(color.dim.name))
     nch2 <- ifelse(col2==0,0,max(nchar(max(levels(x_hist$model))),nchar("Historical data")))
-    nch3 <- ifelse(col3==0,0,max(ifelse(leg.proj,nchar(max(levels(x_proj$moscen))),nchar(max(levels(x_proj$model)))),nchar("Other projections")))
+    nch3 <- ifelse(col3==0,0,max(ifelse(leg.proj,nchar(max(levels(x_proj$identifier))),nchar(max(levels(x_proj$model)))),nchar("Other projections")))
     allnch <- nch1 + nch2 + nch3
     c1 <- nch1/allnch
     c2 <- nch2/allnch
@@ -322,8 +322,8 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   ## legend for the model output
   if(lsh$col1>0){
     l1 <- ggplot(data=a[a$id=="x",])
-    l1 <- l1 + geom_line(aes_(x=~period,y=~value,color=~moscen),size=1)
-    l1 <- l1 + geom_point(aes_(x=~period,y=~value,color=~moscen),size=1.5)
+    l1 <- l1 + geom_line(aes_(x=~period,y=~value,color=~identifier),linewidth=1)
+    l1 <- l1 + geom_point(aes_(x=~period,y=~value,color=~identifier),size=1.5)
     l1 <- l1 + scale_color_manual(values=color_set[1:lsh$col1],
                                   breaks=interaction(unlist(a[a$id=="x","model"]),unlist(a[a$id=="x","scenario"])),
                                 labels=shorten_legend(interaction(unlist(a[a$id=="x","model"]),unlist(a[a$id=="x","scenario"]),sep=" "),lsh$nchar[1]),
@@ -335,7 +335,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   ## legend for the historical data
   if(lsh$col2>0 & "x_hist" %in% levels(a$id)){
     l2 <- ggplot(data=a[a$id=="x_hist",])
-    l2 <- l2 + geom_line(aes_(x=~period,y=~value,color=~model),size=1,alpha=.15)
+    l2 <- l2 + geom_line(aes_(x=~period,y=~value,color=~model),linewidth=1,alpha=.15)
     l2 <- l2 + geom_point(aes_(x=~period,y=~value,color=~model),size=3.5,shape="+")
     l2 <- l2 + scale_color_manual(values=as.vector(color_set[(lsh$col1+1):(lsh$col1+lsh$col2)]),name="Historical data")
     l2 <- l2 + theme_legend()
@@ -346,7 +346,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
   if(lsh$col3>0 & "x_proj" %in% levels(a$id)){
     if(leg.proj){
       l3 <- ggplot(data=a[a$id=="x_proj",])
-      l3 <- l3 + geom_line(aes_(x=~period,y=~value,color=~moscen),size=1,alpha=.7)
+      l3 <- l3 + geom_line(aes_(x=~period,y=~value,color=~identifier),linewidth=1,alpha=.7)
       l3 <- l3 + scale_color_manual(values=color_set[(lsh$col1+lsh$col2+1):(lsh$col1+lsh$col2+lsh$col3)],
                                     breaks=interaction(unlist(a[a$id=="x_proj","model"]),unlist(a[a$id=="x_proj","scenario"])),
                                     labels=shorten_legend(interaction(unlist(a[a$id=="x_proj","model"]),unlist(a[a$id=="x_proj","scenario"]),sep=" "),lsh$nchar[3]),
@@ -355,7 +355,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="moscen",linetype.dim=NULL
       leg[["other"]] <- g_legend(l3)
     } else{
         l3 <- ggplot(data=a[a$id=="x_proj",])
-        l3 <- l3 + geom_line(aes_(x=~period,y=~value,color=~model),size=1,alpha=.5)
+        l3 <- l3 + geom_line(aes_(x=~period,y=~value,color=~model),linewidth=1,alpha=.5)
         l3 <- l3 + scale_color_manual(values=rep("#A1A194",lsh$col3),
                                       breaks=unique(unlist(a[a$id=="x_proj","model"])),
                                       labels=shorten_legend(unique(unlist(a[a$id=="x_proj","model"])),lsh$nchar[3]),

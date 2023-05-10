@@ -18,7 +18,8 @@ shorten_legend(
 
 \item{maxchar}{Maximum number of characters allowed}
 
-\item{identical_only}{If set to TRUE identical parts in the name will be removed, independent of the character length (maxchar will be ignored!)}
+\item{identical_only}{If set to TRUE identical parts in the name will be removed,
+independent of the character length (maxchar will be ignored!)}
 
 \item{ylab}{If specified this part will be removed, independent of maxchar and identical_only}
 

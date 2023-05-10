@@ -91,8 +91,8 @@ showMultiLinePlotsByVariable <- function(
     return(invisible(NULL))
   }
 
-  label <- paste0("[", paste0(levels(d$unit), collapse = ","), "]")
-  xLabel <- paste0(xVar, " [", paste0(levels(d$unit.x), collapse = ","), "]")
+  label <- paste0("(", paste0(levels(d$unit), collapse = ","), ")")
+  xLabel <- paste0(xVar, " (", paste0(levels(d$unit.x), collapse = ","), ")")
 
   p1 <- dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +

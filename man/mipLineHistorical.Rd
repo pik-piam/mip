@@ -7,14 +7,14 @@
 mipLineHistorical(
   x,
   x_hist = NULL,
-  color.dim = "moscen",
+  color.dim = "identifier",
   linetype.dim = NULL,
   facet.dim = "region",
   funnel.dim = NULL,
   ylab = NULL,
   xlab = "Year",
   title = NULL,
-  color.dim.name = "Model output",
+  color.dim.name = NULL,
   ybreaks = NULL,
   ylim = 0,
   ylog = NULL,
@@ -38,7 +38,7 @@ mipLineHistorical(
 
 \item{x_hist}{historical data to plot. Allowed data formats: magpie or quitte, If no historic information is provided the plot will ignore it.}
 
-\item{color.dim}{dimension used for different colors, default="moscen"; can only be chosen freely if x_hist is NULL.}
+\item{color.dim}{dimension used for different colors, default="identifier"; can only be chosen freely if x_hist is NULL.}
 
 \item{linetype.dim}{dimension used for different line types, default=NULL}
 

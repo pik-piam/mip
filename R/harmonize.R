@@ -5,14 +5,12 @@
 #' @author Falk Benke
 #' @param df data frame with model data to be harmonized
 #' @param hist data frame with historical data t be used for harmonization
-#' @param finalYear when should harmonized data match model data again?, default
-#'        is 2015
-#' @param harmonizeYear when should harmonization begin?
-#'        sets model data = reference data for this year, default is 2050
-#' @param method harmonization method, currently supported methods are
-#'        "ratio" and "offset", default is ratio
-#' @param suffix to be appended to harmonized variables, default is empty string
+#' @param finalYear when should harmonized data match model data again?
+#' @param harmonizeYear when should harmonization begin? sets model data = reference data for this year
+#' @param method harmonization method, currently supported methods are "ratio" and "offset"
+#' @param suffix to be appended to harmonized variables
 #' @importFrom dplyr filter mutate
+#' @importFrom data.table `:=`
 #' @export
 harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", method = "ratio", suffix = "") {
   if (!method %in% c("offset", "ratio")) {

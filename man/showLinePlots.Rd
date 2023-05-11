@@ -8,7 +8,7 @@ showLinePlots(
   data,
   vars = NULL,
   scales = "free_y",
-  color.dim.name = "Model output",
+  color.dim.name = NULL,
   mainReg = getOption("mip.mainReg")
 )
 }

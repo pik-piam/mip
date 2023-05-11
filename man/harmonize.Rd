@@ -20,16 +20,15 @@ harmonize(
 
 \item{hist}{data frame with historical data t be used for harmonization}
 
-\item{finalYear}{when should harmonized data match model data again?, default
-is 2015}
+\item{finalYear}{when should harmonized data match model data again?}
 
 \item{harmonizeYear}{when should harmonization begin?
-sets model data = reference data for this year, default is 2050}
+sets model data = reference data for this year}
 
 \item{method}{harmonization method, currently supported methods are
-"ratio" and "offset", default is ratio}
+"ratio" and "offset"}
 
-\item{suffix}{to be appended to harmonized variables, default is empty string}
+\item{suffix}{to be appended to harmonized variables}
 }
 \description{
 Harmonization of model data to historical data, using harmonization methods

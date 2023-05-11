@@ -4,12 +4,7 @@
 \alias{showLinePlotsWithTarget}
 \title{Show Line Plots With Target}
 \usage{
-showLinePlotsWithTarget(
-  data,
-  vars,
-  scales = "free_y",
-  color.dim.name = "Model output"
-)
+showLinePlotsWithTarget(data, vars, scales = "free_y", color.dim.name = NULL)
 }
 \arguments{
 \item{data}{A quitte object or an object that can be transformed into a

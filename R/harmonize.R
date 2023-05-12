@@ -75,7 +75,16 @@ harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", meth
   # iterate over models and variables
 
   vars <- intersect(unique(df$variable), unique(hist$variable))
+
+  if (length(vars) == 0) {
+    stop("No matching variables in model data and historical data found.")
+  }
+
   regions <- intersect(unique(df$region), unique(hist$region))
+
+  if (length(regions) == 0) {
+    stop("No matching regions in model data and historical data found.")
+  }
 
   hist <- hist %>%
     filter(!is.na(!!sym("value")), !!sym("variable") %in% vars, !!sym("region") %in% regions) %>%

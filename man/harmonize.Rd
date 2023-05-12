@@ -22,11 +22,9 @@ harmonize(
 
 \item{finalYear}{when should harmonized data match model data again?}
 
-\item{harmonizeYear}{when should harmonization begin?
-sets model data = reference data for this year}
+\item{harmonizeYear}{when should harmonization begin? sets model data = reference data for this year}
 
-\item{method}{harmonization method, currently supported methods are
-"ratio" and "offset"}
+\item{method}{harmonization method, currently supported methods are "ratio" and "offset"}
 
 \item{suffix}{to be appended to harmonized variables}
 }

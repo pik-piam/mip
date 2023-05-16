@@ -17,6 +17,11 @@ harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", meth
     stop("Invalid method. Options are 'offset' and 'ratio'.")
   }
 
+  if (!all(c("region", "period", "variable", "value", "model", "scenario", "unit") %in% colnames(df)) ||
+    length(colnames(df)) != 7) {
+    stop("df must contain columns: region, period, variable, value, model, scenario, unit")
+  }
+
   .reduceRatio <- function(df, hist, finalYear = "2050", harmonizeYear = "2015") {
     # harmonize factors
     c <- hist[, harmonizeYear]

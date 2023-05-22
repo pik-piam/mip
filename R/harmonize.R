@@ -1,6 +1,6 @@
 #' Harmonization of model data to historical data, using harmonization methods
 #' of aneris, ported to R.
-#' See: https://github.com/iiasa/aneris/blob/master/aneris/methods.py
+#' See: https://github.com/iiasa/aneris/blob/ad6301eb42155c968f20b2c7e071cbec039acc03/aneris/methods.py
 
 #' @author Falk Benke
 #' @param df data frame with model data to be harmonized

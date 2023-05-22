@@ -85,7 +85,7 @@ showAreaAndBarPlots <- function(
   }
 
   dnohist <- data %>%
-    filter(data$scenario != "historical") %>%
+    filter(.data$variable %in% c(.env$vars, tot), .data$scenario != "historical") %>%
     droplevels()
   if (! "identifier" %in% names(dnohist)) dnohist$identifier <- identifierModelScen(dnohist)
   d <- dnohist %>%
@@ -119,7 +119,7 @@ showAreaAndBarPlots <- function(
   )
 
   # Common label for y-axis.
-  lcp <- gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front"))
+  lcp <- if (is.null(tot)) gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front")) else tot
   label <- paste0(lcp, " (", paste0(levels(d$unit), collapse = ","), ")")
 
   # Create plots.

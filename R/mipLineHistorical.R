@@ -257,7 +257,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=
     #alpha: add colors for projection depending on leg.proj
     p <- p + scale_color_manual(color.dim.name,values = color_set, breaks=model_output,labels=sub("\\."," ",model_output),guide=guide_legend(order=1,title.position = "top", ncol=legend.ncol))
     p <- p + scale_fill_manual("Historical data",values = color_set[historical],breaks=historical,
-                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",linetype=0,linewidth=5),order=2,title.position = "top", ncol=legend.ncol))
+                               guide=guide_legend(override.aes = list(colour=color_set[historical],shape="+",linetype=0,size=5),order=2,title.position = "top", ncol=legend.ncol))
     if(leg.proj) p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour=color_set[projection],shape=NULL,linetype=1,linewidth=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
     else p <- p + scale_alpha_manual("Other projections",values = seq(0.1,1,length.out = length(projection)),breaks=projection,labels=sub("\\."," ",projection),guide=guide_legend(override.aes = list(colour="#A1A194",shape=NULL,linetype=1,linewidth=1,alpha=0.5),order=3,title.position = "top", ncol=legend.ncol))
     p <- p + guides(linetype=guide_legend(order=4,title.position="top",ncol=legend.ncol))

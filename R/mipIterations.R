@@ -88,11 +88,12 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
 
   # all combinations of values of columns not plotted (not mapped to x/y/color etc.)
   plottedColumns <- c(xAxis, color, slider, facets, valueColumnName)
-  unplottedCombinations <- unique(plotData[!(names(plotData) %in% plottedColumns)])
-  unplottedCombinations <- lapply(split(unplottedCombinations, seq_len(nrow(unplottedCombinations))), as.list)
 
-  if (identical(length(unplottedCombinations), 0L)) {
+  if (length(plottedColumns) == ncol(plotData)) {
     unplottedCombinations <- list(list())
+  } else {
+    unplottedCombinations <- unique(plotData[!(names(plotData) %in% plottedColumns)])
+    unplottedCombinations <- lapply(split(unplottedCombinations, seq_len(nrow(unplottedCombinations))), as.list)
   }
 
   # create a plot for each combination of unplotted values (not mapped to an aesthetic)
@@ -116,7 +117,7 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
       # by default create a small plot for each region; always show all facets, even if empty
       plot <- plot + facet_wrap(facets, drop = FALSE)
     }
-    if (!is.null(color) & is.numeric(plotData[[color]])) {
+    if (!is.null(color) && is.numeric(plotData[[color]])) {
       plot <- plot + scale_color_gradientn(colours = rainbow(5, v = 0.8))
     }
     return(plot)

@@ -100,7 +100,7 @@ mipConvergence <- function(gdx) {
       linetype = "dashed",
       aes_(group = ~region, color = ~region),
       alpha = aestethics$alpha,
-      size = aestethics$line$size
+      linewidth = aestethics$line$size
     ) +
     geom_point(
       data = select(data, c("iteration", "convergence", "details")) %>% distinct(),
@@ -115,14 +115,19 @@ mipConvergence <- function(gdx) {
     labs(x = NULL, y = NULL)
 
 
+  convergencePlotPlotly <- ggplotly(convergencePlot, tooltip = c("text"))
+
   # Trade goods surplus detail ----
 
   surplus <- readGDX(gdx, name = "p80_surplus", restore_zeros = FALSE)[, c(2100, 2150), ] %>%
     as.quitte() %>%
-    select(c("period", "value", "all_enty", "iteration"))
-  surplus$value[is.na(surplus$value)] <- 0
-  surplus$type <- ifelse(surplus$all_enty == "good", "Goods trade surplus",
-                         ifelse(surplus$all_enty == "perm", "Permits", "Primary energy trade surplus"))
+    select(c("period", "value", "all_enty", "iteration")) %>%
+    mutate(value := ifelse(is.na(value), 0, value),
+           type := case_when(
+             all_enty == "good" ~ "Goods trade surplus",
+             all_enty == "perm" ~ "Permits",
+             TRUE ~ "Primary energy trade surplus"
+           ))
 
   maxTol <- readGDX(gdx, name = "p80_surplusMaxTolerance", restore_zeros = FALSE) %>%
     as.quitte() %>%
@@ -196,7 +201,6 @@ mipConvergence <- function(gdx) {
     hide_legend() %>%
     config(displayModeBar = FALSE, displaylogo = FALSE)
 
-
   # Trade surplus summary ----
 
   surplusCondition <- surplus %>%
@@ -240,6 +244,8 @@ mipConvergence <- function(gdx) {
     scale_y_discrete(breaks = c("Trade\nSurplus"), drop = FALSE) +
     labs(x = NULL, y = NULL)
 
+  surplusSummaryPlotly <- ggplotly(surplusSummary, tooltip = c("text"))
+
   # Objective derivation ----
 
   data <- p80_repy_wide %>%
@@ -269,6 +275,7 @@ mipConvergence <- function(gdx) {
       data[which(data$iteration == iter), ]$tooltip <- tooltip
     }
   }
+
   objVarSummary <- suppressWarnings(ggplot(data, aes_(
     x = ~iteration, y = "Objective\nDeviation",
     fill = ~objVarCondition, text = ~tooltip
@@ -280,7 +287,10 @@ mipConvergence <- function(gdx) {
     scale_y_discrete(breaks = c("Objective\nDeviation"), drop = FALSE) +
     labs(x = NULL, y = NULL)
 
+  objVarSummaryPlotly <- ggplotly(objVarSummary, tooltip = c("text"))
+
   # Price anticipation ----
+
   priceAntecipationFadeoutIteration <- as.vector(readGDX(gdx, name = "s80_fadeoutPriceAnticipStartingPeriod"))
   lastIteration <- readGDX(gdx, name = "o_iterationNumber")[[1]]
   data <- data.frame(iteration = 1:lastIteration)
@@ -300,7 +310,6 @@ mipConvergence <- function(gdx) {
     )
   )
 
-
   priceAnticipation <- ggplot(data, aes_(x = ~iteration)) +
     geom_line(aes_(y = ~fadeoutPriceAnticip), alpha = 0.3, size = aestethics$line$size) +
     suppressWarnings(geom_point(size = 2,
@@ -313,15 +322,17 @@ mipConvergence <- function(gdx) {
     labs(x = NULL, y = NULL) +
     coord_cartesian(ylim = c(-0.2, 1))
 
+  priceAnticipationPlotly <- ggplotly(priceAnticipation, tooltip = c("text"))
+
   # Summary plot ----
 
   out <- list()
 
   out$plot <- subplot(
-    ggplotly(convergencePlot, tooltip = c("text")),
-    ggplotly(surplusSummary, tooltip = c("text")),
-    ggplotly(objVarSummary, tooltip = c("text")),
-    ggplotly(priceAnticipation, tooltip = c("text")),
+    convergencePlotPlotly,
+    surplusSummaryPlotly,
+    objVarSummaryPlotly,
+    priceAnticipationPlotly,
     nrows = 4, shareX = TRUE, titleX = FALSE,
     heights = c(0.4, 0.2, 0.2, 0.2),
     margin = c(.1, .1, .1, .0001)
@@ -329,17 +340,6 @@ mipConvergence <- function(gdx) {
     hide_legend() %>%
     config(displayModeBar = FALSE, displaylogo = FALSE) %>%
     layout(margin = list(l = -100, r = 10))
-
-
-  out$description <- "<p>Conditions to REMIND convergence.<br>Convergence is only achieved if all conditions are met.</p><br><ul><li>Condition one: each region must be optimal, or at most feasible in a latter iteration.</li><li>Condition two: market clearing for all tradable goods.</li><li>Condition three: stable objective function value for all regions.</li><li>Condition four: price anticipation slack must fade out.</li></ul>" # nolint
-  out$contents <- list(
-    "Convergence criteria met" =
-      list("fill" = plotstyle("optimal", unknown = missingColorsdf), "linetype" = NULL),
-    "Partial convergence target met" =
-      list("fill" = plotstyle("feasible", unknown = missingColorsdf), "linetype" = NULL),
-    "Not converged" =
-      list("fill" = plotstyle("infeasible", unknown = missingColorsdf), "linetype" = NULL)
-  )
 
   out$tradeDetailPlot <- surplusConvergencePlotly
 

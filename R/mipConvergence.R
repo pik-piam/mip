@@ -24,13 +24,15 @@
 mipConvergence <- function(gdx) {
 
   if (!file.exists(gdx)) {
-    stop("gdx file not found!")
+    warning("gdx file not found!")
+    return(list())
   }
 
   modelstat <- readGDX(gdx, name = "o_modelstat")[[1]]
 
   if (!(modelstat %in% c(1, 2, 3, 4, 5, 6, 7))) {
-    stop("Run failed - Check code, pre-triangular infes ...")
+    warning("Run failed - Check code, pre-triangular infes ...")
+    return(list())
   }
 
   aestethics <- list(

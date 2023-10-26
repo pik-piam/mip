@@ -42,18 +42,8 @@ mipConvergence <- function(gdx) {
   )
 
   missingColors <- c(
-    "DEU" = "#7F2704",
-    "EUW" = "#FC4E2A", "EWN" = "#FC4E2A", "FRA" = "#E31A1C",
-    "EUS" = "#FFEDA0", "ESW" = "#FFEDA0", "ESC" = brewer.pal(9, "YlOrRd")[3],
-    "EUC" = "#969696", "ECS" = "#D9D9D9", "ECE" = "#969696",
-    "EUN" = "#4292C6", "ENC" = "#6BAED6", "UKI" = "#4292C6",
-    "NEU" = "#78C679", "NEN" = "#78C679", "NES" = "#D9F0A3",
-    "CHE" = "#78C679", "ENN" = "#78C679", "ESE" = "#D9F0A3", "EUI" = "#78C679", "ROE" = "#D9F0A3", # older EU
-    "SSA" = "#00BAFF", "REF" = "#D900BC", "CAZ" = "#007362", "CHA" = "#F24200",
-    "Uranium" = "#EF7676", "Goods" = "#00BFC4",
     "optimal" = "#00BFC4", "feasible" = "#ffcc66", "infeasible" = "#F8766D",
-    "yes" = "#00BFC4", "no" = "#F8766D",
-    "optimal_alt" = "#00BFC4", "feasible_alt" = "#ffcc66"
+    "yes" = "#00BFC4", "no" = "#F8766D"
   )
 
   missingColorsdf <- data.frame(row.names = names(missingColors), color = missingColors)
@@ -297,12 +287,14 @@ mipConvergence <- function(gdx) {
   lastIteration <- readGDX(gdx, name = "o_iterationNumber")[[1]]
   data <- data.frame(iteration = 1:lastIteration)
 
+  cmMaxFadeoutPriceAnticip <- as.vector(readGDX(gdx, name = "cm_maxFadeoutPriceAnticip"))
   data <- data %>% mutate(
     fadeoutPriceAnticip = ifelse(
       .data$iteration < priceAntecipationFadeoutIteration, 1,
       0.7**(.data$iteration - priceAntecipationFadeoutIteration + 1)
     ),
-    converged = ifelse(.data$fadeoutPriceAnticip > 1e-4, "no", "yes"),
+
+    converged = ifelse(.data$fadeoutPriceAnticip > cmMaxFadeoutPriceAnticip, "no", "yes"),
     tooltip = ifelse(
       .data$converged == "yes",
       paste0("Converged<br>Price Anticipation fade out is low enough<br>",
@@ -332,8 +324,8 @@ mipConvergence <- function(gdx) {
 
   out$plot <- subplot(
     convergencePlotPlotly,
-    surplusSummaryPlotly,
     objVarSummaryPlotly,
+    surplusSummaryPlotly,
     priceAnticipationPlotly,
     nrows = 4, shareX = TRUE, titleX = FALSE,
     heights = c(0.4, 0.2, 0.2, 0.2),

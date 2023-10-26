@@ -117,10 +117,19 @@ mipConvergence <- function(gdx) {
 
   # Feasibility -----
 
-  p80_repy_iteration$convergence <- "infeasible"
-  p80_repy_iteration[(p80_repy_iteration$modelstat == 1 & p80_repy_iteration$solvestat == 1), "convergence"] <- "optimal"
-  p80_repy_iteration[(p80_repy_iteration$modelstat == 2 & p80_repy_iteration$solvestat == 1), "convergence"] <- "optimal"
-  p80_repy_iteration[(p80_repy_iteration$modelstat == 7 & p80_repy_iteration$solvestat == 4), "convergence"] <- "feasible"
+  p80_repy_iteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
+    as.quitte() %>%
+    select(c("solveinfo80", "region", "iteration", "value")) %>%
+    dcast(region + iteration ~ solveinfo80, value.var = "value") %>%
+    mutate(
+      iteration := as.numeric(iteration),
+      convergence := case_when(
+        modelstat == 1 & solvestat == 1 ~ "optimal",
+        modelstat == 2 & solvestat == 1 ~ "optimal",
+        modelstat == 7 & solvestat == 4 ~ "feasible",
+        .default = "infeasible"
+      )
+    )
 
   data <- p80_repy_iteration %>%
     group_by(.data$iteration, .data$convergence) %>%
@@ -149,7 +158,6 @@ mipConvergence <- function(gdx) {
     scale_y_discrete(breaks = c("infeasible", "feasible", "optimal"), drop = FALSE) +
     theme_minimal() +
     labs(x = NULL, y = NULL)
-
 
   convergencePlotPlotly <- ggplotly(convergencePlot, tooltip = c("text"))
 

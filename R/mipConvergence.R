@@ -10,15 +10,10 @@
 #'   }
 #'
 #' @importFrom gdx readGDX
-#' @importFrom dplyr bind_rows summarise group_by mutate filter
+#' @importFrom dplyr summarise group_by mutate filter
 #' @importFrom quitte as.quitte
-#' @importFrom ggplot2 ggplot geom_point geom_line scale_fill_manual
-#'   scale_y_discrete geom_rect geom_hline scale_x_continuous
-#'   coord_cartesian aes_
 #' @importFrom plotly ggplotly config hide_legend subplot layout
 #' @importFrom reshape2 dcast
-#' @importFrom stats lag
-#' @importFrom RColorBrewer brewer.pal
 #'
 #' @export
 mipConvergence <- function(gdx) {
@@ -29,6 +24,7 @@ mipConvergence <- function(gdx) {
   }
 
   modelstat <- readGDX(gdx, name = "o_modelstat")[[1]]
+  lastIteration <- readGDX(gdx, name = "o_iterationNumber")[[1]]
 
   if (!(modelstat %in% c(1, 2, 3, 4, 5, 6, 7))) {
     warning("Run failed - Check code, pre-triangular infes ...")
@@ -47,43 +43,91 @@ mipConvergence <- function(gdx) {
   )
 
   missingColorsdf <- data.frame(row.names = names(missingColors), color = missingColors)
+  booleanColor <- plotstyle(c("yes", "no"), unknown = missingColorsdf)
 
-  # data preparation ----
+  # Optimality / Objective Deviation ----
 
-  p80_repy_wide <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
+  p80_convNashObjVal_iter <- readGDX(gdx, name = "p80_convNashObjVal_iter") %>%
+    as.quitte() %>%
+    select(c("region", "iteration", "objvalDifference" = "value")) %>%
+    mutate(iteration := as.numeric(iteration)) %>%
+    filter(iteration <= lastIteration)
+
+  p80_repy_iteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select(c("solveinfo80", "region", "iteration", "value")) %>%
+    mutate(iteration := as.numeric(iteration)) %>%
     dcast(region + iteration ~ solveinfo80, value.var = "value")
 
-  p80_repy_wide <- p80_repy_wide %>%
+  p80_repy_iteration <- p80_repy_iteration %>%
+    left_join(p80_convNashObjVal_iter, by = c("region", "iteration")) %>%
     group_by(.data$region) %>%
     mutate(
-      diff.objval = .data$objval - lag(.data$objval, order_by = .data$iteration),
       objvalCondition = ifelse(modelstat == "2", TRUE,
-        ifelse(modelstat == "7" & is.na(.data$diff.objval), FALSE,
-          ifelse(modelstat == "7" & abs(.data$diff.objval) < 1e-4, TRUE, FALSE)
+        ifelse(modelstat == "7" & is.na(.data$objvalDifference), FALSE,
+          ifelse(modelstat == "7" & .data$objvalDifference < -1e-4, FALSE, TRUE)
         )
       )
     ) %>%
+    ungroup() %>%
+    group_by(.data$iteration) %>%
+    mutate(objvalConverge = all(.data$objvalCondition)) %>%
     ungroup()
 
-  p80_repy_wide <- p80_repy_wide %>%
-    group_by(.data$iteration) %>%
-    mutate(objvalConverge = all(.data$objvalCondition))
+  data <- p80_repy_iteration %>%
+    select("iteration", "objvalConverge") %>%
+    distinct() %>%
+    mutate(
+      !!sym("objVarCondition") := ifelse(.data$objvalConverge, "yes", "no"),
+      tooltip := paste0("Iteration: ", .data$iteration, "<br>Converged")
+    )
 
-  p80_repy_wide$convergence <- "infeasible"
-  p80_repy_wide[(p80_repy_wide$modelstat == 1 & p80_repy_wide$solvestat == 1), "convergence"] <- "optimal"
-  p80_repy_wide[(p80_repy_wide$modelstat == 2 & p80_repy_wide$solvestat == 1), "convergence"] <- "optimal"
-  p80_repy_wide[(p80_repy_wide$modelstat == 7 & p80_repy_wide$solvestat == 4), "convergence"] <- "feasible"
+  for (iter in unique(data$iteration)) {
+    current <- filter(p80_repy_iteration, .data$iteration == iter)
 
-  data <- p80_repy_wide %>%
+    if (!all(current$objvalCondition)) {
+      tooltip <- NULL
+      current <- filter(current, .data$objvalCondition == FALSE)
+
+      for (reg in current$region) {
+        diff <- current[current$region == reg, ]$objvalDifference
+        tooltip <- paste0(tooltip, "<br> ", reg, "   |     ", round(diff, 5))
+      }
+      tooltip <- paste0(
+        "Iteration: ", iter, "<br>Not converged",
+        "<br>Region | Deviation", tooltip, "<br>The deviation limit is +- 0.0001"
+      )
+      data[which(data$iteration == iter), ]$tooltip <- tooltip
+    }
+  }
+
+  objVarSummary <- suppressWarnings(ggplot(data, aes_(
+    x = ~iteration, y = "Objective\nDeviation",
+    fill = ~objVarCondition, text = ~tooltip
+  ))) +
+    geom_hline(yintercept = 0) +
+    theme_minimal() +
+    geom_point(size = 2, alpha = aestethics$alpha) +
+    scale_fill_manual(values = booleanColor) +
+    scale_y_discrete(breaks = c("Objective\nDeviation"), drop = FALSE) +
+    labs(x = NULL, y = NULL)
+
+  objVarSummaryPlotly <- ggplotly(objVarSummary, tooltip = c("text"))
+
+
+  # Feasibility -----
+
+  p80_repy_iteration$convergence <- "infeasible"
+  p80_repy_iteration[(p80_repy_iteration$modelstat == 1 & p80_repy_iteration$solvestat == 1), "convergence"] <- "optimal"
+  p80_repy_iteration[(p80_repy_iteration$modelstat == 2 & p80_repy_iteration$solvestat == 1), "convergence"] <- "optimal"
+  p80_repy_iteration[(p80_repy_iteration$modelstat == 7 & p80_repy_iteration$solvestat == 4), "convergence"] <- "feasible"
+
+  data <- p80_repy_iteration %>%
     group_by(.data$iteration, .data$convergence) %>%
     mutate(details = paste0("Iteration: ", .data$iteration, "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
     ungroup()
 
   data$convergence <- factor(data$convergence, levels = c("infeasible", "feasible", "optimal"))
-
-  # Convergence plot -----
 
   convergencePlot <-
     suppressWarnings(ggplot(mapping = aes_(~iteration, ~convergence, text = ~details))) +
@@ -147,7 +191,7 @@ mipConvergence <- function(gdx) {
             "pebiolc" = "Biomass")
   surplus$name <- vars[surplus$all_enty]
 
-  booleanColor <- plotstyle(as.character(unique(maxTol$withinLimits)), unknown = missingColorsdf)
+
   surplusColor <- plotstyle(vars, unknown = missingColorsdf)
   names(surplusColor) <- names(vars)
 
@@ -238,53 +282,11 @@ mipConvergence <- function(gdx) {
 
   surplusSummaryPlotly <- ggplotly(surplusSummary, tooltip = c("text"))
 
-  # Objective derivation ----
-
-  data <- p80_repy_wide %>%
-    select("iteration", "objvalConverge") %>%
-    distinct() %>%
-    mutate(
-      !!sym("objVarCondition") := ifelse(isTRUE(.data$objvalConverge), "yes", "no"),
-      tooltip := paste0("Iteration: ", .data$iteration, "<br>Converged")
-    )
-
-  for (iter in unique(data$iteration)) {
-
-    current <- filter(p80_repy_wide, .data$iteration == iter)
-
-    if (!all(current$objvalCondition)) {
-      tooltip <- NULL
-      current <- filter(current, .data$objvalCondition == FALSE)
-
-      for (reg in current$region) {
-        diff <- current[current$region == reg, ]$diff.objval
-        tooltip <- paste0(tooltip, "<br> ", reg, "   |     ", round(diff, 5))
-      }
-      tooltip <- paste0(
-        "Iteration: ", iter, "<br>Not converged",
-        "<br>Region | Deviation", tooltip, "<br>The deviation limit is +- 0.0001"
-      )
-      data[which(data$iteration == iter), ]$tooltip <- tooltip
-    }
-  }
-
-  objVarSummary <- suppressWarnings(ggplot(data, aes_(
-    x = ~iteration, y = "Objective\nDeviation",
-    fill = ~objVarCondition, text = ~tooltip
-  ))) +
-    geom_hline(yintercept = 0) +
-    theme_minimal() +
-    geom_point(size = 2, alpha = aestethics$alpha) +
-    scale_fill_manual(values = booleanColor) +
-    scale_y_discrete(breaks = c("Objective\nDeviation"), drop = FALSE) +
-    labs(x = NULL, y = NULL)
-
-  objVarSummaryPlotly <- ggplotly(objVarSummary, tooltip = c("text"))
 
   # Price anticipation ----
 
   priceAntecipationFadeoutIteration <- as.vector(readGDX(gdx, name = "s80_fadeoutPriceAnticipStartingPeriod"))
-  lastIteration <- readGDX(gdx, name = "o_iterationNumber")[[1]]
+
   data <- data.frame(iteration = 1:lastIteration)
 
   cmMaxFadeoutPriceAnticip <- as.vector(readGDX(gdx, name = "cm_maxFadeoutPriceAnticip"))

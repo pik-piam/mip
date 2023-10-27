@@ -305,33 +305,35 @@ mipConvergence <- function(gdx) {
 
   # Price anticipation ----
 
-  priceAntecipationFadeoutIteration <- as.vector(readGDX(gdx, name = "s80_fadeoutPriceAnticipStartingPeriod"))
-
-  data <- data.frame(iteration = 1:lastIteration)
-
   cmMaxFadeoutPriceAnticip <- as.vector(readGDX(gdx, name = "cm_maxFadeoutPriceAnticip"))
+  p80FadeoutPriceAnticipIter <- readGDX(gdx, name = "p80_fadeoutPriceAnticip_iter", restore_zeros = FALSE) %>%
+    as.quitte() %>%
+    select("iteration", "fadeoutPriceAnticip" = value )
 
-  data <- data %>% mutate(
-    fadeoutPriceAnticip = ifelse(
-      .data$iteration < priceAntecipationFadeoutIteration, 1,
-      0.7**(.data$iteration - priceAntecipationFadeoutIteration + 1)
-    ),
-
-    converged = ifelse(.data$fadeoutPriceAnticip > cmMaxFadeoutPriceAnticip, "no", "yes"),
-    tooltip = ifelse(
-      .data$converged == "yes",
-      paste0("Converged<br>Price Anticipation fade out is low enough<br>",
-             round(.data$fadeoutPriceAnticip, 5), " <= 0.0001"),
-      paste0("Not converged<br>Price Anticipation fade out is not low enough<br>",
-             round(.data$fadeoutPriceAnticip, 5), " > 0.0001")
+  data <- p80FadeoutPriceAnticipIter %>%
+    mutate(
+      iteration := as.numeric(iteration),
+      converged = ifelse(.data$fadeoutPriceAnticip > cmMaxFadeoutPriceAnticip, "no", "yes"),
+      tooltip = ifelse(
+        .data$converged == "yes",
+        paste0(
+          "Converged<br>Price Anticipation fade out is low enough<br>",
+          round(.data$fadeoutPriceAnticip, 5), " <= ", cmMaxFadeoutPriceAnticip
+        ),
+        paste0(
+          "Not converged<br>Price Anticipation fade out is not low enough<br>",
+          round(.data$fadeoutPriceAnticip, 5), " > ", cmMaxFadeoutPriceAnticip
+        )
+      )
     )
-  )
 
   priceAnticipation <- ggplot(data, aes_(x = ~iteration)) +
     geom_line(aes_(y = ~fadeoutPriceAnticip), alpha = 0.3, size = aestethics$line$size) +
-    suppressWarnings(geom_point(size = 2,
-                                aes_(y = 0.0001, fill = ~converged, text = ~tooltip),
-                                alpha = aestethics$alpha)) +
+    suppressWarnings(geom_point(
+      size = 2,
+      aes_(y = 0.0001, fill = ~converged, text = ~tooltip),
+      alpha = aestethics$alpha
+    )) +
     theme_minimal() +
     scale_fill_manual(values = booleanColor) +
     scale_y_continuous(breaks = c(0.0001), labels = c("Price\nAnticipation")) +
@@ -340,6 +342,8 @@ mipConvergence <- function(gdx) {
     coord_cartesian(ylim = c(-0.2, 1))
 
   priceAnticipationPlotly <- ggplotly(priceAnticipation, tooltip = c("text"))
+
+  # Tax Convergence ----
 
   # Summary plot ----
 

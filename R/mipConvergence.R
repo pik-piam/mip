@@ -37,13 +37,7 @@ mipConvergence <- function(gdx) {
     "point" = list("size" = 2 / 3.78)
   )
 
-  missingColors <- c(
-    "optimal" = "#00BFC4", "feasible" = "#ffcc66", "infeasible" = "#F8766D",
-    "yes" = "#00BFC4", "no" = "#F8766D"
-  )
-
-  missingColorsdf <- data.frame(row.names = names(missingColors), color = missingColors)
-  booleanColor <- plotstyle(c("yes", "no"), unknown = missingColorsdf)
+  booleanColor <- c("yes" = "#00BFC4", "no" = "#F8766D")
 
   # Optimality / Objective Deviation ----
 
@@ -153,8 +147,8 @@ mipConvergence <- function(gdx) {
       size = 2,
       alpha = aestethics$alpha
     ) +
-    scale_fill_manual(values = plotstyle(as.character(unique(data$convergence)), unknown = missingColorsdf)) +
-    scale_color_manual(values = plotstyle(as.character(unique(data$region)), unknown = missingColorsdf)) +
+    scale_fill_manual(values = c("optimal" = "#00BFC4", "feasible" = "#ffcc66", "infeasible" = "#F8766D")) +
+    scale_color_manual(values = plotstyle(as.character(unique(data$region)))) +
     scale_y_discrete(breaks = c("infeasible", "feasible", "optimal"), drop = FALSE) +
     theme_minimal() +
     labs(x = NULL, y = NULL)
@@ -163,76 +157,95 @@ mipConvergence <- function(gdx) {
 
   # Trade goods surplus detail ----
 
+  # TODO: why is p80_surplusMax_iter only returning positive values?
   surplus <- readGDX(gdx, name = "p80_surplus", restore_zeros = FALSE)[, c(2100, 2150), ] %>%
     as.quitte() %>%
     select(c("period", "value", "all_enty", "iteration")) %>%
-    mutate(value := ifelse(is.na(value), 0, value),
-           type := case_when(
-             all_enty == "good" ~ "Goods trade surplus",
-             all_enty == "perm" ~ "Permits",
-             TRUE ~ "Primary energy trade surplus"
-           ))
+    mutate(
+      value := ifelse(is.na(value), 0, value),
+      type := case_when(
+        all_enty == "good" ~ "Goods trade surplus",
+        all_enty == "perm" ~ "Permits",
+        TRUE ~ "Primary energy trade surplus"
+      )
+    )
 
-  maxTol <- readGDX(gdx, name = "p80_surplusMaxTolerance", restore_zeros = FALSE) %>%
+  p80_surplusMaxTolerance <- readGDX(gdx, name = "p80_surplusMaxTolerance", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select(c("maxTol" = 7, "all_enty" = 8))
 
-  surplus <- merge(surplus, maxTol, by = "all_enty")
-  surplus[which(surplus$period == 2150), ]$maxTol <- surplus[which(surplus$period == 2150), ]$maxTol * 10
-  surplus$rectXmin <- as.numeric(surplus$iteration) - 0.5
-  surplus$rectXmax <- as.numeric(surplus$iteration) + 0.5
-  surplus$withinLimits <- ifelse(surplus$value > surplus$maxTol, "no",
-                                 ifelse(surplus$value < -surplus$maxTol, "no", "yes"))
+  surplus <- left_join(surplus, p80_surplusMaxTolerance, by = "all_enty") %>%
+    mutate(
+      maxTol := ifelse(period == 2150, maxTol * 10, maxTol),
+      withinLimits := ifelse(abs(value) > maxTol, "no", "yes")
+    )
 
-  maxTol <- surplus %>%
+  data <- surplus
+
+  data$tooltip <- paste0(
+    ifelse(data$withinLimits == "no",
+      ifelse(data$value > data$maxTol,
+        paste0(
+          data$all_enty, " trade surplus (", data$value,
+          ") is greater than maximum tolerance (", data$maxTol, ")."
+        ),
+        paste0(
+          data$all_enty, " trade surplus (", data$value,
+          ") is lower than maximum tolerance (-", data$maxTol, ")."
+        )
+      ),
+      paste0(data$all_enty, " is within tolerance.")
+    ),
+    "<br>Iteration: ", data$iteration
+  )
+
+  limits <- surplus %>%
     group_by(.data$type, .data$period, .data$iteration) %>%
     mutate(withinLimits = ifelse(all(.data$withinLimits == "yes"), "yes", "no")) %>%
     ungroup() %>%
-    filter(.data$all_enty %in% c("peoil", "good", "perm")) %>%
-    select(-1)
+    select("type", "period", "iteration", "maxTol", "withinLimits") %>%
+    distinct() %>%
+    mutate(
+      rectXmin = as.numeric(iteration) - 0.5,
+      rectXmax = as.numeric(iteration) + 0.5,
+      tooltip = paste0(
+        type,
+        ifelse(withinLimits == "no",
+          " outside tolerance limits.",
+          " within tolerance limits."
+        )
+      )
+    )
 
-  vars <- c("pecoal" = "Coal",
-            "pegas" = "Gas",
-            "peoil" = "Oil",
-            "peur" = "Uranium",
-            "good" = "Goods",
-            "pebiolc" = "Biomass")
-  surplus$name <- vars[surplus$all_enty]
-
-
-  surplusColor <- plotstyle(vars, unknown = missingColorsdf)
-  names(surplusColor) <- names(vars)
-
-  surplus$tooltip <- paste0(
-    ifelse(surplus$withinLimits == "no",
-      ifelse(surplus$value > surplus$maxTol,
-        paste0(surplus$name, " trade surplus (", surplus$value,
-               ") is greater than maximum tolerance (", surplus$maxTol, ")."),
-        paste0(surplus$name, " trade surplus (", surplus$value,
-               ") is lower than maximum tolerance (-", surplus$maxTol, ").")
-      ),
-      paste0(surplus$type, " is within tolerance.")
-    ),
-    "<br>Iteration: ", surplus$iteration
+  surplusColor <- c(
+    peoil = "#cc7500",
+    pegas = "#999959",
+    pecoal = "#0c0c0c",
+    peur = "#EF7676",
+    pebiolc = "#005900",
+    good = "#00BFC4"
   )
 
-  maxTol$tooltip <- paste0(maxTol$type,
-                           ifelse(maxTol$withinLimits == "no",
-                                  " outside tolerance limits.",
-                                  " within tolerance limits."))
-
   surplusConvergence <- ggplot() +
-    suppressWarnings(geom_line(data = surplus,
-                               aes_(x = ~iteration, y = ~value, color = ~all_enty,
-                                    group = ~all_enty, text = ~tooltip),
-                               alpha = aestethics$alpha,
-                               size = aestethics$line$size)) +
-    suppressWarnings(geom_rect(data = maxTol,
-                               aes_(xmin = ~rectXmin, xmax = ~rectXmax,
-                                    ymin = ~ -maxTol, ymax = ~maxTol,
-                                    fill = ~withinLimits, text = ~tooltip),
-                               inherit.aes = FALSE,
-                               alpha = aestethics$alpha)) +
+    suppressWarnings(geom_line(
+      data = data,
+      aes_(
+        x = ~iteration, y = ~value, color = ~all_enty,
+        group = ~all_enty, text = ~tooltip
+      ),
+      alpha = aestethics$alpha,
+      size = aestethics$line$size
+    )) +
+    suppressWarnings(geom_rect(
+      data = limits,
+      aes_(
+        xmin = ~rectXmin, xmax = ~rectXmax,
+        ymin = ~ -maxTol, ymax = ~maxTol,
+        fill = ~withinLimits, text = ~tooltip
+      ),
+      inherit.aes = FALSE,
+      alpha = aestethics$alpha
+    )) +
     theme_minimal() +
     ggtitle("Tradable goods surplus") +
     facet_grid(type ~ period, scales = "free_y") +
@@ -249,12 +262,11 @@ mipConvergence <- function(gdx) {
 
   surplusCondition <- surplus %>%
     group_by(.data$iteration) %>%
-    summarise(withinLimits = ifelse(all(.data$withinLimits == "yes"), "yes", "no"))
-
-  surplusCondition$tooltip <- paste0("Iteration: ", surplusCondition$iteration, "<br>Converged")
+    summarise(withinLimits = ifelse(all(.data$withinLimits == "yes"), "yes", "no")) %>%
+    mutate(tooltip = paste0("Iteration: ", iteration, "<br>Converged"))
 
   for (iter in surplusCondition$iteration) {
-    if (all(surplusCondition[which(surplusCondition$iteration == iter), ]$withinLimits == "no")) {
+    if (surplusCondition[which(surplusCondition$iteration == iter), ]$withinLimits == "no") {
       tooltip <- NULL
       for (period in unique(surplus$period)) {
         for (good in unique(surplus$all_enty)) {

@@ -44,36 +44,36 @@ mipConvergence <- function(gdx) {
   p80ConvNashObjValIter <- readGDX(gdx, name = "p80_convNashObjVal_iter") %>%
     as.quitte() %>%
     select(c("region", "iteration", "objvalDifference" = "value")) %>%
-    mutate(iteration := as.numeric(iteration)) %>%
-    filter(iteration <= lastIteration)
+    mutate("iteration" := as.numeric(.data$iteration)) %>%
+    filter(.data$iteration <= lastIteration)
 
   p80RepyIteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select(c("solveinfo80", "region", "iteration", "value")) %>%
-    mutate(iteration := as.numeric(iteration)) %>%
+    mutate("iteration" := as.numeric(.data$iteration)) %>%
     dcast(region + iteration ~ solveinfo80, value.var = "value")
 
   p80RepyIteration <- p80RepyIteration %>%
     left_join(p80ConvNashObjValIter, by = c("region", "iteration")) %>%
     group_by(.data$region) %>%
     mutate(
-      objvalCondition = ifelse(modelstat == "2", TRUE,
-        ifelse(modelstat == "7" & is.na(.data$objvalDifference), FALSE,
-          ifelse(modelstat == "7" & .data$objvalDifference < -1e-4, FALSE, TRUE)
+      "objvalCondition" = ifelse(.data$modelstat == "2", TRUE,
+        ifelse(.data$modelstat == "7" & is.na(.data$objvalDifference), FALSE,
+          ifelse(.data$modelstat == "7" & .data$objvalDifference < -1e-4, FALSE, TRUE)
         )
       )
     ) %>%
     ungroup() %>%
     group_by(.data$iteration) %>%
-    mutate(objvalConverge = all(.data$objvalCondition)) %>%
+    mutate("objvalConverge" = all(.data$objvalCondition)) %>%
     ungroup()
 
   data <- p80RepyIteration %>%
     select("iteration", "objvalConverge") %>%
     distinct() %>%
     mutate(
-      !!sym("objVarCondition") := ifelse(.data$objvalConverge, "yes", "no"),
-      tooltip := paste0("Iteration: ", .data$iteration, "<br>Converged")
+      "objVarCondition" := ifelse(.data$objvalConverge, "yes", "no"),
+      "tooltip" := paste0("Iteration: ", .data$iteration, "<br>Converged")
     )
 
   for (iter in unique(data$iteration)) {
@@ -116,18 +116,18 @@ mipConvergence <- function(gdx) {
     select(c("solveinfo80", "region", "iteration", "value")) %>%
     dcast(region + iteration ~ solveinfo80, value.var = "value") %>%
     mutate(
-      iteration := as.numeric(iteration),
-      convergence := case_when(
-        modelstat == 1 & solvestat == 1 ~ "optimal",
-        modelstat == 2 & solvestat == 1 ~ "optimal",
-        modelstat == 7 & solvestat == 4 ~ "feasible",
+      "iteration" := as.numeric(.data$iteration),
+      "convergence" := case_when(
+        .data$modelstat == 1 & .data$solvestat == 1 ~ "optimal",
+        .data$modelstat == 2 & .data$solvestat == 1 ~ "optimal",
+        .data$modelstat == 7 & .data$solvestat == 4 ~ "feasible",
         .default = "infeasible"
       )
     )
 
   data <- p80RepyIteration %>%
     group_by(.data$iteration, .data$convergence) %>%
-    mutate(details = paste0("Iteration: ", .data$iteration, "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
+    mutate("details" = paste0("Iteration: ", .data$iteration, "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
     ungroup()
 
   data$convergence <- factor(data$convergence, levels = c("infeasible", "feasible", "optimal"))
@@ -162,10 +162,10 @@ mipConvergence <- function(gdx) {
     as.quitte() %>%
     select(c("period", "value", "all_enty", "iteration")) %>%
     mutate(
-      value := ifelse(is.na(value), 0, value),
-      type := case_when(
-        all_enty == "good" ~ "Goods trade surplus",
-        all_enty == "perm" ~ "Permits",
+      "value" := ifelse(is.na(.data$value), 0, .data$value),
+      "type" := case_when(
+        .data$all_enty == "good" ~ "Goods trade surplus",
+        .data$all_enty == "perm" ~ "Permits",
         TRUE ~ "Primary energy trade surplus"
       )
     )
@@ -176,8 +176,8 @@ mipConvergence <- function(gdx) {
 
   surplus <- left_join(surplus, p80SurplusMaxTolerance, by = "all_enty") %>%
     mutate(
-      maxTol := ifelse(period == 2150, maxTol * 10, maxTol),
-      withinLimits := ifelse(abs(value) > maxTol, "no", "yes")
+      "maxTol" := ifelse(.data$period == 2150, .data$maxTol * 10, .data$maxTol),
+      "withinLimits" := ifelse(abs(.data$value) > .data$maxTol, "no", "yes")
     )
 
   data <- surplus
@@ -201,16 +201,16 @@ mipConvergence <- function(gdx) {
 
   limits <- surplus %>%
     group_by(.data$type, .data$period, .data$iteration) %>%
-    mutate(withinLimits = ifelse(all(.data$withinLimits == "yes"), "yes", "no")) %>%
+    mutate("withinLimits" = ifelse(all(.data$withinLimits == "yes"), "yes", "no")) %>%
     ungroup() %>%
     select("type", "period", "iteration", "maxTol", "withinLimits") %>%
     distinct() %>%
     mutate(
-      rectXmin = as.numeric(iteration) - 0.5,
-      rectXmax = as.numeric(iteration) + 0.5,
-      tooltip = paste0(
-        type,
-        ifelse(withinLimits == "no",
+      "rectXmin" = as.numeric(.data$iteration) - 0.5,
+      "rectXmax" = as.numeric(.data$iteration) + 0.5,
+      "tooltip" = paste0(
+        .data$type,
+        ifelse(.data$withinLimits == "no",
           " outside tolerance limits.",
           " within tolerance limits."
         )
@@ -263,7 +263,7 @@ mipConvergence <- function(gdx) {
   surplusCondition <- surplus %>%
     group_by(.data$iteration) %>%
     summarise(withinLimits = ifelse(all(.data$withinLimits == "yes"), "yes", "no")) %>%
-    mutate(tooltip = paste0("Iteration: ", iteration, "<br>Converged"))
+    mutate("tooltip" = paste0("Iteration: ", .data$iteration, "<br>Converged"))
 
   for (iter in surplusCondition$iteration) {
     if (surplusCondition[which(surplusCondition$iteration == iter), ]$withinLimits == "no") {
@@ -308,13 +308,13 @@ mipConvergence <- function(gdx) {
   cmMaxFadeoutPriceAnticip <- as.vector(readGDX(gdx, name = "cm_maxFadeoutPriceAnticip"))
   p80FadeoutPriceAnticipIter <- readGDX(gdx, name = "p80_fadeoutPriceAnticip_iter", restore_zeros = FALSE) %>%
     as.quitte() %>%
-    select("iteration", "fadeoutPriceAnticip" = value )
+    select("iteration", "fadeoutPriceAnticip" = "value")
 
   data <- p80FadeoutPriceAnticipIter %>%
     mutate(
-      iteration := as.numeric(iteration),
-      converged = ifelse(.data$fadeoutPriceAnticip > cmMaxFadeoutPriceAnticip, "no", "yes"),
-      tooltip = ifelse(
+      "iteration" := as.numeric(.data$iteration),
+      "converged" = ifelse(.data$fadeoutPriceAnticip > cmMaxFadeoutPriceAnticip, "no", "yes"),
+      "tooltip" = ifelse(
         .data$converged == "yes",
         paste0(
           "Converged<br>Price Anticipation fade out is low enough<br>",

@@ -41,20 +41,20 @@ mipConvergence <- function(gdx) {
 
   # Optimality / Objective Deviation ----
 
-  p80_convNashObjVal_iter <- readGDX(gdx, name = "p80_convNashObjVal_iter") %>%
+  p80ConvNashObjValIter <- readGDX(gdx, name = "p80_convNashObjVal_iter") %>%
     as.quitte() %>%
     select(c("region", "iteration", "objvalDifference" = "value")) %>%
     mutate(iteration := as.numeric(iteration)) %>%
     filter(iteration <= lastIteration)
 
-  p80_repy_iteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
+  p80RepyIteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select(c("solveinfo80", "region", "iteration", "value")) %>%
     mutate(iteration := as.numeric(iteration)) %>%
     dcast(region + iteration ~ solveinfo80, value.var = "value")
 
-  p80_repy_iteration <- p80_repy_iteration %>%
-    left_join(p80_convNashObjVal_iter, by = c("region", "iteration")) %>%
+  p80RepyIteration <- p80RepyIteration %>%
+    left_join(p80ConvNashObjValIter, by = c("region", "iteration")) %>%
     group_by(.data$region) %>%
     mutate(
       objvalCondition = ifelse(modelstat == "2", TRUE,
@@ -68,7 +68,7 @@ mipConvergence <- function(gdx) {
     mutate(objvalConverge = all(.data$objvalCondition)) %>%
     ungroup()
 
-  data <- p80_repy_iteration %>%
+  data <- p80RepyIteration %>%
     select("iteration", "objvalConverge") %>%
     distinct() %>%
     mutate(
@@ -77,7 +77,7 @@ mipConvergence <- function(gdx) {
     )
 
   for (iter in unique(data$iteration)) {
-    current <- filter(p80_repy_iteration, .data$iteration == iter)
+    current <- filter(p80RepyIteration, .data$iteration == iter)
 
     if (!all(current$objvalCondition)) {
       tooltip <- NULL
@@ -111,7 +111,7 @@ mipConvergence <- function(gdx) {
 
   # Feasibility -----
 
-  p80_repy_iteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
+  p80RepyIteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select(c("solveinfo80", "region", "iteration", "value")) %>%
     dcast(region + iteration ~ solveinfo80, value.var = "value") %>%
@@ -125,7 +125,7 @@ mipConvergence <- function(gdx) {
       )
     )
 
-  data <- p80_repy_iteration %>%
+  data <- p80RepyIteration %>%
     group_by(.data$iteration, .data$convergence) %>%
     mutate(details = paste0("Iteration: ", .data$iteration, "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
     ungroup()
@@ -170,11 +170,11 @@ mipConvergence <- function(gdx) {
       )
     )
 
-  p80_surplusMaxTolerance <- readGDX(gdx, name = "p80_surplusMaxTolerance", restore_zeros = FALSE) %>%
+  p80SurplusMaxTolerance <- readGDX(gdx, name = "p80_surplusMaxTolerance", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select(c("maxTol" = 7, "all_enty" = 8))
 
-  surplus <- left_join(surplus, p80_surplusMaxTolerance, by = "all_enty") %>%
+  surplus <- left_join(surplus, p80SurplusMaxTolerance, by = "all_enty") %>%
     mutate(
       maxTol := ifelse(period == 2150, maxTol * 10, maxTol),
       withinLimits := ifelse(abs(value) > maxTol, "no", "yes")
@@ -310,6 +310,7 @@ mipConvergence <- function(gdx) {
   data <- data.frame(iteration = 1:lastIteration)
 
   cmMaxFadeoutPriceAnticip <- as.vector(readGDX(gdx, name = "cm_maxFadeoutPriceAnticip"))
+
   data <- data %>% mutate(
     fadeoutPriceAnticip = ifelse(
       .data$iteration < priceAntecipationFadeoutIteration, 1,

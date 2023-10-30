@@ -344,7 +344,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   priceAnticipationPlotly <- ggplotly(priceAnticipation, tooltip = c("text"))
 
-  # Tax Convergence ----
+  # Tax Convergence (optional) ----
 
   cmTaxConvCheck <- as.vector(readGDX(gdx, name = "cm_TaxConvCheck"))
 
@@ -387,6 +387,68 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   taxConvergencePlotly <- ggplotly(taxConvergence, tooltip = c("text"))
 
+
+  # Emission Market Deviation (optional) ----
+
+  optionalPlots <- list()
+
+  p80EmiMktTargetDevIter <- suppressWarnings(
+    readGDX(gdx, name = "p80_emiMktTarget_dev_iter", react = "silent", restore_zeros = FALSE)
+  )
+
+  if (!is.null(p80EmiMktTargetDevIter)) {
+    cmEmiMktTargetTolerance <- as.vector(readGDX(gdx, name = "cm_emiMktTarget_tolerance"))
+
+    p80EmiMktTargetDevIter <- p80EmiMktTargetDevIter %>%
+      as.quitte() %>%
+      select("period", "iteration", "ext_regi", "emiMktExt", "value") %>%
+      mutate("converged" = .data$value <= cmEmiMktTargetTolerance)
+
+    data <- p80EmiMktTargetDevIter %>%
+      group_by(.data$iteration) %>%
+      summarise(converged = ifelse(any(.data$converged == FALSE), "no", "yes")) %>%
+      mutate("tooltip" = "Converged")
+
+    # TODO: What to add to the tooltip if not converged?
+
+    for (i in unique(p80EmiMktTargetDevIter$iteration)) {
+      if (data[data$iteration == i, "converged"] == "no") {
+        tmp <- filter(p80EmiMktTargetDevIter, .data$iteration == i, .data$converged == FALSE)
+
+        data[data$iteration == i, "tooltip"] <- paste0(
+          "Iteration ", i, " ",
+          "not converged:<br>",
+          paste0(unique(tmp$ext_regi), collapse = ", "),
+          "<br>",
+          paste0(unique(tmp$period), collapse = ", "),
+          "<br>",
+          paste0(unique(tmp$emiMktExt), collapse = ", ")
+        )
+      }
+    }
+
+    emiMktTargetDev <- suppressWarnings(ggplot(data, aes_(
+      x = ~iteration, y = "Emission Market\nTarget Deviation",
+      fill = ~converged, text = ~tooltip
+    ))) +
+      geom_hline(yintercept = 0) +
+      theme_minimal() +
+      geom_point(size = 2, alpha = aestethics$alpha) +
+      scale_fill_manual(values = booleanColor) +
+      scale_y_discrete(breaks = c("Emission Market\nTarget Deviation"), drop = FALSE) +
+      labs(x = NULL, y = NULL)
+
+    emiMktTargetDevPlotly <- ggplotly(emiMktTargetDev, tooltip = c("text"))
+
+    optionalPlots <- append(optionalPlots, list(emiMktTargetDevPlotly))
+  }
+
+  # Implicity Quantity Target (optional) ----
+
+  # Global Bugdet Deviation (optional) ----
+
+  # Internalized Damages (optional) ----
+
   # Summary plot ----
 
   out <- list()
@@ -408,6 +470,15 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     layout(margin = list(l = -100, r = 10))
 
   out$tradeDetailPlot <- surplusConvergencePlotly
+
+  if (length(optionalPlots) > 0) {
+    out$optionalPlots <- subplot(
+      optionalPlots
+    ) %>%
+      hide_legend() %>%
+      config(displayModeBar = FALSE, displaylogo = FALSE) %>%
+      layout(margin = list(l = -100, r = 10))
+  }
 
   return(out)
 }

@@ -16,7 +16,7 @@
 #' @importFrom reshape2 dcast
 #'
 #' @export
-mipConvergence <- function(gdx) {
+mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   if (!file.exists(gdx)) {
     warning("gdx file not found!")
@@ -127,7 +127,8 @@ mipConvergence <- function(gdx) {
 
   data <- p80RepyIteration %>%
     group_by(.data$iteration, .data$convergence) %>%
-    mutate("details" = paste0("Iteration: ", .data$iteration, "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
+    mutate("details" = paste0("Iteration: ", .data$iteration,
+                              "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
     ungroup()
 
   data$convergence <- factor(data$convergence, levels = c("infeasible", "feasible", "optimal"))
@@ -345,6 +346,47 @@ mipConvergence <- function(gdx) {
 
   # Tax Convergence ----
 
+  cmTaxConvCheck <- as.vector(readGDX(gdx, name = "cm_TaxConvCheck"))
+
+  p80ConvNashTaxrevIter <- readGDX(gdx, name = "p80_convNashTaxrev_iter", restore_zeros = FALSE) %>%
+    as.quitte() %>%
+    select("region", "period", "iteration", "value") %>%
+    mutate("converged" = .data$value <= 1e-4)
+
+  data <- p80ConvNashTaxrevIter %>%
+    group_by(.data$iteration) %>%
+    summarise(converged = ifelse(any(.data$converged == FALSE), "no", "yes")) %>%
+    mutate("tooltip" = "Converged")
+
+  for (i in unique(p80ConvNashTaxrevIter$iteration)) {
+    if (data[data$iteration == i, "converged"] == "no") {
+      tmp <- filter(p80ConvNashTaxrevIter, .data$iteration == i, .data$converged == FALSE)
+
+      data[data$iteration == i, "tooltip"] <- paste0(
+        "Iteration ", i, " ",
+        "not converged:<br>",
+        paste0(unique(tmp$region), collapse = ", "),
+        "<br>",
+        paste0(unique(tmp$period), collapse = ", ")
+      )
+    }
+  }
+
+  yLabel <- ifelse(cmTaxConvCheck == 0, "Tax\nConvergence\n(incactive)", "Tax\nConvergence")
+
+  taxConvergence <- suppressWarnings(ggplot(data, aes_(
+    x = ~iteration, y = yLabel,
+    fill = ~converged, text = ~tooltip
+  ))) +
+    geom_hline(yintercept = 0) +
+    theme_minimal() +
+    geom_point(size = 2, alpha = aestethics$alpha) +
+    scale_fill_manual(values = booleanColor) +
+    scale_y_discrete(breaks = c(yLabel), drop = FALSE) +
+    labs(x = NULL, y = NULL)
+
+  taxConvergencePlotly <- ggplotly(taxConvergence, tooltip = c("text"))
+
   # Summary plot ----
 
   out <- list()
@@ -354,8 +396,11 @@ mipConvergence <- function(gdx) {
     objVarSummaryPlotly,
     surplusSummaryPlotly,
     priceAnticipationPlotly,
-    nrows = 4, shareX = TRUE, titleX = FALSE,
-    heights = c(0.4, 0.2, 0.2, 0.2),
+    taxConvergencePlotly,
+    nrows = 5,
+    shareX = TRUE,
+    titleX = FALSE,
+    heights = c(0.3, 0.5 / 3, 0.5 / 3, 0.2, 0.5 / 3),
     margin = c(.1, .1, .1, .0001)
   ) %>%
     hide_legend() %>%

@@ -22,7 +22,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     warning("gdx file not found!")
     return(list())
   }
-
   modelstat <- readGDX(gdx, name = "o_modelstat")[[1]]
   lastIteration <- readGDX(gdx, name = "o_iterationNumber")[[1]]
 
@@ -38,6 +37,8 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
   )
 
   booleanColor <- c("yes" = "#00BFC4", "no" = "#F8766D")
+
+  optionalPlots <- list()
 
   # Optimality / Objective Deviation ----
 
@@ -159,6 +160,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
   # Trade goods surplus detail ----
 
   # TODO: why is p80_surplusMax_iter only returning positive values?
+
   surplus <- readGDX(gdx, name = "p80_surplus", restore_zeros = FALSE)[, c(2100, 2150), ] %>%
     as.quitte() %>%
     select(c("period", "value", "all_enty", "iteration")) %>%
@@ -346,6 +348,9 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Tax Convergence (optional) ----
 
+  # TODO: What to add to the tooltip if not converged?
+  # TODO: correct implementation?
+
   cmTaxConvCheck <- as.vector(readGDX(gdx, name = "cm_TaxConvCheck"))
 
   p80ConvNashTaxrevIter <- readGDX(gdx, name = "p80_convNashTaxrev_iter", restore_zeros = FALSE) %>%
@@ -360,15 +365,26 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   for (i in unique(p80ConvNashTaxrevIter$iteration)) {
     if (data[data$iteration == i, "converged"] == "no") {
-      tmp <- filter(p80ConvNashTaxrevIter, .data$iteration == i, .data$converged == FALSE)
+      tmp <- filter(p80ConvNashTaxrevIter, .data$iteration == i, .data$converged == FALSE) %>%
+        mutate("item" = paste0(.data$region, " ", .data$period)) %>%
+        select("region", "period", "item") %>%
+        distinct()
 
-      data[data$iteration == i, "tooltip"] <- paste0(
-        "Iteration ", i, " ",
-        "not converged:<br>",
-        paste0(unique(tmp$region), collapse = ", "),
-        "<br>",
-        paste0(unique(tmp$period), collapse = ", ")
-      )
+      if (nrow(tmp) > 10) {
+        data[data$iteration == i, "tooltip"] <- paste0(
+          "Iteration ", i, " ",
+          "not converged:<br>",
+          paste0(unique(tmp$region), collapse = ", "),
+          "<br>",
+          paste0(unique(tmp$period), collapse = ", ")
+        )
+      } else {
+        data[data$iteration == i, "tooltip"] <- paste0(
+          "Iteration ", i, " ",
+          "not converged:<br>",
+          paste0(unique(tmp$item), collapse = ", ")
+        )
+      }
     }
   }
 
@@ -390,13 +406,19 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Emission Market Deviation (optional) ----
 
-  optionalPlots <- list()
+  # TODO: can I use p80_emiMktTarget_dev_iter directly here?
+  # TODO: use pm_emiMktTarget_dev_iter instead of p80_emiMktTarget_dev_iter
+  # TODO: What to add to the tooltip if not converged?
+  # TODO: correct implementation
 
-  p80EmiMktTargetDevIter <- suppressWarnings(
-    readGDX(gdx, name = "p80_emiMktTarget_dev_iter", react = "silent", restore_zeros = FALSE)
-  )
+  pmEmiMktTarget <- readGDX(gdx, name = "pm_emiMktTarget", react = "silent", restore_zeros = FALSE)
 
-  if (!is.null(p80EmiMktTargetDevIter)) {
+  if (!is.null(pmEmiMktTarget)) {
+
+    p80EmiMktTargetDevIter <- suppressWarnings(
+      readGDX(gdx, name = "p80_emiMktTarget_dev_iter", react = "silent", restore_zeros = FALSE)
+    )
+
     cmEmiMktTargetTolerance <- as.vector(readGDX(gdx, name = "cm_emiMktTarget_tolerance"))
 
     p80EmiMktTargetDevIter <- p80EmiMktTargetDevIter %>%
@@ -409,21 +431,30 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
       summarise(converged = ifelse(any(.data$converged == FALSE), "no", "yes")) %>%
       mutate("tooltip" = "Converged")
 
-    # TODO: What to add to the tooltip if not converged?
-
     for (i in unique(p80EmiMktTargetDevIter$iteration)) {
       if (data[data$iteration == i, "converged"] == "no") {
-        tmp <- filter(p80EmiMktTargetDevIter, .data$iteration == i, .data$converged == FALSE)
+        tmp <- filter(p80EmiMktTargetDevIter, .data$iteration == i, .data$converged == FALSE) %>%
+          mutate("item" = paste0(.data$ext_regi, " ", .data$period, " ", .data$emiMktExt)) %>%
+          select("ext_regi", "period", "emiMktExt", "item") %>%
+          distinct()
 
-        data[data$iteration == i, "tooltip"] <- paste0(
-          "Iteration ", i, " ",
-          "not converged:<br>",
-          paste0(unique(tmp$ext_regi), collapse = ", "),
-          "<br>",
-          paste0(unique(tmp$period), collapse = ", "),
-          "<br>",
-          paste0(unique(tmp$emiMktExt), collapse = ", ")
-        )
+        if (nrow(tmp) > 10) {
+          data[data$iteration == i, "tooltip"] <- paste0(
+            "Iteration ", i, " ",
+            "not converged:<br>",
+            paste0(unique(tmp$ext_regi), collapse = ", "),
+            "<br>",
+            paste0(unique(tmp$period), collapse = ", "),
+            "<br>",
+            paste0(unique(tmp$emiMktExt), collapse = ", ")
+          )
+        } else {
+          data[data$iteration == i, "tooltip"] <- paste0(
+            "Iteration ", i, " ",
+            "not converged:<br>",
+            paste0(unique(tmp$item), collapse = ", ")
+          )
+        }
       }
     }
 
@@ -443,7 +474,58 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     optionalPlots <- append(optionalPlots, list(emiMktTargetDevPlotly))
   }
 
-  # Implicity Quantity Target (optional) ----
+  # Implicit Quantity Target (optional) ----
+
+  pmImplicitQttyTarget <- readGDX(gdx, name = "pm_implicitQttyTarget", restore_zeros = FALSE)
+
+  if (!is.null(pmImplicitQttyTarget)) {
+
+    cmImplicitQttyTargetTolerance <- as.vector(readGDX(gdx, name = "cm_implicitQttyTarget_tolerance"))
+
+    pmImplicitQttyTarget <- readGDX(gdx, name = "pm_implicitQttyTarget", restore_zeros = FALSE) %>%
+      as.quitte() %>%
+      select("period", "ext_regi", "taxType", "qttyTarget", "qttyTargetGroup")
+
+    pmImplicitQttyTargetIsLimited <- readGDX(gdx, name = "pm_implicitQttyTarget_isLimited") %>%
+      as.quitte() %>%
+      select("iteration", "qttyTarget", "qttyTargetGroup", "isLimited" = "value")
+
+    p80ImplicitQttyTargetDevIter <- readGDX(gdx, name = "p80_implicitQttyTarget_dev_iter", restore_zeros = FALSE) %>%
+      as.quitte() %>%
+      select("period", "value", "iteration", "ext_regi", "qttyTarget", "qttyTargetGroup") %>%
+      left_join(pmImplicitQttyTarget, by = c("period", "ext_regi", "qttyTarget", "qttyTargetGroup")) %>%
+      left_join(pmImplicitQttyTargetIsLimited, by = c("iteration", "qttyTarget", "qttyTargetGroup")) %>%
+      mutate(
+        "failed" =
+          abs(.data$value) > cmImplicitQttyTargetTolerance & (
+            !(ifelse(.data$taxType == "tax", .data$value < 0, FALSE)) |
+            ifelse(.data$taxType == "sub", .data$value > 0, FALSE)
+          ) & .data$isLimited != 1
+      )
+
+    # TODO: What to add to the tooltip if not converged?
+    data <- p80ImplicitQttyTargetDevIter %>%
+      group_by(.data$iteration) %>%
+      summarise(converged = ifelse(any(.data$failed == TRUE), "no", "yes")) %>%
+      mutate("tooltip" = ifelse(.data$converged == "yes", "Converged", "Not converged"))
+
+    qttyTarget <- suppressWarnings(ggplot(data, aes_(
+      x = ~iteration, y = "Implicit Quantity\nTarget",
+      fill = ~converged, text = ~tooltip
+    ))) +
+      geom_hline(yintercept = 0) +
+      theme_minimal() +
+      geom_point(size = 2, alpha = aestethics$alpha) +
+      scale_fill_manual(values = booleanColor) +
+      scale_y_discrete(breaks = c("Implicit Quantity\nTarget"), drop = FALSE) +
+      labs(x = NULL, y = NULL)
+
+    qttyTargetPlotly <- ggplotly(qttyTarget, tooltip = c("text"))
+
+    optionalPlots <- append(optionalPlots, list(qttyTargetPlotly))
+
+  }
+
 
   # Global Bugdet Deviation (optional) ----
 
@@ -473,7 +555,11 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   if (length(optionalPlots) > 0) {
     out$optionalPlots <- subplot(
-      optionalPlots
+      optionalPlots,
+      nrows = length(optionalPlots),
+      shareX = TRUE,
+      titleX = FALSE,
+      margin = c(.1, .1, .1, .0001)
     ) %>%
       hide_legend() %>%
       config(displayModeBar = FALSE, displaylogo = FALSE) %>%

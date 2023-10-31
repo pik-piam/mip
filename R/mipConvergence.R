@@ -529,6 +529,34 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Global Bugdet Deviation (optional) ----
 
+  # TODO. what is the condition?
+
+  p80GlobalBudgetDevIter <- readGDX(gdx, name = "p80_globalBudget_dev_iter", restore_zeros = FALSE) %>%
+    as.quitte() %>%
+    select("value", "iteration") %>%
+    mutate("failed" = .data$value > 1.01 | .data$value < 0.99)
+
+  data <- p80GlobalBudgetDevIter %>%
+    mutate(
+      "converged" = ifelse(.data$failed == TRUE, "no", "yes"),
+      "tooltip" = ifelse(.data$failed, "Not converged", "Converged")
+    )
+
+  globalBuget <- suppressWarnings(ggplot(data, aes_(
+    x = ~iteration, y = "Global Budget\nDeviation",
+    fill = ~converged, text = ~tooltip
+  ))) +
+    geom_hline(yintercept = 0) +
+    theme_minimal() +
+    geom_point(size = 2, alpha = aestethics$alpha) +
+    scale_fill_manual(values = booleanColor) +
+    scale_y_discrete(breaks = c("Global Budget\nDeviation"), drop = FALSE) +
+    labs(x = NULL, y = NULL)
+
+  globalBugetPlotly <- ggplotly(globalBuget, tooltip = c("text"))
+
+  optionalPlots <- append(optionalPlots, list(globalBugetPlotly))
+
   # Internalized Damages (optional) ----
 
   # Summary plot ----

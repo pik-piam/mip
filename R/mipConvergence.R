@@ -161,9 +161,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Trade goods surplus detail ----
 
-  # TODO: why is p80_surplusMax_iter only returning positive values?
-
-  surplus <- readGDX(gdx, name = "p80_surplus", restore_zeros = FALSE)[, c(2100, 2150), ] %>%
+  surplus <- readGDX(gdx, name = "p80_surplusMax_iter", restore_zeros = FALSE)[, c(2100, 2150), ] %>%
     as.quitte() %>%
     select(c("period", "value", "all_enty", "iteration")) %>%
     mutate(
@@ -351,9 +349,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Tax Convergence (optional) ----
 
-  # TODO: What to add to the tooltip if not converged?
-  # TODO: correct implementation?
-
   cmTaxConvCheck <- as.vector(readGDX(gdx, name = "cm_TaxConvCheck"))
 
   p80ConvNashTaxrevIter <- readGDX(gdx, name = "p80_convNashTaxrev_iter", restore_zeros = FALSE) %>%
@@ -409,11 +404,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Emission Market Deviation (optional) ----
 
-  # TODO: can I use p80_emiMktTarget_dev_iter directly here?
-  # TODO: use pm_emiMktTarget_dev_iter instead of p80_emiMktTarget_dev_iter
-  # TODO: What to add to the tooltip if not converged?
-  # TODO: correct implementation
-
   pmEmiMktTarget <- readGDX(gdx, name = "pm_emiMktTarget", react = "silent", restore_zeros = FALSE)
 
   if (!is.null(pmEmiMktTarget)) {
@@ -462,14 +452,14 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     }
 
     emiMktTargetDev <- suppressWarnings(ggplot(data, aes_(
-      x = ~iteration, y = "Emission Market\nTarget Deviation",
+      x = ~iteration, y = "Emission Market\nTarget",
       fill = ~converged, text = ~tooltip
     ))) +
       geom_hline(yintercept = 0) +
       theme_minimal() +
       geom_point(size = 2, alpha = aestethics$alpha) +
       scale_fill_manual(values = booleanColor) +
-      scale_y_discrete(breaks = c("Emission Market\nTarget Deviation"), drop = FALSE) +
+      scale_y_discrete(breaks = c("Emission Market\nTarget"), drop = FALSE) +
       labs(x = NULL, y = NULL)
 
     emiMktTargetDevPlotly <- ggplotly(emiMktTargetDev, tooltip = c("text"))
@@ -507,7 +497,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
           ) & .data$isLimited != 1
       )
 
-    # TODO: What to add to the tooltip if not converged?
     data <- p80ImplicitQttyTargetDevIter %>%
       group_by(.data$iteration) %>%
       summarise(converged = ifelse(any(.data$failed == TRUE), "no", "yes")) %>%
@@ -531,8 +520,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
 
   # Global Bugdet Deviation (optional) ----
-
-  # TODO. what is the condition?
 
   p80GlobalBudgetDevIter <- readGDX(gdx, name = "p80_globalBudget_dev_iter", restore_zeros = FALSE) %>%
     as.quitte() %>%
@@ -561,7 +548,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Internalized Damages (optional) ----
 
-  # TODO: never turned on?
   module2realisation <- readGDX(gdx, name = "module2realisation")
   if (module2realisation[module2realisation$modules == "internalizeDamages", ][, 2] != "off") {
     cmSccConvergence <- as.numeric(readGDX(gdx, name = "cm_sccConvergence", types = c("parameters")))

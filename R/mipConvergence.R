@@ -38,7 +38,55 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   booleanColor <- c("yes" = "#00BFC4", "no" = "#F8766D")
 
-  optionalPlots <- list()
+  subplots <- list()
+
+  # Feasibility -----
+
+  p80RepyIteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
+    as.quitte() %>%
+    select(c("solveinfo80", "region", "iteration", "value")) %>%
+    dcast(region + iteration ~ solveinfo80, value.var = "value") %>%
+    mutate(
+      "iteration" := as.numeric(.data$iteration),
+      "convergence" := case_when(
+        .data$modelstat == 1 & .data$solvestat == 1 ~ "optimal",
+        .data$modelstat == 2 & .data$solvestat == 1 ~ "optimal",
+        .data$modelstat == 7 & .data$solvestat == 4 ~ "feasible",
+        .default = "infeasible"
+      )
+    )
+
+  data <- p80RepyIteration %>%
+    group_by(.data$iteration, .data$convergence) %>%
+    mutate("details" = paste0("Iteration: ", .data$iteration,
+                              "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
+    ungroup()
+
+  data$convergence <- factor(data$convergence, levels = c("infeasible", "feasible", "optimal"))
+
+  convergencePlot <-
+    suppressWarnings(ggplot(mapping = aes_(~iteration, ~convergence, text = ~details))) +
+    geom_line(
+      data = data,
+      linetype = "dashed",
+      aes_(group = ~region, color = ~region),
+      alpha = aestethics$alpha,
+      linewidth = aestethics$line$size
+    ) +
+    geom_point(
+      data = select(data, c("iteration", "convergence", "details")) %>% distinct(),
+      aes_(fill = ~convergence),
+      size = 2,
+      alpha = aestethics$alpha
+    ) +
+    scale_fill_manual(values = c("optimal" = "#00BFC4", "feasible" = "#ffcc66", "infeasible" = "#F8766D")) +
+    scale_color_manual(values = plotstyle(as.character(unique(data$region)))) +
+    scale_y_discrete(breaks = c("infeasible", "feasible", "optimal"), drop = FALSE) +
+    theme_minimal() +
+    labs(x = NULL, y = NULL)
+
+  convergencePlotPlotly <- ggplotly(convergencePlot, tooltip = c("text"))
+  subplots <- append(subplots, list(convergencePlotPlotly))
 
   # Optimality / Objective Deviation ----
 
@@ -108,54 +156,8 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     labs(x = NULL, y = NULL)
 
   objVarSummaryPlotly <- ggplotly(objVarSummary, tooltip = c("text"))
+  subplots <- append(subplots, list(objVarSummaryPlotly))
 
-
-  # Feasibility -----
-
-  p80RepyIteration <- readGDX(gdx, name = "p80_repy_iteration", restore_zeros = FALSE) %>%
-    as.quitte() %>%
-    select(c("solveinfo80", "region", "iteration", "value")) %>%
-    dcast(region + iteration ~ solveinfo80, value.var = "value") %>%
-    mutate(
-      "iteration" := as.numeric(.data$iteration),
-      "convergence" := case_when(
-        .data$modelstat == 1 & .data$solvestat == 1 ~ "optimal",
-        .data$modelstat == 2 & .data$solvestat == 1 ~ "optimal",
-        .data$modelstat == 7 & .data$solvestat == 4 ~ "feasible",
-        .default = "infeasible"
-      )
-    )
-
-  data <- p80RepyIteration %>%
-    group_by(.data$iteration, .data$convergence) %>%
-    mutate("details" = paste0("Iteration: ", .data$iteration,
-                              "<br>region: ", paste0(.data$region, collapse = ", "))) %>%
-    ungroup()
-
-  data$convergence <- factor(data$convergence, levels = c("infeasible", "feasible", "optimal"))
-
-  convergencePlot <-
-    suppressWarnings(ggplot(mapping = aes_(~iteration, ~convergence, text = ~details))) +
-    geom_line(
-      data = data,
-      linetype = "dashed",
-      aes_(group = ~region, color = ~region),
-      alpha = aestethics$alpha,
-      linewidth = aestethics$line$size
-    ) +
-    geom_point(
-      data = select(data, c("iteration", "convergence", "details")) %>% distinct(),
-      aes_(fill = ~convergence),
-      size = 2,
-      alpha = aestethics$alpha
-    ) +
-    scale_fill_manual(values = c("optimal" = "#00BFC4", "feasible" = "#ffcc66", "infeasible" = "#F8766D")) +
-    scale_color_manual(values = plotstyle(as.character(unique(data$region)))) +
-    scale_y_discrete(breaks = c("infeasible", "feasible", "optimal"), drop = FALSE) +
-    theme_minimal() +
-    labs(x = NULL, y = NULL)
-
-  convergencePlotPlotly <- ggplotly(convergencePlot, tooltip = c("text"))
 
   # Trade goods surplus detail ----
 
@@ -304,7 +306,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     labs(x = NULL, y = NULL)
 
   surplusSummaryPlotly <- ggplotly(surplusSummary, tooltip = c("text"))
-
+  subplots <- append(subplots, list(surplusSummaryPlotly))
 
   # Price anticipation ----
 
@@ -345,6 +347,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     coord_cartesian(ylim = c(-0.2, 1))
 
   priceAnticipationPlotly <- ggplotly(priceAnticipation, tooltip = c("text"))
+  subplots <- append(subplots, list(priceAnticipationPlotly))
 
   # Tax Convergence (optional) ----
 
@@ -402,7 +405,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     labs(x = NULL, y = NULL)
 
   taxConvergencePlotly <- ggplotly(taxConvergence, tooltip = c("text"))
-
+  subplots <- append(subplots, list(taxConvergencePlotly))
 
   # Emission Market Deviation (optional) ----
 
@@ -471,7 +474,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
     emiMktTargetDevPlotly <- ggplotly(emiMktTargetDev, tooltip = c("text"))
 
-    optionalPlots <- append(optionalPlots, list(emiMktTargetDevPlotly))
+    subplots <- append(subplots, list(emiMktTargetDevPlotly))
   }
 
   # Implicit Quantity Target (optional) ----
@@ -521,8 +524,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
       labs(x = NULL, y = NULL)
 
     qttyTargetPlotly <- ggplotly(qttyTarget, tooltip = c("text"))
-
-    optionalPlots <- append(optionalPlots, list(qttyTargetPlotly))
+    subplots <- append(subplots, list(qttyTargetPlotly))
 
   }
 
@@ -554,8 +556,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     labs(x = NULL, y = NULL)
 
   globalBugetPlotly <- ggplotly(globalBuget, tooltip = c("text"))
-
-  optionalPlots <- append(optionalPlots, list(globalBugetPlotly))
+  subplots <- append(subplots, list(globalBugetPlotly))
 
   # Internalized Damages (optional) ----
 
@@ -563,36 +564,19 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   out <- list()
 
+  out$tradeDetailPlot <- surplusConvergencePlotly
+  n <- length(subplots)
   out$plot <- subplot(
-    convergencePlotPlotly,
-    objVarSummaryPlotly,
-    surplusSummaryPlotly,
-    priceAnticipationPlotly,
-    taxConvergencePlotly,
-    nrows = 5,
+    subplots,
+    nrows = n,
+    heights = c(2 / (n + 2), rep(1 / (n + 2), 2), 2 / (n + 2), 1 / (n + 2), rep(1 / (n + 2), n - 5)),
     shareX = TRUE,
     titleX = FALSE,
-    heights = c(0.3, 0.5 / 3, 0.5 / 3, 0.2, 0.5 / 3),
     margin = c(.1, .1, .1, .0001)
   ) %>%
     hide_legend() %>%
     config(displayModeBar = FALSE, displaylogo = FALSE) %>%
     layout(margin = list(l = -100, r = 10))
-
-  out$tradeDetailPlot <- surplusConvergencePlotly
-
-  if (length(optionalPlots) > 0) {
-    out$optionalPlots <- subplot(
-      optionalPlots,
-      nrows = length(optionalPlots),
-      shareX = TRUE,
-      titleX = FALSE,
-      margin = c(.1, .1, .1, .0001)
-    ) %>%
-      hide_legend() %>%
-      config(displayModeBar = FALSE, displaylogo = FALSE) %>%
-      layout(margin = list(l = -100, r = 10))
-  }
 
   return(out)
 }

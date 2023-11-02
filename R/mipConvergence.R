@@ -391,7 +391,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     }
   }
 
-  yLabel <- ifelse(cmTaxConvCheck == 0, "Tax\nConvergence\n(incactive)", "Tax\nConvergence")
+  yLabel <- ifelse(cmTaxConvCheck == 0, "Tax Convergence\n(inactive)", "Tax Convergence")
 
   taxConvergence <- suppressWarnings(ggplot(data, aes_(
     x = ~iteration, y = yLabel,
@@ -418,25 +418,25 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   if (!is.null(pmEmiMktTarget)) {
 
-    p80EmiMktTargetDevIter <- suppressWarnings(
-      readGDX(gdx, name = "p80_emiMktTarget_dev_iter", react = "silent", restore_zeros = FALSE)
+    pmEmiMktTargetDevIter <- suppressWarnings(
+      readGDX(gdx, name = "pm_emiMktTarget_dev_iter", react = "silent", restore_zeros = FALSE)
     )
 
     cmEmiMktTargetTolerance <- as.vector(readGDX(gdx, name = "cm_emiMktTarget_tolerance"))
 
-    p80EmiMktTargetDevIter <- p80EmiMktTargetDevIter %>%
+    pmEmiMktTargetDevIter <- pmEmiMktTargetDevIter %>%
       as.quitte() %>%
       select("period", "iteration", "ext_regi", "emiMktExt", "value") %>%
       mutate("converged" = .data$value <= cmEmiMktTargetTolerance)
 
-    data <- p80EmiMktTargetDevIter %>%
+    data <- pmEmiMktTargetDevIter %>%
       group_by(.data$iteration) %>%
       summarise(converged = ifelse(any(.data$converged == FALSE), "no", "yes")) %>%
       mutate("tooltip" = "Converged")
 
-    for (i in unique(p80EmiMktTargetDevIter$iteration)) {
+    for (i in unique(pmEmiMktTargetDevIter$iteration)) {
       if (data[data$iteration == i, "converged"] == "no") {
-        tmp <- filter(p80EmiMktTargetDevIter, .data$iteration == i, .data$converged == FALSE) %>%
+        tmp <- filter(pmEmiMktTargetDevIter, .data$iteration == i, .data$converged == FALSE) %>%
           mutate("item" = paste0(.data$ext_regi, " ", .data$period, " ", .data$emiMktExt)) %>%
           select("ext_regi", "period", "emiMktExt", "item") %>%
           distinct()
@@ -479,7 +479,8 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Implicit Quantity Target (optional) ----
 
-  pmImplicitQttyTarget <- readGDX(gdx, name = "pm_implicitQttyTarget", restore_zeros = FALSE)
+  pmImplicitQttyTarget <- readGDX(gdx, name = "pm_implicitQttyTarget", restore_zeros = FALSE,
+                                  react = "silent")
 
   if (!is.null(pmImplicitQttyTarget)) {
 
@@ -560,8 +561,9 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Internalized Damages (optional) ----
 
+  # TODO: never turned on?
   module2realisation <- readGDX(gdx, name = "module2realisation")
-  if (module2realisation[module2realisation$modules == "internalizeDamages", ][, 2] == "on") {
+  if (module2realisation[module2realisation$modules == "internalizeDamages", ][, 2] != "off") {
     cmSccConvergence <- as.numeric(readGDX(gdx, name = "cm_sccConvergence", types = c("parameters")))
     cmTempConvergence <- as.numeric(readGDX(gdx, name = "cm_tempConvergence", types = c("parameters")))
     p80SccConvergenceMaxDeviationIter <- readGDX(gdx, name = "p80_sccConvergenceMaxDeviation_iter") %>%
@@ -606,18 +608,17 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
   out <- list()
 
   out$tradeDetailPlot <- surplusConvergencePlotly
+
   n <- length(subplots)
   out$plot <- subplot(
     subplots,
     nrows = n,
-    heights = c(2 / (n + 2), rep(1 / (n + 2), 2), 2 / (n + 2), 1 / (n + 2), rep(1 / (n + 2), n - 5)),
+    heights = c(3 / (n + 3), rep(1 / (n + 3), 2), 2 / (n + 3), 1 / (n + 3), rep(1 / (n + 3), n - 5)),
     shareX = TRUE,
-    titleX = FALSE,
-    margin = c(.1, .1, .1, .0001)
+    titleX = FALSE
   ) %>%
     hide_legend() %>%
-    config(displayModeBar = FALSE, displaylogo = FALSE) %>%
-    layout(margin = list(l = -100, r = 10))
+    config(displayModeBar = FALSE, displaylogo = FALSE)
 
   return(out)
 }

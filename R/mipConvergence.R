@@ -560,6 +560,47 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   # Internalized Damages (optional) ----
 
+  module2realisation <- readGDX(gdx, name = "module2realisation")
+  if (module2realisation[module2realisation$modules == "internalizeDamages", ][, 2] == "on") {
+    cmSccConvergence <- as.numeric(readGDX(gdx, name = "cm_sccConvergence", types = c("parameters")))
+    cmTempConvergence <- as.numeric(readGDX(gdx, name = "cm_tempConvergence", types = c("parameters")))
+    p80SccConvergenceMaxDeviationIter <- readGDX(gdx, name = "p80_sccConvergenceMaxDeviation_iter") %>%
+      as.quitte() %>%
+      select("iteration", "p80SccConvergenceMaxDeviationIter" = "value") %>%
+      mutate("iteration" := as.numeric(.data$iteration)) %>%
+      filter(.data$iteration <= lastIteration)
+
+    p80GmtConvIter <- readGDX(gdx, name = "p80_gmt_conv_iter") %>%
+      as.quitte() %>%
+      select("iteration", "p80GmtConvIter" = "value") %>%
+      mutate("iteration" := as.numeric(.data$iteration)) %>%
+      filter(.data$iteration <= lastIteration)
+
+    data <- left_join(p80SccConvergenceMaxDeviationIter, p80GmtConvIter, by = "iteration") %>%
+      mutate(
+        "converged" = ifelse(.data$p80SccConvergenceMaxDeviationIter > cmSccConvergence |
+                               .data$p80GmtConvIter >  cmTempConvergence, "no", "yes"),
+        "tooltip" = ifelse(.data$converged == "no", "Not converged", "Converged")
+      )
+
+
+    damageInternalization <- suppressWarnings(ggplot(data, aes_(
+      x = ~iteration, y = "Damage\nInternalization",
+      fill = ~converged, text = ~tooltip
+    ))) +
+      geom_hline(yintercept = 0) +
+      theme_minimal() +
+      geom_point(size = 2, alpha = aestethics$alpha) +
+      scale_fill_manual(values = booleanColor) +
+      scale_y_discrete(breaks = c("Damage\nInternalization"), drop = FALSE) +
+      labs(x = NULL, y = NULL)
+
+    damageInternalizationPlotly <- ggplotly(damageInternalization, tooltip = c("text"))
+    subplots <- append(subplots, list(damageInternalizationPlotly))
+
+  }
+
+
   # Summary plot ----
 
   out <- list()

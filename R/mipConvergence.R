@@ -237,7 +237,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
         group = ~all_enty, text = ~tooltip
       ),
       alpha = aestethics$alpha,
-      size = aestethics$line$size
+      linewidth = aestethics$line$size
     )) +
     suppressWarnings(geom_rect(
       data = limits,
@@ -331,7 +331,7 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
     )
 
   priceAnticipation <- ggplot(data, aes_(x = ~iteration)) +
-    geom_line(aes_(y = ~fadeoutPriceAnticip), alpha = 0.3, size = aestethics$line$size) +
+    geom_line(aes_(y = ~fadeoutPriceAnticip), alpha = 0.3, linewidth = aestethics$line$size) +
     suppressWarnings(geom_point(
       size = 2,
       aes_(y = 0.0001, fill = ~converged, text = ~tooltip),

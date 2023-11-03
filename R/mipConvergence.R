@@ -294,13 +294,13 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
   }
 
   surplusSummary <- suppressWarnings(ggplot(surplusCondition,
-                                            aes_(x = ~iteration, y = "Trade\nSurplus",
+                                            aes_(x = ~iteration, y = "Max. Trade\nSurplus",
                                                  fill = ~withinLimits, text = ~tooltip))) +
     geom_hline(yintercept = 0) +
     theme_minimal() +
     geom_point(size = 2, alpha = aestethics$alpha) +
     scale_fill_manual(values = booleanColor) +
-    scale_y_discrete(breaks = c("Trade\nSurplus"), drop = FALSE) +
+    scale_y_discrete(breaks = c("Max. Trade\nSurplus"), drop = FALSE) +
     labs(x = NULL, y = NULL)
 
   surplusSummaryPlotly <- ggplotly(surplusSummary, tooltip = c("text"))
@@ -354,16 +354,16 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
   p80ConvNashTaxrevIter <- readGDX(gdx, name = "p80_convNashTaxrev_iter", restore_zeros = FALSE) %>%
     as.quitte() %>%
     select("region", "period", "iteration", "value") %>%
-    mutate("converged" = .data$value <= 1e-4)
+    mutate("failed" = .data$value > 1e-4)
 
   data <- p80ConvNashTaxrevIter %>%
     group_by(.data$iteration) %>%
-    summarise(converged = ifelse(any(.data$converged == FALSE), "no", "yes")) %>%
+    summarise(converged = ifelse(any(.data$failed == TRUE), "no", "yes")) %>%
     mutate("tooltip" = "Converged")
 
   for (i in unique(p80ConvNashTaxrevIter$iteration)) {
     if (data[data$iteration == i, "converged"] == "no") {
-      tmp <- filter(p80ConvNashTaxrevIter, .data$iteration == i, .data$converged == FALSE) %>%
+      tmp <- filter(p80ConvNashTaxrevIter, .data$iteration == i, .data$failed == TRUE) %>%
         mutate("item" = paste0(.data$region, " ", .data$period)) %>%
         select("region", "period", "item") %>%
         distinct()
@@ -518,7 +518,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
 
   }
 
-
   # Global Bugdet Deviation (optional) ----
 
   p80GlobalBudgetDevIter <- readGDX(gdx, name = "p80_globalBudget_dev_iter", restore_zeros = FALSE) %>%
@@ -570,7 +569,6 @@ mipConvergence <- function(gdx) { # nolint cyclocomp_linter
                                .data$p80GmtConvIter >  cmTempConvergence, "no", "yes"),
         "tooltip" = ifelse(.data$converged == "no", "Not converged", "Converged")
       )
-
 
     damageInternalization <- suppressWarnings(ggplot(data, aes_(
       x = ~iteration, y = "Damage\nInternalization",

@@ -10,8 +10,9 @@
 #'   }
 #'
 #' @importFrom gdx readGDX
-#' @importFrom dplyr summarise group_by mutate filter
+#' @importFrom dplyr summarise group_by mutate filter distinct case_when
 #' @importFrom quitte as.quitte
+#' @importFrom ggplot2 scale_y_continuous scale_y_discrete geom_rect
 #' @importFrom plotly ggplotly config hide_legend subplot layout
 #' @importFrom reshape2 dcast
 #'

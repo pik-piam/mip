@@ -1,0 +1,381 @@
+---
+title: "Improve cs2 climate plots of temperature & concentration distributions from MAGICC"
+output:
+  html_document:
+    theme: paper
+    toc: true
+    toc_float:
+      collapsed: false
+    toc_depth: 2
+    code_folding: hide
+    df_print: kable
+  html_notebook:
+      code_folding: hide
+  pdf_document: default
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(quitte)
+library(readxl)
+```
+
+# Get meta data and have a look
+
+Currently uses XLSX, use `quitte` instead. Goal is to have a quitte Object
+
+```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+these_please <- c(
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
+)
+
+ngfs_data <-   readxl::read_xlsx(
+  "~/../lab/misc_data/ngfs-magicc-data-from-csv-v2.xlsx",
+  sheet = "ngfs-magicc-data"
+) %>%
+  #select(starts_with(c("Variable", "Unit", "1", "2"))) %>%
+  filter(grepl("Percentile", Variable)) %>%  # Works
+  mutate_at(vars(starts_with(c("1", "2"))), as.double)
+
+ngfs_data  # Should be quitte
+foo <- reshape2::melt(ngfs_data, id.vars = seq(1:5), variable.name = "period")
+print(foo)
+bar <- as.quitte(foo %>% filter(Variable %in% these_please))  # Filter for appropriate variables 
+#plotWhatever(bar)  # Should return facet_wrap plot
+#mip::plotPercentile(bar) ##
+```
+Need to collect all the values for each year
+
+```{r}
+these_please <- c(
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
+)
+
+percentile_from_variables <- function(variables) {
+  return (stringr::str_split_i(variables, pattern = "\\|", i=-1))
+}
+
+df <- ngfs_data %>% 
+  #filter(Variable %in% these_please) %>% 
+  pivot_longer(starts_with(c("1", "2")), names_to = "Year", values_to = "Value") %>%
+  pivot_wider(names_from = "Variable",  values_from = "Value") %>%
+  rename_with(percentile_from_variables, starts_with("AR6 climate diagnostics")) %>%
+  mutate_at(vars(c("Year")), as.integer)
+df
+```
+
+```{r}
+baz <- bar %>% 
+  mutate(
+    "Percentile"=stringr::str_split_i(variable, pattern = "\\|", i=-1), 
+    "variable"=gsub("\\|[^\\|]+$", "", variable)
+  )
+print(baz)
+
+ggplot() +
+  geom_line(
+    #data = filter(baz, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
+    #data = baz,
+    data = baz,
+    aes(x = period, y = value, color=Percentile)
+  ) + 
+facet_wrap(~variable, scales = "free")
+```
+
+
+```{r}
+
+p <- ggplot() +
+  geom_line(
+    data = df,
+    aes(x = Year, y = get("50.0th Percentile"), group=1)
+  ) +
+  geom_ribbon(
+    data = df,
+    aes(x = Year, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
+    fill = "#68788a",
+    alpha = 0.5
+  ) +
+  geom_ribbon(
+    data = df,
+    aes(x = Year, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
+    fill = "#68788a",
+    alpha = 0.2
+  )
+  # geom_ribbon(
+  #   data = df,
+  #   aes(x = period, ymin = lower, ymax = upper),
+  #   fill = "#68788a",
+  #   alpha = 0.2
+  # )
+
+print(p)
+```
+# Multiple scenario dataset 
+
+Variables are doublicates in this dataset
+
+```{r}
+ngfs_scenarios <-   readxl::read_xlsx(
+  "~/../lab/misc_data/ngfs-magicc-data-from-csv-v3-extended-scenarios.xlsx",
+  sheet = "ngfs-magicc-data"
+) %>%
+  select(starts_with(c("Scenario", "Variable", "Unit", "1", "2"))) %>%
+  filter(grepl("Percentile", Variable)) %>%  # Works
+  mutate_at(vars(starts_with(c("1", "2"))), as.double)
+```
+
+Restructure data like before
+
+```{r}
+
+these_please <- c(
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
+)
+
+percentile_from_variables <- function(variables) {
+  return (stringr::str_split_i(variables, pattern = "\\|", i=-1))
+}
+
+df <- ngfs_scenarios %>% 
+  filter(Variable %in% these_please) %>% 
+  pivot_longer(starts_with(c("1", "2")), names_to = "Year", values_to = "Value") %>%
+  pivot_wider(names_from = "Variable",  values_from = "Value") %>%
+  rename_with(percentile_from_variables, starts_with("AR6 climate diagnostics")) %>%
+  mutate_at(vars(c("Year")), as.integer)
+df
+
+ngfs_scenarios
+```
+
+## Combine mutiple plots into `facet_wrap`
+
+```{r}
+p <- ggplot() +
+  geom_line(
+    data = df,
+    aes(x = Year, y = get("50.0th Percentile"), group=1)
+  ) +
+  geom_ribbon(
+    data = df,
+    aes(x = Year, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
+    fill = "#68788a",
+    alpha = 0.5
+  ) +
+  geom_ribbon(
+    data = df,
+    aes(x = Year, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
+    fill = "#68788a",
+    alpha = 0.2
+  )
+  # geom_ribbon(
+  #   data = df,
+  #   aes(x = period, ymin = lower, ymax = upper),
+  #   fill = "#68788a",
+  #   alpha = 0.2
+  # )
+
+#complete <- p + facet_wrap(~class, ncol = 3)
+#complete <- p + facet_wrap(c("a", "b", "c"), ncol = 3)
+complete <- p + facet_wrap()
+
+print(complete)
+# print(p)
+```
+
+```{r}
+knitr::knit_exit()
+```
+
+# Playground
+
+## Learning `facet_wrap`
+
+```{r}
+library(ggplot2)
+mpg2 <- subset(mpg, cyl != 5 & drv %in% c("4", "f") & class != "2seater")
+print(mpg2)
+
+base <- ggplot(mpg2, aes(displ, hwy)) + 
+  #geom_blank() +  # Plots nothing
+  geom_point() +  # Plots points
+  xlab(NULL) + 
+  ylab(NULL)
+
+# base + facet_wrap(~class, ncol = 3)
+base + facet_wrap("class", ncol = 3)
+#base + facet_wrap(var(class), ncol = 3)  # Doesnt work
+```
+
+## Restructuring
+
+```{r}
+pnl <- tibble(
+  x = 1:4,
+  a = c(1, 1,0, 0),
+  b = c(0, 1, 1, 1),
+  y1 = rnorm(4),
+  y2 = rnorm(4),
+  z1 = rep(3, 4),
+  z2 = rep(-2, 4),
+)
+print(pnl)
+
+foo <- pnl %>% pivot_longer(
+  cols = !c(x, a, b), 
+  names_to = c(".value", "time"), 
+  names_pattern = "(.)(.)"
+)
+print(foo)
+```
+
+## Miscellaneous
+
+```{r}
+#endsWith(x = ngfs_meta[, ncol(ngfs_meta)], suffix = "Percentile")
+#ngfs_meta[, ncol(ngfs_meta)] %>% select(ends_with("Percentile"))  # Does not work
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", ngfs_meta[, ncol(ngfs_meta)]))  # Does not work
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", colnames(ngfs_meta)[ncol(ngfs_meta)]))  # Does not work
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", "Variable_7"))  # Does not work
+#grepl("Percentile", colnames(ngfs_meta)[ncol(ngfs_meta)])  # Same as above
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", Variable_7))  # Works
+#ngfs_meta %>% filter(grepl("Percentile", Variable_7))  # Works
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", as.name(tail(names(ngfs_meta), 1))))  # Does not work
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", as.symbol(tail(names(ngfs_meta), 1))))  # Does not work
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter(grepl("Percentile", as.symbol(tail(names(.), 1))))  # Does not work
+#ngfs_meta[, ncol(ngfs_meta)] %>% filter()
+#colnames(ngfs_meta)[ncol(ngfs_meta)]
+#as.name(tail(names(ngfs_meta), 1))
+#as.symbol(tail(names(ngfs_meta), 1))
+```
+
+```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+#ngfs_meta %>% drop_na(contains("Variable"))
+#ngfs_meta %>% filter(last_col() != "95.0th Percentile")
+ngfs_meta %>% filter(ngfs_meta[, ncol(ngfs_meta)] == "95.0th Percentile")
+```
+
+```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+ngfs_data <- readxl::read_xlsx(
+  "~/../lab/misc_data/ngfs-magicc-data-from-csv.xlsx",
+  sheet = "ngfs-magicc-data"
+) %>%
+  select(starts_with(c("Variable", "1", "2"))) %>%
+  separate_wider_delim("Variable", delim = "|", names_sep = "_", too_few = "align_end") #%>%
+  #drop_na(x, any_of(vars))
+  #separate_wider_delim(cols = c("Variable"), delim="|")
+  #data.frame(do.call('rbind', strsplit(as.character(ngfs_data$Variable), '|', fixed=TRUE))) %>%
+  #drop("Variable")
+
+#within(ngfs_meta, SOMETHING<-data.frame(do.call('rbind', strsplit(as.character(ngfs_meta$Variable), '|', fixed=TRUE))))
+
+ngfs_data
+```
+
+## Concatenate string vectors and constants
+
+```{r}
+a <- 1:10
+print(a)
+b <- 11:20
+print(b)
+c <- c(a,b)
+print(c)
+d <- c(a,b, 5)
+print(d)
+
+print("String vectors")
+
+a <- c("loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong String", "bar")
+print(a)
+b <- c("baz")
+print(b)
+c <- c(a,b)
+print(c)
+d <- c(a,b, ".values")
+print(d)
+```
+
+## Split `Variable` into dedicated columns
+```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+data.frame(do.call('rbind', strsplit(as.character(ngfs_data$Variable), '|', fixed=TRUE)))
+```
+
+## Basic stuff
+```{r}
+c("X1", "X2", "X3", "X4", "X5", "X6", "X7")
+c("X1", "X2", "X3", "X4", "X5")
+```
+
+```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+#ngfs_meta |> separate_wider_delim("Variable", delim = "|", names_sep = "_")
+ngfs_meta |> separate_wider_delim("Variable", delim = "|", names_sep = "_", names = c("X1", "X2", "X3", "X4", "X5", "X6", "X7"), too_few = "align_start")
+#as.data.frame(ngfs_meta) |> separate_longer_delim("Variable", delim = "|")
+#as.data.frame(ngfs_meta) |> separate_wider_delim("Variable", delim = "|", names = c("X1", "X2", "X3", "X4", "X5", "X6", "X7"))
+#data.frame(do.call('rbind', strsplit(as.character(ngfs_data$Variable), '|', fixed=TRUE)))
+```
+
+# Graveyard
+
+```{r}
+these_please <- c(
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
+)
+
+percentile_from_variables <- function(variables) {
+  return (stringr::str_split_i(variables, pattern = "\\|", i=-1))
+}
+
+df <- ngfs_data %>% 
+  filter(Variable %in% these_please) %>% 
+  # pivot_longer(starts_with(c("1", "2")))
+  # pivot_longer(starts_with(c("1", "2")), names_to = these_please, names_sep = " ", values_to = "year") #%>%
+  # pivot_longer_spec(starts_with(c("1", "2")), names_to = these_please, names_sep = " ", values_to = "year") #%>%
+  # pivot_longer_spec(starts_with(c("1", "2")), names_to = c(".value", these_please), names_sep = " ", values_to = "year") #%>%
+  #pivot_longer(starts_with(c("1", "2")), names_to = c(".value", these_please), names_pattern = "(.)(.)(.)")
+  pivot_longer(starts_with(c("1", "2")), names_to = "Year", values_to = "Value") %>%
+  #gather("year", "value", 3:ncol(ngfs_data), convert = TRUE) #%>%
+  #gather("year", c("value_1", "value_2"), 3:ncol(ngfs_data)) #%>%
+  #gather("year", "value", 3:ncol(ngfs_data), convert = as.integer) %>%
+  #mutate_at(vars(c("year")), as.integer)
+  pivot_wider(names_from = "Variable",  values_from = "Value") %>%
+  rename_with(percentile_from_variables, starts_with("AR6 climate diagnostics")) %>%
+  mutate_at(vars(c("Year")), as.integer)
+df
+```
+
+```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+ngfs_data <-   readxl::read_xlsx(
+  "~/../lab/misc_data/ngfs-magicc-data-from-csv-v2.xlsx",
+  sheet = "ngfs-magicc-data"
+) %>%
+  select(starts_with(c("Variable", "Unit", "1", "2"))) %>%
+  #filter(grepl("Percentile", Variable)) %>%  # Works
+  filter(grepl("Percentile", Variable)) %>%  # Works
+  #separate_wider_delim("Variable", delim = "|", names_sep = "_", too_few = "align_end") #%>%
+  #gather("year", "value", 3:ncol(ngfs_meta))
+  mutate_at(vars(starts_with(c("1", "2"))), as.double)
+
+#within(ngfs_meta, SOMETHING<-data.frame(do.call('rbind', strsplit(as.character(ngfs_meta$Variable), '|', fixed=TRUE))))
+
+ngfs_data
+```

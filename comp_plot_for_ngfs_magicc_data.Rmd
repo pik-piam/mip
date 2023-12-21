@@ -23,180 +23,193 @@ library(quitte)
 library(readxl)
 ```
 
-# Get meta data and have a look
+# Data!
 
-Currently uses XLSX, use `quitte` instead. Goal is to have a quitte Object
+Currently uses XLSX, unsure if this stays use `quitte` instead. Goal is to have a quitte Object. We need to do some more work before reshaping the dset and creating a quitte object from. This seems to depend on the XLSX itself and therefore other methods for reading it might produce different results. However, the most important part is to select for the variable to be displayed later on
 
-```{r, fig.width=5, fig.height=5, message = FALSE, warning = FALSE}
+```{r}
 these_please <- c(
+  # CO2 concentrations
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile",
+  # NOTE: Theres not 5th Percentile on Surface Temperatures
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|10.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|90.0th Percentile",
+  # CH4 Fluxes
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|95.0th Percentile"
 )
 
-ngfs_data <-   readxl::read_xlsx(
+ngfs_xlsx <- readxl::read_xlsx(
   "~/../lab/misc_data/ngfs-magicc-data-from-csv-v2.xlsx",
   sheet = "ngfs-magicc-data"
 ) %>%
-  #select(starts_with(c("Variable", "Unit", "1", "2"))) %>%
-  filter(grepl("Percentile", Variable)) %>%  # Works
-  mutate_at(vars(starts_with(c("1", "2"))), as.double)
+  # Cast yearly columns as doubles
+  mutate_at(vars(starts_with(c("1", "2"))), as.double) %>% 
+  # Exclude rows whose "Variable" column does not end in Percentile, because 
+  # these do not contain numerical data in the columns for each year
+  #filter(grepl("Percentile", Variable)) %>% 
+  # Take only those variables that shall be plotted later on
+  filter(Variable %in% these_please)
 
-ngfs_data  # Should be quitte
-foo <- reshape2::melt(ngfs_data, id.vars = seq(1:5), variable.name = "period")
-print(foo)
-bar <- as.quitte(foo %>% filter(Variable %in% these_please))  # Filter for appropriate variables 
-#plotWhatever(bar)  # Should return facet_wrap plot
+ngfs_xlsx
+```
+
+Now for the fun part: Reshaping the whole thang into a `quitte` object. Year columns need to become lines here. Can be done with `reshape2::melt`:
+
+```{r}
+reshape2::melt(
+  ngfs_xlsx, 
+  #id.vars = seq(1:5), 
+  c("Model", "Scenario", "Region", "Variable", "Unit"),
+  variable.name = "period"
+)
+```
+
+Or with `dplyr::pivot_longer`:
+
+```{r}
+pivot_longer(ngfs_xlsx, starts_with(c("1", "2")), names_to = "period", values_to = "value")
+```
+
+Finally, create a `quitte` object (which is basically a list with specified columns)
+
+```{r}
+ngfs_data <- as.quitte(ngfs_xlsx %>% 
+  pivot_longer(
+    starts_with(c("1", "2")), 
+    names_to = "period", 
+    values_to = "value"
+  )
+)
+
+ngfs_data <- as.quitte(ngfs_xlsx %>% 
+  reshape2::melt(
+    c("Model", "Scenario", "Region", "Variable", "Unit"),
+    variable.name = "period"
+  )
+)
+
+print(ngfs_data)
+```
+
+By the way:
+
+```{r}
+print(typeof(ngfs_data))
+```
+
+Our `quitte` object is now available an ready to be passed to the plotting function.
+
+# Plotting!
+
+Write a function that returns a `facet_wrap`
+
+```{r}
+plotPercentiles <- function(quitte_frame) {
+  print("Hello!")
+} 
 #mip::plotPercentile(bar) ##
+ngfs_data
 ```
 Need to collect all the values for each year
 
 ```{r}
-these_please <- c(
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
-)
-
-percentile_from_variables <- function(variables) {
-  return (stringr::str_split_i(variables, pattern = "\\|", i=-1))
-}
-
 df <- ngfs_data %>% 
-  #filter(Variable %in% these_please) %>% 
-  pivot_longer(starts_with(c("1", "2")), names_to = "Year", values_to = "Value") %>%
-  pivot_wider(names_from = "Variable",  values_from = "Value") %>%
-  rename_with(percentile_from_variables, starts_with("AR6 climate diagnostics")) %>%
-  mutate_at(vars(c("Year")), as.integer)
+  mutate(
+    "percentile" = stringr::str_extract( variable, "[^\\|]+?$"),
+    "variable"   = gsub("\\|[^\\|]+$", "", variable)
+  ) %>%
+  pivot_wider(
+    names_from = "percentile",  
+    values_from = "value" 
+  ) 
+
+# colnames(df)
 df
 ```
 
 ```{r}
-baz <- bar %>% 
-  mutate(
-    "Percentile"=stringr::str_split_i(variable, pattern = "\\|", i=-1), 
-    "variable"=gsub("\\|[^\\|]+$", "", variable)
-  )
-print(baz)
-
 ggplot() +
   geom_line(
     #data = filter(baz, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
     #data = baz,
-    data = baz,
-    aes(x = period, y = value, color=Percentile)
-  ) + 
-facet_wrap(~variable, scales = "free")
+    #data = df,
+    data = filter(df, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
+    aes(x = period, y = get("33.0th Percentile"), color=Percentile)
+  )  
+#facet_wrap(~variable, scales = "free")
 ```
-
 
 ```{r}
 
 p <- ggplot() +
   geom_line(
-    data = df,
-    aes(x = Year, y = get("50.0th Percentile"), group=1)
+    # data = df,
+    data = filter(df, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
+    aes(x = period, y = get("50.0th Percentile"), group=1)
   ) +
   geom_ribbon(
-    data = df,
-    aes(x = Year, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
+    data = filter(df, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
+    aes(x = period, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
     fill = "#68788a",
     alpha = 0.5
   ) +
   geom_ribbon(
-    data = df,
-    aes(x = Year, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
+    data = filter(df, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
+    aes(x = period, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
     fill = "#68788a",
     alpha = 0.2
   )
-  # geom_ribbon(
-  #   data = df,
-  #   aes(x = period, ymin = lower, ymax = upper),
-  #   fill = "#68788a",
-  #   alpha = 0.2
-  # )
 
 print(p)
 ```
-# Multiple scenario dataset 
-
-Variables are doublicates in this dataset
+# Case: Multiple variables
 
 ```{r}
-ngfs_scenarios <-   readxl::read_xlsx(
-  "~/../lab/misc_data/ngfs-magicc-data-from-csv-v3-extended-scenarios.xlsx",
-  sheet = "ngfs-magicc-data"
-) %>%
-  select(starts_with(c("Scenario", "Variable", "Unit", "1", "2"))) %>%
-  filter(grepl("Percentile", Variable)) %>%  # Works
-  mutate_at(vars(starts_with(c("1", "2"))), as.double)
+unique(df$variable)
 ```
-
-Restructure data like before
-
 ```{r}
+p <- ggplot()
 
-these_please <- c(
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile"
-)
-
-percentile_from_variables <- function(variables) {
-  return (stringr::str_split_i(variables, pattern = "\\|", i=-1))
+for (variable in unique(df$variable)) {
+  p <- p + 
+    geom_line(
+      # data = df,
+      data = filter(df, variable == variable),
+      aes(x = period, y = get("50.0th Percentile"), group=1)
+    ) +
+    geom_ribbon(
+      data = filter(df, variable == variable),
+      aes(x = period, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
+      fill = "#68788a",
+      alpha = 0.5
+    ) +
+    geom_ribbon(
+      data = filter(df, variable == variable),
+      aes(x = period, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
+      fill = "#68788a",
+      alpha = 0.2
+    )
 }
 
-df <- ngfs_scenarios %>% 
-  filter(Variable %in% these_please) %>% 
-  pivot_longer(starts_with(c("1", "2")), names_to = "Year", values_to = "Value") %>%
-  pivot_wider(names_from = "Variable",  values_from = "Value") %>%
-  rename_with(percentile_from_variables, starts_with("AR6 climate diagnostics")) %>%
-  mutate_at(vars(c("Year")), as.integer)
-df
+p <- p + facet_wrap(vars(variable), scales = "free")
 
-ngfs_scenarios
+print(p)
 ```
 
-## Combine mutiple plots into `facet_wrap`
+# Multiple scenario dataset 
 
-```{r}
-p <- ggplot() +
-  geom_line(
-    data = df,
-    aes(x = Year, y = get("50.0th Percentile"), group=1)
-  ) +
-  geom_ribbon(
-    data = df,
-    aes(x = Year, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
-    fill = "#68788a",
-    alpha = 0.5
-  ) +
-  geom_ribbon(
-    data = df,
-    aes(x = Year, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
-    fill = "#68788a",
-    alpha = 0.2
-  )
-  # geom_ribbon(
-  #   data = df,
-  #   aes(x = period, ymin = lower, ymax = upper),
-  #   fill = "#68788a",
-  #   alpha = 0.2
-  # )
-
-#complete <- p + facet_wrap(~class, ncol = 3)
-#complete <- p + facet_wrap(c("a", "b", "c"), ncol = 3)
-complete <- p + facet_wrap()
-
-print(complete)
-# print(p)
-```
+Variables are now dublicates in this dset
 
 ```{r}
 knitr::knit_exit()

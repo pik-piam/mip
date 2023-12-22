@@ -115,9 +115,6 @@ Our `quitte` object is now available an ready to be passed to the plotting funct
 Write a function that returns a `facet_wrap`
 
 ```{r}
-plotPercentiles <- function(quitte_frame) {
-  print("Hello!")
-} 
 #mip::plotPercentile(bar) ##
 ngfs_data
 ```
@@ -136,18 +133,6 @@ df <- ngfs_data %>%
 
 # colnames(df)
 df
-```
-
-```{r}
-ggplot() +
-  geom_line(
-    #data = filter(baz, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
-    #data = baz,
-    #data = df,
-    data = filter(df, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"),
-    aes(x = period, y = get("33.0th Percentile"), color=Percentile)
-  )  
-#facet_wrap(~variable, scales = "free")
 ```
 
 ```{r}
@@ -220,19 +205,19 @@ these_please <- c(
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
   "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
-  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile" #,
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile",
   # NOTE: Theres not 5th Percentile on Surface Temperatures
-  # "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|10.0th Percentile",
-  # "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|33.0th Percentile",
-  # "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|50.0th Percentile",
-  # "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|67.0th Percentile",
-  # "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|90.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|10.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|90.0th Percentile",
   # CH4 Fluxes
-  # "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|5.0th Percentile",
-  # "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|33.0th Percentile",
-  # "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|50.0th Percentile",
-  # "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|67.0th Percentile",
-  # "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|95.0th Percentile"
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|95.0th Percentile"
 )
 
 ngfs_xlsx_2_scenarios <- readxl::read_xlsx(
@@ -272,7 +257,6 @@ unique(ngfs_data_2_scenarios$scenario)
 
 ```{r}
 df_2 <- ngfs_data_2_scenarios %>% 
-  # group_by(scenario) %>%
   mutate(
     "percentile" = stringr::str_extract( variable, "[^\\|]+?$"),
     "variable"   = gsub("\\|[^\\|]+$", "", variable)
@@ -293,8 +277,6 @@ p <- ggplot()
 for (variable in unique(df_2$variable)) {
   for (scenario in unique(df_2$scenario)) {
     data <- filter(df_2, variable == variable & scenario == scenario)
-    labels
-    # print(unique(data$unit))
     p <- p + 
       geom_line(
         data = data, aes(x = period, y = get("50.0th Percentile"), group=1)
@@ -345,7 +327,229 @@ print(p)
 ```{r}
 unique(data$unit)
 ```
+# Functionalize!
 
+```{r}
+plotPercentiles <- function(quitte_frame, scenarios=NULL, variables=NULL, percentiles=NULL) {
+  
+  # TODO: Test for error cases (eg. check if scenarios are actually present in the data)
+  
+  # TODO: How to provide percentiles?
+  # - NULL: Use 33, 66, 5, 95 as default
+  # - SAME: List of length 2 or length 4, eg [33, 66, 10, 90]
+  # - DIFF: List of Lists of length 2 or length 4, eg [33, 66, 10, 90]
+  if (is.null(percentiles)) {
+    these_percentiles <- c(5, 95, 33, 67)
+  # } else if (length(percentiles)) {
+  #   these_percentiles <- percentiles
+  } else {
+
+  }
+  # 
+  # format_str <- "$[.1f]{which}th Percentile"
+  # these_percentiles <- ifelse(is.null(percentiles), NULL, stringr::str_interp(format_str, percentiles))
+  # 
+  inner_min <- stringr::str_interp(format_str, list(which=as.double(these_percentiles[1])))
+  inner_max <- stringr::str_interp(format_str, list(which=as.double(these_percentiles[2])))
+  outer_min <- stringr::str_interp(format_str, list(which=as.double(these_percentiles[3])))
+  outer_max <- stringr::str_interp(format_str, list(which=as.double(these_percentiles[4])))
+  
+  # print(scenarios)
+  # print(variables)
+  # print("--- LENGTHS ---")
+  # print(length(scenarios))
+  # print(length(variables))
+  # print("--- FOR scenarios ---")
+  # for (foo in scenarios) {print(foo)}
+  # print("--- FOR variables ---")
+  # for (bar in variables) {print(bar)}
+  
+  df <- quitte_frame %>% 
+    mutate(
+      "percentile" = stringr::str_extract(variable, "[^\\|]+?$"),
+      "variable"   = gsub("\\|[^\\|]+$", "", variable)
+    ) %>%
+    pivot_wider(
+      names_from = "percentile",  
+      values_from = "value" 
+    )
+  
+  these_scenarios <- if (is.null(scenarios)) unique(df$scenario) else scenarios
+  these_variables <- if (is.null(variables)) unique(df$variable) else variables
+  
+  # these_scenarios <- ifelse(is.null(scenarios), as.character(unique(df$scenario)), sapply(scenarios, function(i) i))
+  # these_variables <- ifelse(is.null(variables), unique(df$variable), sapply(variables, function(i) i))
+  # these_scenarios <- ifelse(is.null(scenarios), as.character(unique(df$scenario)), scenarios)
+  # these_variables <- ifelse(is.null(variables), unique(df$variable), variables)
+  
+  # if (is.null(scenarios)) 
+  #   these_scenarios <- unique(df$scenario)
+  # } else {
+  #   these_scenarios <- scenarios
+  # }
+  # if (is.null(variables)) {
+  #   these_variables <- unique(df$variable)
+  # } else {
+  #   these_variables <- variables
+  # }
+  
+  # print("--- FOR these_scenarios ---")
+  # for (foo in these_scenarios) {print(foo)}
+  # print("--- FOR these_variables ---")
+  # for (bar in these_variables) {print(bar)}
+  
+  # if (is.null(scenarios) & is.null(variables)) {
+  #   these_scenarios <- unique(df$scenario)
+  #   these_variables <- unique(df$variable)
+  # } else if (!is.null(scenarios)) {
+  #   these_scenarios <- scenarios
+  #   these_variables <- unique(df$variable)
+  # } else if (!is.null(variables)) {
+  #   these_scenarios <- unique(df$scenario)
+  #   these_variables <- variables
+  # } else {
+  #   these_scenarios <- scenarios
+  #   these_variables <- variables
+  # }
+  
+  # print("--- CONTENT ---")
+  # print(these_scenarios)
+  # print(these_variables)
+  # print("--- LENGTHS ---")
+  # print(length(these_scenarios))
+  # print(length(these_variables))
+  # print("--- TYPES ---")
+  # print(typeof(these_scenarios))
+  # print(typeof(these_variables))
+  # print("-------------")
+  
+  print("--- WHICH ---")
+  print(paste0("these_scenarios: ", these_scenarios))
+  print(paste0("these_variables: ", these_variables))
+  
+  print("--- PERCENTILES ---")
+  print(paste0("outer_max: ", outer_max))
+  print(paste0("inner_max: ", inner_max))
+  print(paste0("inner_min: ", inner_min))
+  print(paste0("outer_min: ", outer_min))
+  
+  p <- ggplot()
+  
+  print("--- PLOT ---")
+  for (this_variable in these_variables) {
+    print(this_variable)
+    for (this_scenario in these_scenarios) {
+      print(this_scenario)
+      # print(paste0(variable, scenario))
+      data <- filter(df, variable == this_variable & scenario == this_scenario)
+      print(data)
+      p <- p + 
+        geom_line(
+          # data = data, aes(x = period, y = get("50.0th Percentile"), group=1)
+          data = data, aes(x = period, y = get("50.0th Percentile"))
+        ) +
+        geom_ribbon(
+          # data = data, aes(x = period, ymin = get(inner_min), ymax = get(inner_max)),
+          data = data, aes(x = period, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
+          fill = "#68788a", alpha = 0.5
+        ) +
+        geom_ribbon(
+          # data = data, aes(x = period, ymin = get(outer_min), ymax = get(outer_max)),
+          data = data, aes(x = period, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
+          fill = "#68788a", alpha = 0.2
+        ) 
+    }
+  }
+  
+  # if (length(scenarios) == 1) {
+  if (length(these_scenarios) == 1) {
+    p <- p +
+      facet_wrap(
+        vars(variable),
+        scales = "free_y") +
+      theme(
+        axis.title.x = element_blank()
+      ) +
+      ylab(
+        unique(df$unit))
+  # } else if (!is.null(variables)) {
+  } else if (length(these_variables) == 1) {
+    p <- p +
+      facet_wrap(
+        vars(scenario)) +
+      theme(
+        axis.title.x = element_blank()
+      ) +
+      ylab(
+        unique(df$unit))
+  }
+  else {
+    # Using facet grid
+    p <- p +
+      facet_grid(
+        variable ~ scenario,
+        scales = "free_y") +
+      theme(
+        axis.title.x = element_blank()
+      ) +
+      ylab(
+        unique(df$unit))
+  }
+  
+  # p <- p +
+  #     facet_grid(
+  #       variable ~ scenario,
+  #       scales = "free_y") +
+  #     theme(
+  #       axis.title.x = element_blank()
+  #     ) +
+  #     ylab(
+  #       unique(df$unit))
+
+  return(p)
+} 
+
+# print(plotPercentiles(ngfs_data_2_scenarios))
+# print(plotPercentiles(ngfs_data_2_scenarios, which = "scenarios"))
+# print(plotPercentiles(ngfs_data_2_scenarios, which = "variables"))
+# print(plotPercentiles(ngfs_data_2_scenarios, which = "both"))
+# try(print(plotPercentiles(ngfs_data_2_scenarios, which = "asd")))
+
+# print(plotPercentiles(ngfs_data_2_scenarios, variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3")))
+print(plotPercentiles(ngfs_data_2_scenarios, scenarios = c("d_another")))
+
+# print(plotPercentiles(ngfs_data_2_scenarios, scenarios = c("d_another", "d_delfrag")))
+# print(plotPercentiles(ngfs_data_2_scenarios))
+# print(plotPercentiles(ngfs_data_2_scenarios, scenarios = c("d_another"), variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3")))
+# print(plotPercentiles(ngfs_data_2_scenarios, scenarios = c("d_another"), variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3", "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3")))
+# print(plotPercentiles(ngfs_data_2_scenarios, variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3", "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3")))
+# print(plotPercentiles(ngfs_data_2_scenarios, scenarios = c("d_another", "d_delfrag"), variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3", "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3")))
+
+```
+
+
+
+```{r}
+filter(df, variable == "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3" & scenario == scenario)
+```
+
+
+## Function tests
+
+Must use pre-processed `ngfs_data_2_scenarios`
+
+```{r}
+# print(plotPercentiles(ngfs_data_2_scenarios))
+# print(plotPercentiles(ngfs_data_2_scenarios, which = "scenarios"))
+# print(plotPercentiles(ngfs_data_2_scenarios, which = "variables"))
+# print(plotPercentiles(ngfs_data_2_scenarios, which = "both"))
+# try(print(plotPercentiles(ngfs_data_2_scenarios, which = "asd")))
+
+print(plotPercentiles(ngfs_data_2_scenarios, scenarios = c("d_another", "d_delfrag")))
+# print(plotPercentiles(ngfs_data_2_scenarios, variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3")))
+# print(plotPercentiles(ngfs_data_2_scenarios))
+
+```
 
 # The End
 
@@ -354,6 +558,19 @@ knitr::knit_exit()
 ```
 
 # Playground
+
+
+```{r}
+# print(ngfs_data_2_scenarios)
+
+which_example = "variables=AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"
+#which_example = "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile"
+# which_example = "variables=AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3,AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|90.0th Percentile"
+
+print(stringr::str_split(gsub(pattern = "variables\\=", x = which_example, replacement = ""), pattern = ","))
+
+
+```
 
 ## Learning `facet_wrap`
 

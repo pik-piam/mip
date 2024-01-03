@@ -1,0 +1,152 @@
+---
+title: "Set of tests for `plotPercentiles.R`"
+output:
+  html_document:
+    theme: paper
+    toc: true
+    toc_float:
+      collapsed: false
+    toc_depth: 2
+    code_folding: hide
+    df_print: kable
+  html_notebook:
+      code_folding: hide
+  pdf_document: default
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(quitte)
+library(readxl)
+```
+
+# Read data
+
+```{r}
+these_please <- c(
+  # CO2 concentrations
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3|95.0th Percentile",
+  # NOTE: Theres not 5th Percentile on Surface Temperatures
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|10.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|90.0th Percentile",
+  # CH4 Fluxes
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|5.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|33.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|50.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|67.0th Percentile",
+  "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3|95.0th Percentile"
+)
+
+ngfs_data <- readxl::read_xlsx(
+  # "~/../lab/misc_data/ngfs-magicc-data-from-csv-v2.xlsx",
+    "~/../lab/misc_data/ngfs-magicc-data-from-csv-v3-extended-scenarios.xlsx",
+    sheet = "ngfs-magicc-data"
+  ) %>%
+  # Cast yearly columns as doubles
+  mutate_at(vars(starts_with(c("1", "2"))), as.double) %>% 
+  # Exclude rows whose "Variable" column does not end in Percentile, because 
+  # these do not contain numerical data in the columns for each year
+  #filter(grepl("Percentile", Variable)) %>% 
+  # Take only those variables that shall be plotted later on
+  filter(Variable %in% these_please) %>% 
+  reshape2::melt(
+    c("Model", "Scenario", "Region", "Variable", "Unit"),
+    variable.name = "period"
+  ) %>%
+  as.quitte()
+
+print(ngfs_data)
+```
+
+## Test function
+
+Source package 
+
+```{r}
+# library("plotPercentiles", lib.loc = "C:/Users/tonnru/lab/mip/R")
+source("./R/plotPercentiles.R")
+```
+
+Check out different scenarios/variables
+
+```{r}
+print(unique(ngfs_data$scenario))
+print(unique(ngfs_data$variable))
+```
+### Sanity checks
+
+Function is supposed to fail here
+
+```{r}
+try(print(plotPercentiles(ngfs_data, scenarios = "blerk")))
+try(print(plotPercentiles(ngfs_data, variables = "blork")))
+```
+### One variable, all scenarios
+
+```{r}
+print(plotPercentiles(ngfs_data, variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3")))
+# print(plotPercentiles(ngfs_data, scenarios = c("d_another", "d_delfrag")))
+# print(plotPercentiles(ngfs_data))
+```
+### Single variable, single scenario
+
+```{r}
+print(plotPercentiles(ngfs_data, variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3"), scenarios = c("d_delfrag")))
+```
+### Multiple variables, single scenario
+
+```{r}
+print(plotPercentiles(
+  ngfs_data, 
+  variables = c(
+    "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3",
+    "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3"
+  ), 
+  scenarios = c("d_delfrag"))
+)
+```
+
+### Multiple variables, single scenario
+
+```{r}
+print(plotPercentiles(ngfs_data, scenarios = c("d_delfrag")))
+```
+
+### Multiple variables, multiple scenarios
+
+```{r}
+print(plotPercentiles(ngfs_data, scenarios = c("d_another", "d_delfrag")))
+```
+
+
+### Multiple variables, multiple scenarios
+
+```{r}
+print(plotPercentiles(
+  ngfs_data, 
+  variables = c(
+    "AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3",
+    "AR6 climate diagnostics|Net Land to Atmosphere Flux due to Permafrost|CH4|MAGICCv7.5.3"
+  ), 
+  scenarios = c(
+    "d_another", 
+    "d_delfrag"
+  )
+))
+```
+
+### All variables, all scenarios (default call)
+
+```{r}
+print(plotPercentiles(ngfs_data))
+```

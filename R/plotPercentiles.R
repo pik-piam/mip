@@ -1,19 +1,23 @@
-#' Scenario comparison plots
+#' Comparison plots show user selected variables obtained from different scenario
+#' runs
 
 #' @author Tonn Rueter
-#' @param quitte_df `quitte` style data frame containing all variables for each scenario
+#' @param df `quitte` style data frame containing all variables for each scenario
 #' @param scenarios Character vector containing the names of the desired scenarios. If none is provided, all scenarios will be displayed
 #' @param variables Character vector containing the names of the desired variables. If none is provided, all variables will be displayed
 #' @importFrom dplyr filter mutate
 #' @importFrom reshape2 melt
-#' @importFrom stringr str_extract str_glue
+#' @importFrom stringr str_extract
 #' @export
-plotPercentiles <- function(quitte_frame, scenarios=NULL, variables=NULL) {
+plotPercentiles <- function(df, scenarios=NULL, variables=NULL) {
 
   # In the quitte data frame all perenctiles are given as individual variables
   # Manipulate input data frame such that all percentiles of a given quantity
-  # are transformed to individual columns
-  df <- quitte_frame %>%
+  # are transformed to individual columns. Variable names in the quitte data
+  # frame follow the format "Any|Variable|5.0th Percentile". The regular
+  # expressions below divide the variable name into the prefix and the
+  # percentile specifier
+  data <- df %>%
     mutate(
       "percentile" = stringr::str_extract(variable, "[^\\|]+?$"),
       "variable"   = gsub("\\|[^\\|]+$", "", variable)
@@ -23,10 +27,26 @@ plotPercentiles <- function(quitte_frame, scenarios=NULL, variables=NULL) {
       values_from = "value"
     )
 
+  # Check which scenarios/variabes are available
+  unique_scenarios <- unique(data$scenario)
+  unique_variables <- unique(data$variable)
+
   # Check which function parameters have been provided and default to unique
   # values from the data frame in case none have
-  these_scenarios <- if (is.null(scenarios)) unique(df$scenario) else scenarios
-  these_variables <- if (is.null(variables)) unique(df$variable) else variables
+  these_scenarios <- if (is.null(scenarios)) {
+    unique_scenarios
+  } else if (all_items_available(scenarios, unique_scenarios, warn=TRUE)) {
+    scenarios
+  } else {
+    stop("Provided scenario is missing in data")
+  }
+  these_variables <- if (is.null(variables)) {
+    unique_variables
+  } else if (all_items_available(variables, unique_variables, warn=TRUE)) {
+    variables
+  } else {
+    stop("Provided variable is missing in data")
+  }
 
   # Set up the plot
   p <- ggplot()
@@ -34,33 +54,34 @@ plotPercentiles <- function(quitte_frame, scenarios=NULL, variables=NULL) {
   # Fill plot by filtering for the requested variables and scenarios
   for (this_variable in these_variables) {
     for (this_scenario in these_scenarios) {
-      data <- filter(df, variable == this_variable & scenario == this_scenario)
+      plot_data <- filter(data, variable == this_variable & scenario == this_scenario)
       p <- p +
         geom_line(
-          data = data, aes(x = period, y = get("50.0th Percentile"))
+          data = plot_data, aes(x = period, y = get("50.0th Percentile"))
         ) +
         geom_ribbon(
-          data = data, aes(x = period, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
+          data = plot_data, aes(x = period, ymin = get("33.0th Percentile"), ymax = get("67.0th Percentile")),
           fill = "#68788a", alpha = 0.5
         ) +
         geom_ribbon(
-          data = data, aes(x = period, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
+          data = plot_data, aes(x = period, ymin = get("5.0th Percentile"), ymax = get("95.0th Percentile")),
           fill = "#68788a", alpha = 0.2
         )
     }
   }
 
-  # Depeding on the function parameters, plots need to be arranged
+  # Depending on the function parameters, plots need to be arranged
   if (length(these_scenarios) == 1) {
     # Plots all parameters for a given scenario. Y-axes need to be independent
     p <- p +
       facet_wrap(
         vars(variable),
-        scales = "free_y") +
+        scales = "free_y",
+        ncol = 1) +
       theme(
         axis.title.x = element_blank()) +
       ylab(
-        unique(df$unit))
+        unique(data$unit))
   } else if (length(these_variables) == 1) {
     # Plots a given parameter for all scenarios. Lock y-axes to improve comparison
     p <- p +
@@ -69,7 +90,7 @@ plotPercentiles <- function(quitte_frame, scenarios=NULL, variables=NULL) {
       theme(
         axis.title.x = element_blank()) +
       ylab(
-        unique(df$unit))
+        unique(data$unit))
   }
   else {
     # Using facet grid when multiple variables in multiple scenarios are compared
@@ -80,8 +101,18 @@ plotPercentiles <- function(quitte_frame, scenarios=NULL, variables=NULL) {
       theme(
         axis.title.x = element_blank()) +
       ylab(
-        unique(df$unit))
+        unique(data$unit))
   }
 
   return(p)
+}
+
+all_items_available <- function(selection, available, warn = FALSE) {
+  for (item in selection) {
+    if (!(item %in% available)) {
+      if (warn) warning(paste0("'", item, "' missing in available data"))
+      return(FALSE)
+    }
+  }
+  return(TRUE)
 }

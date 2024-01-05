@@ -12,7 +12,7 @@ Authors@R: c(
     person("Stephen", "Wirth", , "wirth@pik-potsdam.de", role = "aut"),
     person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = "aut"),
     person("Oliver", "Richters", role = "aut"),
-    person("Tonn", "Rueter", role = "aut")
+    person("Tonn", "Rüter", role = "aut")
   )
 Description: Package contains generic functions to produce comparison
     plots of multi-model runs.

@@ -5,9 +5,11 @@
 #' @param df `quitte` style data frame containing all variables for each scenario
 #' @param scenarios Character vector contains names of the desired scenarios. If none, all scenarios will be displayed
 #' @param variables Character vector contains names of the desired variables. If none, all variables will be displayed
-#' @importFrom dplyr filter mutate
+#' @importFrom dplyr filter mutate vars
 #' @importFrom reshape2 melt
 #' @importFrom stringr str_extract
+#' @importFrom tidyr pivot_wider
+#' @importFrom ggplot2 ggplot geom_line geom_ribbon facet_wrap facet_grid theme ylab
 #' @export
 plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
 

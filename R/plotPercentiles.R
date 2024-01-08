@@ -35,25 +35,30 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
       values_from = "value"
     )
 
-  # Check which scenarios/variabes are available
+  # Check which scenarios/variables are available
   uniqueScenarios <- unique(data$scenario)
   uniqueVariables <- unique(data$variable)
 
-  # Check which function parameters have been provided and default to unique
-  # values from the data frame in case none have
-  theseScenarios <- if (is.null(scenarios)) {
-    uniqueScenarios
-  } else if (allItemsAvailable(scenarios, uniqueScenarios, warn = TRUE)) {
-    scenarios
+  # Check which function parameters have been provided and default to unique values from the data frame in case none
+  # have. If scenarios/variables have been provided by user, check whether they are available in the data
+  if (!is.null(scenarios)) {
+    diffScenarios <- setdiff(scenarios, uniqueScenarios)
+    if (length(diffScenarios) > 0) {
+      stop(paste0("Missing scenarios: ", paste0(setdiff(scenarios, uniqueScenarios), collapse = ", "), "\n"))
+    }
+    theseScenarios <- scenarios
   } else {
-    stop("Provided scenario is missing in data")
+    theseScenarios <- uniqueScenarios
   }
-  theseVariables <- if (is.null(variables)) {
-    uniqueVariables
-  } else if (allItemsAvailable(variables, uniqueVariables, warn = TRUE)) {
-    variables
+
+  if (!is.null(variables)) {
+    diffVariables <- setdiff(variables, uniqueVariables)
+    if (length(diffVariables) > 0) {
+      stop(paste0("Missing variables: ", paste0(diffVariables, collapse = ", "), "\n"))
+    }
+    theseVariables <- variables
   } else {
-    stop("Provided variable is missing in data")
+    theseVariables <- uniqueVariables
   }
 
   # Set up the plot
@@ -100,14 +105,4 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
   }
 
   return(p)
-}
-
-allItemsAvailable <- function(selection, available, warn = FALSE) {
-  for (item in selection) {
-    if (!(item %in% available)) {
-      if (warn) warning(paste0("'", item, "' missing in available data"))
-      return(FALSE)
-    }
-  }
-  return(TRUE)
 }

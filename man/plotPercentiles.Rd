@@ -2,21 +2,29 @@
 % Please edit documentation in R/plotPercentiles.R
 \name{plotPercentiles}
 \alias{plotPercentiles}
-\title{Comparison plots show user selected variables obtained from different scenario
-runs}
+\title{Comparison plots show 50th percentile of user selected variables as obtained from different scenario runs. If
+available in the data, ribbon plots will also show the 33th - 67th percentile in a darker color and the 5th – 95th
+percentile in a lighter color. *Note*: the 5th, 33th, 67th and 95th percentile must be given in the provided data set
+as the percentiles are not computed}
 \usage{
 plotPercentiles(df, scenarios = NULL, variables = NULL)
 }
 \arguments{
-\item{df}{`quitte` style data frame containing all variables for each scenario}
+\item{df}{`quitte` style data frame containing all variables for each scenario. In the quitte data frame all
+percentiles must be given as individual variables. Manipulate input data frame such that all percentiles
+of a given quantity are transformed to individual columns.}
 
 \item{scenarios}{Character vector contains names of the desired scenarios. If none, all scenarios will be displayed}
 
-\item{variables}{Character vector contains names of the desired variables. If none, all variables will be displayed}
+\item{variables}{Character vector contains names of the desired variables. If none, all variables will be displayed
+Variable names in the quitte data frame need to follow the format "Any|Variable|50.0th Percentile". When
+selecting variables for display only use the "Any|Variable"-prefix and omit the "X-th Percentile"-suffix}
 }
 \description{
-Comparison plots show user selected variables obtained from different scenario
-runs
+Comparison plots show 50th percentile of user selected variables as obtained from different scenario runs. If
+available in the data, ribbon plots will also show the 33th - 67th percentile in a darker color and the 5th – 95th
+percentile in a lighter color. *Note*: the 5th, 33th, 67th and 95th percentile must be given in the provided data set
+as the percentiles are not computed
 }
 \author{
 Tonn Rueter

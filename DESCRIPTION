@@ -2,7 +2,7 @@ Type: Package
 Package: mip
 Title: Comparison of multi-model runs
 Version: 0.148.0
-Date: 2024-01-08
+Date: 2024-01-09
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),

@@ -1,16 +1,32 @@
-#' Comparison plots show 50th percentile of user selected variables as obtained from different scenario runs. If
-#' available in the data, ribbon plots will also show the 33th - 67th percentile in a darker color and the 5th – 95th
-#' percentile in a lighter color. *Note*: the 5th, 33th, 67th and 95th percentile must be given in the provided data set
-#' as the percentiles are not computed
-
-#' @author Tonn Rueter
-#' @param df `quitte` style data frame containing all variables for each scenario. In the quitte data frame all
-#'    percentiles must be given as individual variables. Manipulate input data frame such that all percentiles
-#'    of a given quantity are transformed to individual columns.
-#' @param scenarios Character vector contains names of the desired scenarios. If none, all scenarios will be displayed
-#' @param variables Character vector contains names of the desired variables. If none, all variables will be displayed
-#'    Variable names in the quitte data frame need to follow the format "Any|Variable|50.0th Percentile". When
-#'    selecting variables for display only use the "Any|Variable"-prefix and omit the "X-th Percentile"-suffix
+#' Comparison line plots with percentiles
+#'
+#' Line plots show median (50th percentile) of user selected variable(s) obtained from different scenario runs. If
+#' available in the data, ribbon plots will also show the 33th - 67th percentile region in a darker color and the
+#' 5th – 95th percentile region in a lighter color. Note: the 5th, 33th, 67th and 95th percentiles must be provided in
+#' the data set as the percentiles are not computed
+#'
+#' @author Tonn Rüter
+#' @param df The \code{quitte}-style data frame must contain all percentiles of the quantity of interest as individual
+#'    variables (e.g. for atmospheric CO2 concentrations "Atmospheric Concentrations|CO2|50th Percentile",
+#'    "Atmospheric Concentrations|CO2|33th Percentile", ..., must be present)
+#' @param scenarios Character vector containing names of the desired scenarios. If \code{NULL}, all scenarios present in
+#'    the data will be displayed
+#' @param variables Character vector containing names of the desired variables. If \code{NULL}, all variables present in
+#'    the data will be displayed. When selecting particular variables for display only use the "Any|Variable"-prefix and
+#'    omit the "X-th Percentile"-suffix (e.g. for atmospheric CO2 concentrations write "Atmospheric Concentrations|CO2")
+#' @examples
+#' \dontrun{
+#' # Plot atmospheric CO2 concentrations for all scenarios available in the data
+#' p <- plotPercentiles(
+#'   data,
+#'   # Use variable name without "X-th Percentile"-suffix
+#'   variables = c("AR6 climate diagnostics|Atmospheric Concentrations|CO2|MAGICCv7.5.3")
+#' )
+#' # Plot all available variables for selected scenarios
+#' p <- plotPercentiles(data, scenarios = c("d_delfrag", "d_another"))
+#' }
+#' @section Example Plot:
+#' \if{html}{\figure{plotPercentiles1.png}{Atmospheric CO2 concentrations for all scenarios available in the data}}
 #' @importFrom dplyr filter mutate vars
 #' @importFrom reshape2 melt
 #' @importFrom stringr str_extract
@@ -19,12 +35,10 @@
 #' @export
 plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
 
-  # In the quitte data frame all percentiles are given as individual variables
-  # Manipulate input data frame such that all percentiles of a given quantity
-  # are transformed to individual columns. Variable names in the quitte data
-  # frame follow the format "Any|Variable|5.0th Percentile". The regular
-  # expressions below divide the variable name into the prefix and the
-  # percentile specifier
+  # In the quitte data frame all percentiles are given as individual variables. Manipulate input data frame such that
+  # all percentiles of a given quantity are transformed to individual columns. Variable names in the quitte data frame
+  # follow the format "Any|Variable|5.0th Percentile". The regular expressions below divide the variable name into the
+  # prefix and the percentile specifier
   data <- df %>%
     mutate(
       "percentile" = stringr::str_extract(.data$variable, "[^\\|]+?$"),

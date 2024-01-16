@@ -4,7 +4,7 @@
 \alias{harmonize}
 \title{Harmonization of model data to historical data, using harmonization methods
 of aneris, ported to R.
-See: https://github.com/iiasa/aneris/blob/master/aneris/methods.py}
+See: https://github.com/iiasa/aneris/blob/ad6301eb42155c968f20b2c7e071cbec039acc03/aneris/methods.py}
 \usage{
 harmonize(
   df,
@@ -22,18 +22,16 @@ harmonize(
 
 \item{finalYear}{when should harmonized data match model data again?}
 
-\item{harmonizeYear}{when should harmonization begin?
-sets model data = reference data for this year}
+\item{harmonizeYear}{when should harmonization begin? sets model data = reference data for this year}
 
-\item{method}{harmonization method, currently supported methods are
-"ratio" and "offset"}
+\item{method}{harmonization method, currently supported methods are "ratio" and "offset"}
 
 \item{suffix}{to be appended to harmonized variables}
 }
 \description{
 Harmonization of model data to historical data, using harmonization methods
 of aneris, ported to R.
-See: https://github.com/iiasa/aneris/blob/master/aneris/methods.py
+See: https://github.com/iiasa/aneris/blob/ad6301eb42155c968f20b2c7e071cbec039acc03/aneris/methods.py
 }
 \author{
 Falk Benke

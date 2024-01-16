@@ -85,7 +85,7 @@ showAreaAndBarPlots <- function(
   }
 
   dnohist <- data %>%
-    filter(data$scenario != "historical") %>%
+    filter(.data$variable %in% c(.env$vars, tot), .data$scenario != "historical") %>%
     droplevels()
   if (! "identifier" %in% names(dnohist)) dnohist$identifier <- identifierModelScen(dnohist)
   d <- dnohist %>%
@@ -119,7 +119,7 @@ showAreaAndBarPlots <- function(
   )
 
   # Common label for y-axis.
-  lcp <- gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front"))
+  lcp <- if (is.null(tot)) gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front")) else tot
   label <- paste0(lcp, " (", paste0(levels(d$unit), collapse = ","), ")")
 
   # Create plots.
@@ -134,19 +134,21 @@ showAreaAndBarPlots <- function(
     droplevels() %>%
     mipBarYearData(ylab = lcp) +
     ylab(NULL) +
-    theme(legend.position = "none")
-  p3 <- d %>%
-    filter(.data$region != .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
-    droplevels() %>%
-    mipBarYearData(ylab = lcp) +
-    ylab(NULL) +
-    guides(fill = guide_legend(reverse = TRUE, ncol = 3))
-  p4 <- d %>%
-    filter(.data$region != .env$mainReg) %>%
-    droplevels() %>%
-    mipArea(scales = scales, total = is.null(tot), ylab = lcp,
-            stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
-    guides(fill = guide_legend(reverse = TRUE))
+    { if (length(unique(data$region)) > 1) theme(legend.position = "none") } # nolint
+  if (length(unique(data$region)) > 1) {
+    p3 <- d %>%
+      filter(.data$region != .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
+      droplevels() %>%
+      mipBarYearData(ylab = lcp) +
+      ylab(NULL) +
+      guides(fill = guide_legend(reverse = TRUE, ncol = 3))
+    p4 <- d %>%
+      filter(.data$region != .env$mainReg) %>%
+      droplevels() %>%
+      mipArea(scales = scales, total = is.null(tot), ylab = lcp,
+              stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
+      guides(fill = guide_legend(reverse = TRUE))
+  }
 
   # Add black lines in area plots from variable tot if provided.
   if (!is.null(tot)) {
@@ -161,24 +163,30 @@ showAreaAndBarPlots <- function(
         mapping = aes(.data$period, .data$value),
         size = 1.3
       )
-    dRegiTot <- dnohist %>%
-      filter(
-        .data$region != .env$mainReg,
-        .data$variable == .env$tot) %>%
-      droplevels()
-    dRegiTot$scenario <- dRegiTot$identifier
-    p4 <- p4 +
-      geom_line(
-        data = dRegiTot,
-        mapping = aes(.data$period, .data$value),
-        size = 1.3
-      )
+    if (length(unique(data$region)) > 1) {
+      dRegiTot <- dnohist %>%
+        filter(
+          .data$region != .env$mainReg,
+          .data$variable == .env$tot) %>%
+        droplevels()
+      dRegiTot$scenario <- dRegiTot$identifier
+      p4 <- p4 +
+        geom_line(
+          data = dRegiTot,
+          mapping = aes(.data$period, .data$value),
+          size = 1.3
+        )
+    }
   }
 
   # Show plots.
-  grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)
-  cat("\n\n")
-  print(p4)
+  if (length(unique(data$region)) > 1) {
+    grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)
+    cat("\n\n")
+    print(p4)
+  } else {
+    grid.arrange(p1, p2, layout_matrix = rbind(c(1, 2)), left = label)
+  }
   cat("\n\n")
 
   return(invisible(NULL))

@@ -1,6 +1,6 @@
 # Comparison of multi-model runs
 
-R package **mip**, version **0.144.4**
+R package **mip**, version **0.147.0**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/mip)](https://cran.r-project.org/package=mip) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158586.svg)](https://doi.org/10.5281/zenodo.1158586) [![R build status](https://github.com/pik-piam/mip/workflows/check/badge.svg)](https://github.com/pik-piam/mip/actions) [![codecov](https://codecov.io/gh/pik-piam/mip/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mip) [![r-universe](https://pik-piam.r-universe.dev/badges/mip)](https://pik-piam.r-universe.dev/builds)
 
@@ -47,7 +47,7 @@ In case of questions / problems please contact David Klein <dklein@pik-potsdam.d
 
 To cite package **mip** in publications use:
 
-Klein D, Dietrich J, Baumstark L, Humpenoeder F, Stevanovic M, Wirth S, Führlich P, Richters O (2023). _mip: Comparison of multi-model runs_. doi:10.5281/zenodo.1158586 <https://doi.org/10.5281/zenodo.1158586>, R package version 0.144.4, <https://github.com/pik-piam/mip>.
+Klein D, Dietrich J, Baumstark L, Humpenoeder F, Stevanovic M, Wirth S, Führlich P, Richters O (2023). _mip: Comparison of multi-model runs_. doi:10.5281/zenodo.1158586 <https://doi.org/10.5281/zenodo.1158586>, R package version 0.147.0, <https://github.com/pik-piam/mip>.
 
 A BibTeX entry for LaTeX users is
 
@@ -56,7 +56,7 @@ A BibTeX entry for LaTeX users is
   title = {mip: Comparison of multi-model runs},
   author = {David Klein and Jan Philipp Dietrich and Lavinia Baumstark and Florian Humpenoeder and Miodrag Stevanovic and Stephen Wirth and Pascal Führlich and Oliver Richters},
   year = {2023},
-  note = {R package version 0.144.4},
+  note = {R package version 0.147.0},
   doi = {10.5281/zenodo.1158586},
   url = {https://github.com/pik-piam/mip},
 }

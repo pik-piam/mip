@@ -1,6 +1,6 @@
 #' Harmonization of model data to historical data, using harmonization methods
 #' of aneris, ported to R.
-#' See: https://github.com/iiasa/aneris/blob/master/aneris/methods.py
+#' See: https://github.com/iiasa/aneris/blob/ad6301eb42155c968f20b2c7e071cbec039acc03/aneris/methods.py
 
 #' @author Falk Benke
 #' @param df data frame with model data to be harmonized, must have the following columns:
@@ -17,6 +17,11 @@
 harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", method = "ratio", suffix = "") {
   if (!method %in% c("offset", "ratio")) {
     stop("Invalid method. Options are 'offset' and 'ratio'.")
+  }
+
+  if (!all(c("region", "period", "variable", "value", "model", "scenario", "unit") %in% colnames(df)) ||
+    length(colnames(df)) != 7) {
+    stop("df must contain columns: region, period, variable, value, model, scenario, unit")
   }
 
   .reduceRatio <- function(df, hist, finalYear = "2050", harmonizeYear = "2015") {
@@ -77,7 +82,16 @@ harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", meth
   # iterate over models and variables
 
   vars <- intersect(unique(df$variable), unique(hist$variable))
+
+  if (length(vars) == 0) {
+    stop("No matching variables in model data and historical data found.")
+  }
+
   regions <- intersect(unique(df$region), unique(hist$region))
+
+  if (length(regions) == 0) {
+    stop("No matching regions in model data and historical data found.")
+  }
 
   hist <- hist %>%
     filter(!is.na(!!sym("value")), !!sym("variable") %in% vars, !!sym("region") %in% regions) %>%

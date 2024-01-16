@@ -1,5 +1,3 @@
-
-
 #' The MIP R package
 #' 
 #' Contains the routines for plotting multi model and multi scenario comparisons
@@ -10,8 +8,7 @@
 #' 
 #' @name mip-package
 #' @aliases mip-package mip
-#' @docType package
 #' @author David Klein
 #' 
 #' Maintainer: Anastasis Giannousakis <giannou@@pik-potsdam.de>
-NULL
+"_PACKAGE"

@@ -12,7 +12,7 @@
 #' @param method harmonization method, currently supported methods are "ratio" and "offset"
 #' @param suffix to be appended to harmonized variables
 #' @importFrom dplyr filter mutate
-#' @importFrom data.table `:=`
+#' @importFrom data.table :=
 #' @export
 harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", method = "ratio", suffix = "") {
   if (!method %in% c("offset", "ratio")) {

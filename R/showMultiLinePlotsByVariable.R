@@ -96,14 +96,14 @@ showMultiLinePlotsByVariable <- function(
   p1 <- dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
-    facet_wrap(vars(.data$variable), scales = scales) +
+    facet_wrap(vars(.data$variable), scales = scales, nrow = 3) +
     theme_minimal() +
     expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
   p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
-    facet_wrap(vars(.data$variable), scales = scales) +
+    facet_wrap(vars(.data$variable), scales = scales, nrow = 3) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     expand_limits(y = 0) +

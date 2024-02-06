@@ -13,6 +13,9 @@
 #' @param showHistorical A single logical value. Should historical data be
 #'   shown? It is not recommended to set this to \code{TRUE} as the resulting
 #'   plot we probably be quite confusing.
+#' @param showGlobal A single logical value. Should global data be
+#'  shown? Default is false to save space in pdf
+#' @param NROW_NUM An integer value. Number of rows of the panel figures
 #' @param histRefModel A named character vector identifying the unique model to
 #'   be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
 #'   to set globally.
@@ -42,6 +45,8 @@
 showMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   showHistorical = FALSE,
+  showGlobal = FALSE,
+  NROW_NUM = 1, 
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel"),
   yearsByVariable = getOption("mip.yearsBarPlot")
@@ -92,39 +97,46 @@ showMultiLinePlotsByVariable <- function(
 
   label <- paste0("(", paste0(levels(d$unit), collapse = ","), ")")
   xLabel <- paste0(xVar, " (", paste0(levels(d$unit.x), collapse = ","), ")")
-
+  
+  if (showGlobal) {
   p1 <- dMainScen %>%
     ggplot(aes(.data$value.x, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
-    facet_wrap(vars(.data$variable), scales = scales, nrow = 3) +
+    facet_wrap(vars(.data$variable), scales = scales, nrow = NROW_NUM) +
     theme_minimal() +
     expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
+  }
   p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +
-    facet_wrap(vars(.data$variable), scales = scales, nrow = 3) +
+    facet_wrap(vars(.data$variable), scales = scales, nrow = NROW_NUM) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
+  
   if (showHistorical) {
     stopifnot(xVar %in% names(histRefModel))
+    if (showGlobal) {
     p1 <- p1 +
       geom_point(data = dMainHist, aes(shape = .data$model)) +
       geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)
+    }
     p2 <- p2 +
       geom_point(data = dRegiHist, aes(shape = .data$model)) +
       geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)
   }
   # Add markers for certain years.
   if (length(yearsByVariable) > 0) {
+    if (showGlobal) {
     p1 <- p1 +
       geom_point(
       data = dMainScen %>%
         filter(.data$period %in% .env$yearsByVariable) %>%
         mutate(year = factor(.data$period)),
       mapping = aes(.data$value.x, .data$value, shape = .data$year))
+    }
     p2 <- p2 +
       geom_point(
         data = dRegiScen %>%
@@ -134,8 +146,10 @@ showMultiLinePlotsByVariable <- function(
   }
 
   # Show plots.
+  if (showGlobal) { 
   print(p1)
   cat("\n\n")
+  }
   print(p2)
   cat("\n\n")
 

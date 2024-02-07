@@ -58,7 +58,6 @@ showMultiLinePlotsByVariable <- function(
   checkGlobalOptionsProvided(c("mainReg", "histRefModel"))
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
   stopifnot(is.character(histRefModel) && !is.null(names(histRefModel)))
-  stopifnot(xVar %in% names(histRefModel))
 
   dy <- data %>%
     filter(.data$variable %in% .env$vars)
@@ -110,6 +109,7 @@ showMultiLinePlotsByVariable <- function(
     expand_limits(y = 0) +
     ylab(label) + xlab(xLabel)
   if (showHistorical) {
+    stopifnot(xVar %in% names(histRefModel))
     p1 <- p1 +
       geom_point(data = dMainHist, aes(shape = .data$model)) +
       geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5)

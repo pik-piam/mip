@@ -99,13 +99,13 @@ showMultiLinePlotsByVariable <- function(
   xLabel <- paste0(xVar, " (", paste0(levels(d$unit.x), collapse = ","), ")")
   
   if (showGlobal) {
-  p1 <- dMainScen %>%
-    ggplot(aes(.data$value.x, .data$value)) +
-    geom_line(aes(linetype = .data$scenario)) +
-    facet_wrap(vars(.data$variable), scales = scales, nrow = nrowNum) +
-    theme_minimal() +
-    expand_limits(y = 0) +
-    ylab(label) + xlab(xLabel)
+    p1 <- dMainScen %>%
+      ggplot(aes(.data$value.x, .data$value)) +
+      geom_line(aes(linetype = .data$scenario)) +
+      facet_wrap(vars(.data$variable), scales = scales, nrow = nrowNum) +
+      theme_minimal() +
+      expand_limits(y = 0) +
+      ylab(label) + xlab(xLabel)
   }
   p2 <- dRegiScen %>%
     ggplot(aes(.data$value.x, .data$value, color = .data$region)) +

@@ -7,7 +7,7 @@
 #' \code{variable}. The plots arranged and shown.
 #'
 #' @param vars A character vector. The variables to be plotted.
-#' @param NROW_NUM An integer value. Number of rows of the panel figures
+#' @param nrowNum An integer value. Number of rows of the panel figures
 #' @inheritParams showLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -28,7 +28,7 @@
 #' @importFrom ggplot2 ylim
 showMultiLinePlots <- function(
   data, vars, scales = "free_y",
-  NROW_NUM = 1, 
+  nrowNum = 1, 
   mainReg = getOption("mip.mainReg")
 ) {
 
@@ -70,7 +70,7 @@ showMultiLinePlots <- function(
     geom_line(aes(linetype = .data$scenario)) +
     geom_point(data = dMainHist, aes(shape = .data$model)) +
     geom_line(data = dMainHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
-    facet_wrap(vars(.data$variable), scales = scales, nrow = NROW_NUM) +
+    facet_wrap(vars(.data$variable), scales = scales, nrow = nrowNum) +
     theme_minimal() +
     expand_limits(y = 0) +
     ylab(label)
@@ -80,7 +80,7 @@ showMultiLinePlots <- function(
     geom_line(aes(linetype = .data$scenario)) +
     geom_point(data = dRegiHist, aes(shape = .data$model)) +
     geom_line(data = dRegiHist, aes(group = paste0(.data$model, .data$region)), alpha = 0.5) +
-    facet_wrap(vars(.data$variable), scales = scales, nrow = NROW_NUM) +
+    facet_wrap(vars(.data$variable), scales = scales, nrow = nrowNum) +
     theme_minimal() +
     scale_color_manual(values = plotstyle(regions)) +
     expand_limits(y = 0) +

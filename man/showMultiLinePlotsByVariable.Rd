@@ -11,7 +11,7 @@ showMultiLinePlotsByVariable(
   scales = "free_y",
   showHistorical = FALSE,
   showGlobal = FALSE,
-  NROW_NUM = 1,
+  nrowNum = 1,
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel"),
   yearsByVariable = getOption("mip.yearsBarPlot")
@@ -34,7 +34,7 @@ plot we probably be quite confusing.}
 \item{showGlobal}{A single logical value. Should global data be
 shown? Default is false to save space in pdf}
 
-\item{NROW_NUM}{An integer value. Number of rows of the panel figures}
+\item{nrowNum}{An integer value. Number of rows of the panel figures}
 
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}

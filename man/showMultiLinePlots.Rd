@@ -8,6 +8,7 @@ showMultiLinePlots(
   data,
   vars,
   scales = "free_y",
+  nrowNum = 1,
   mainReg = getOption("mip.mainReg")
 )
 }
@@ -18,6 +19,8 @@ quitte object.}
 \item{vars}{A character vector. The variables to be plotted.}
 
 \item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+
+\item{nrowNum}{An integer value. Number of rows of the panel figures}
 
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}

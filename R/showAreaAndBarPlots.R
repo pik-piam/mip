@@ -124,7 +124,7 @@ showAreaAndBarPlots <- function(
   )
 
   # Common label for y-axis.
-  lcp <- if (is.null(tot)) gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front")) else tot
+  lcp <- if (is.null(tot)) gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front")) else gsub(" pCap$", "", tot)
   label <- paste0(lcp, " (", paste0(levels(d$unit), collapse = ","), ")")
 
   # Create plots.

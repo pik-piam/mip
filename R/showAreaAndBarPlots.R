@@ -98,6 +98,11 @@ showAreaAndBarPlots <- function(
     return(invisible(NULL))
   }
 
+  if (!mainReg %in% unique(d$region)) {
+    warning("Main region not found in data. Nothing to plot.", call. = FALSE)
+    return(invisible(NULL))
+  }
+
   switch(
     orderVars,
     mean = {

@@ -3,14 +3,16 @@
 #' See: https://github.com/iiasa/aneris/blob/ad6301eb42155c968f20b2c7e071cbec039acc03/aneris/methods.py
 
 #' @author Falk Benke
-#' @param df data frame with model data to be harmonized
-#' @param hist data frame with historical data t be used for harmonization
+#' @param df data frame with model data to be harmonized, must have the following columns:
+#' variable, region, scenario, model, period
+#' @param hist data frame with historical data to be used for harmonization, must also have the following columns:
+#' variable, region, scenario, model, period
 #' @param finalYear when should harmonized data match model data again?
 #' @param harmonizeYear when should harmonization begin? sets model data = reference data for this year
 #' @param method harmonization method, currently supported methods are "ratio" and "offset"
 #' @param suffix to be appended to harmonized variables
 #' @importFrom dplyr filter mutate
-#' @importFrom data.table `:=`
+#' @importFrom data.table :=
 #' @export
 harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", method = "ratio", suffix = "") {
   if (!method %in% c("offset", "ratio")) {
@@ -28,7 +30,7 @@ harmonize <- function(df, hist, finalYear = "2050", harmonizeYear = "2015", meth
     m <- df[, harmonizeYear]
     ratios <- c / m
 
-    years <- as.numeric(names(df)[-seq(1, 5)])
+    years <- as.numeric(names(df)[-1:-5])
     yi <- as.numeric(harmonizeYear)
     yf <- as.numeric(finalYear)
 

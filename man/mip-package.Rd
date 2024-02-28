@@ -13,6 +13,15 @@ Contains the routines for plotting multi model and multi scenario comparisons
 7.6\cr Date: \tab 2016-06-13\cr License: \tab LGPL-3\cr LazyLoad: \tab
 yes\cr }
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/pik-piam/mip}
+  \item \doi{10.5281/zenodo.1158586}
+  \item Report bugs at \url{https://github.com/pik-piam/mip/issues}
+}
+
+}
 \author{
 David Klein
 

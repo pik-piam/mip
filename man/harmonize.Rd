@@ -16,9 +16,11 @@ harmonize(
 )
 }
 \arguments{
-\item{df}{data frame with model data to be harmonized}
+\item{df}{data frame with model data to be harmonized, must have the following columns:
+variable, region, scenario, model, period}
 
-\item{hist}{data frame with historical data t be used for harmonization}
+\item{hist}{data frame with historical data to be used for harmonization, must also have the following columns:
+variable, region, scenario, model, period}
 
 \item{finalYear}{when should harmonized data match model data again?}
 

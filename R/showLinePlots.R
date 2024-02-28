@@ -28,7 +28,8 @@ showLinePlots <- function(
     mainReg = getOption("mip.mainReg")
 ) {
 
-  data <- as.quitte(data)
+  data <- as.quitte(data) %>%
+    filter(!is.na(.data$value))
 
   # Validate function arguments.
   stopifnot(is.character(vars) || is.null(vars))

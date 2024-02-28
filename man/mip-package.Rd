@@ -3,7 +3,6 @@
 \docType{package}
 \name{mip-package}
 \alias{mip-package}
-\alias{_PACKAGE}
 \alias{mip}
 \title{The MIP R package}
 \description{

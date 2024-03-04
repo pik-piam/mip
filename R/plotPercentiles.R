@@ -40,10 +40,12 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
   # follow the format "Any|Variable|5.0th Percentile". The regular expressions below divide the variable name into the
   # prefix and the percentile specifier
   data <- df %>%
+    as.quitte(na.rm = TRUE) %>%
     mutate(
       "percentile" = stringr::str_extract(.data$variable, "[^\\|]+?$"),
       "variable"   = gsub("\\|[^\\|]+$", "", .data$variable)
     ) %>%
+    filter(grepl(" Percentile$", .data$percentile)) %>%
     pivot_wider(
       names_from = "percentile",
       values_from = "value"

@@ -27,25 +27,31 @@
 #' }
 #' @section Example Plot:
 #' \if{html}{\figure{plotPercentiles1.png}{Atmospheric CO2 concentrations for all scenarios available in the data}}
-#' @importFrom dplyr filter mutate vars
+#' @importFrom dplyr filter mutate vars select
 #' @importFrom reshape2 melt
 #' @importFrom stringr str_extract
-#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_wider all_of
 #' @importFrom ggplot2 ggplot geom_line geom_ribbon facet_wrap facet_grid theme ylab
 #' @export
 plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
-
+  # Dropped "model" from Necessary columns
+  necessaryCols <- c("scenario", "region", "variable", "unit", "period", "value")
   # In the quitte data frame all percentiles are given as individual variables. Manipulate input data frame such that
-  # all percentiles of a given quantity are transformed to individual columns. Variable names in the quitte data frame
-  # follow the format "Any|Variable|5.0th Percentile". The regular expressions below divide the variable name into the
-  # prefix and the percentile specifier
+  # all percentiles of a given quantity are transformed to individual columns
   data <- df %>%
+    # Drop NA values
     as.quitte(na.rm = TRUE) %>%
+    # Only use necessary columns. The .data-prefix in col names was deprecated in tidyselect since v1.2.0.
+    select(all_of(necessaryCols)) %>%
+    # Variable names in the quitte data frame follow the format "Any|Variable|5.0th Percentile". The regular 
+    # expressions below divide the variable name into the prefix and the percentile specifier
     mutate(
       "percentile" = stringr::str_extract(.data$variable, "[^\\|]+?$"),
       "variable"   = gsub("\\|[^\\|]+$", "", .data$variable)
     ) %>%
+    # Remove all non-percentile variables
     filter(grepl(" Percentile$", .data$percentile)) %>%
+    # Pivot data such that percentiles are transformed to individual columns
     pivot_wider(
       names_from = "percentile",
       values_from = "value"

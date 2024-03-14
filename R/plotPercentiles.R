@@ -121,7 +121,7 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
     p <- p +
       facet_wrap(vars(.data$scenario)) +
       theme(axis.title.x = element_blank()) +
-      ylab(unique(data$unit))
+      ylab(paste0(theseVariables, " (", unique(data$unit), ")"))
   } else {
     # Using facet grid when multiple variables in multiple scenarios are compared
     p <- p +

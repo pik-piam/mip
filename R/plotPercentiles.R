@@ -130,5 +130,6 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
       ylab(unique(data$unit))
   }
 
+  p <- p + theme(text = element_text(size = 17))
   return(p)
 }

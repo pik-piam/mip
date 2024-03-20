@@ -86,6 +86,7 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
   data <- data %>%
     filter(.data$scenario %in% theseScenarios, .data$variable %in% theseVariables) %>%
     droplevels()
+  theseScenarios <- intersect(theseScenarios, unique(data$scenario))
 
   # Set up the plot
   p <- ggplot()

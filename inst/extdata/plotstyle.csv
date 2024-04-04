@@ -642,7 +642,7 @@ pchar;Charging stations availability;#8c8c8c;;
 pref;Refueling stations availability;#8c8c8c;;
 Risk;Risk;#d11141;;
 prisk;Risk aversion;#d11141;;
-pinco_tot;Total inconvenience cost; #00b159;;
+pinco_tot;Total inconvenience cost;#00b159;;
 Busses;Busses;#32cd32;;
 Aircraft international;Aircraft (international);#9acd32;;
 Aircraft domestic;Aircraft (domestic);#7cfc00;;

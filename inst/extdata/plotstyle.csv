@@ -763,5 +763,5 @@ Construction|Commercial;Commercial;#469990;;
 Renovation|Commercial;Commercial;#469990;;
 Demolition|Commercial;Commercial;#469990;;
 Heat pump;;#3cb44b;;
-Direct electric;;#f58231;;
-Disctrict heat;;#cc0000;;
+Resistive electric;;#f58231;;
+District heating;;#cc0000;;

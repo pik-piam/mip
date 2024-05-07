@@ -29,7 +29,7 @@
 #'
 #' @importFrom magclass is.magpie
 #' @importFrom ggplot2 ggplot aes_ guides guide_legend scale_x_continuous
-#'             ggtitle geom_col scale_shape_manual
+#'             ggtitle geom_col scale_shape_manual theme_minimal theme
 #' @importFrom dplyr %>% mutate filter inner_join group_by summarise select n sym arrange
 #' @importFrom tidyr crossing unite
 #' @importFrom quitte order.levels
@@ -110,6 +110,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
                       guide = guide_legend(reverse = TRUE)) +
     facet_wrap(~region, scales = "free_y") +
     labs(x = xlab, y = ylab, title = title) +
+    theme_minimal() +
     theme(legend.position = "bottom")
 
   # add markers
@@ -122,7 +123,9 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
                                shape = !!sym("identifier")),
                  size = 1.5) +
       scale_shape_manual(values = scenarioMarkers, name = NULL) +
-      theme(legend.box = "vertical")
+      theme(legend.box = "vertical",
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor.x = element_blank())
   } else {
     p <- p +
       scale_x_continuous(breaks = xpos$xpos,

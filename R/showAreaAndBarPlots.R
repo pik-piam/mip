@@ -55,7 +55,7 @@
 #' }
 #' @export
 #' @importFrom rlang .data .env
-#' @importFrom dplyr rename left_join summarize group_by arrange
+#' @importFrom dplyr rename left_join summarize group_by arrange filter
 showAreaAndBarPlots <- function(
   data, vars, tot = NULL, fill = FALSE,
   orderVars = c("mean", "user", "userRev"),
@@ -87,7 +87,7 @@ showAreaAndBarPlots <- function(
   dnohist <- data %>%
     filter(.data$variable %in% c(.env$vars, tot), .data$scenario != "historical") %>%
     droplevels()
-  if (! "identifier" %in% names(dnohist)) dnohist$identifier <- identifierModelScen(dnohist)
+  if (!"identifier" %in% names(dnohist)) dnohist$identifier <- identifierModelScen(dnohist)
   d <- dnohist %>%
     filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>%
     droplevels()
@@ -138,21 +138,31 @@ showAreaAndBarPlots <- function(
     filter(.data$region == .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
     droplevels() %>%
     mipBarYearData(ylab = lcp) +
-    ylab(NULL) +
-    { if (length(unique(data$region)) > 1) theme(legend.position = "none") } # nolint
-  if (length(unique(data$region)) > 1) {
-    p3 <- d %>%
-      filter(.data$region != .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
+    ylab(NULL)
+
+  d3 <- d %>%
+    filter(.data$region != .env$mainReg,
+           .data$period %in% .env$yearsBarPlot)
+  d4 <- d %>%
+    filter(.data$region != .env$mainReg)
+  showNonMainRegs <- nrow(d3) > 0 && nrow(d4) > 0
+
+  if (showNonMainRegs) {
+    p2 <- p2 +
+      theme(legend.position = "none")
+    p3 <- d3 %>%
       droplevels() %>%
       mipBarYearData(ylab = lcp) +
       ylab(NULL) +
       guides(fill = guide_legend(reverse = TRUE, ncol = 3))
-    p4 <- d %>%
-      filter(.data$region != .env$mainReg) %>%
+    p4 <- d4 %>%
       droplevels() %>%
       mipArea(scales = scales, total = is.null(tot), ylab = lcp,
               stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
       guides(fill = guide_legend(reverse = TRUE))
+  } else {
+    p2 <- p2 +
+      guides(fill = guide_legend(reverse = TRUE, ncol = 3))
   }
 
   # Add black lines in area plots from variable tot if provided.
@@ -168,7 +178,7 @@ showAreaAndBarPlots <- function(
         mapping = aes(.data$period, .data$value),
         size = 1.3
       )
-    if (length(unique(data$region)) > 1) {
+    if (showNonMainRegs) {
       dRegiTot <- dnohist %>%
         filter(
           .data$region != .env$mainReg,
@@ -185,7 +195,7 @@ showAreaAndBarPlots <- function(
   }
 
   # Show plots.
-  if (length(unique(data$region)) > 1) {
+  if (showNonMainRegs) {
     grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)
     cat("\n\n")
     print(p4)

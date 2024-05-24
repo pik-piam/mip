@@ -765,3 +765,7 @@ Demolition|Commercial;Commercial;#469990;;
 Heat pump;;#3cb44b;;
 Resistive electric;;#f58231;;
 District heating;;#cc0000;;
+Gas heater;;#999959;;
+Coal heater;;#0c0c0c;;
+Liquids heater;;#0000cc;;
+Biomass heater;;#005900;;

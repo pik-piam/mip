@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'mip: Comparison of multi-model runs'
-version: 0.148.16
-date-released: '2024-05-19'
+version: 0.148.17
+date-released: '2024-05-24'
 abstract: Package contains generic functions to produce comparison plots of multi-model
   runs.
 authors:
@@ -34,7 +34,6 @@ authors:
   given-names: Tonn
   email: tonn.rueter@pik-potsdam.de
 license: BSD-2-Clause
-keywords: ~
 repository-code: https://github.com/pik-piam/mip
 doi: 10.5281/zenodo.1158586
 

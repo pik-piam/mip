@@ -166,7 +166,7 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=
     return(p)
   }
 
-  # plot the data accordig to plotting priority
+  # plot the data according to plotting priority
   plot.priority <- rev(plot.priority)
   for(i in 1:length(plot.priority)){
     if(plot.priority[i] == "x_hist" & i>1 ){  ## if the historic values are plotted on top of the scenario ones, they should be smaller

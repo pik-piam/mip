@@ -10,6 +10,7 @@
 #'   to be plotted. If \code{NULL} all rows from \code{data} are plotted.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
 #' @param color.dim.name name for the color-dimension used in the legend
+#' @param color.dim.manual optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.
 #' @inheritParams showAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -23,9 +24,11 @@
 #' @export
 #' @importFrom rlang .data .env
 #' @importFrom dplyr bind_rows
+#' @importFrom gridExtra arrangeGrob
+
 showLinePlots <- function(
     data, vars = NULL, scales = "free_y", color.dim.name = NULL,
-    mainReg = getOption("mip.mainReg")
+    mainReg = getOption("mip.mainReg"), color.dim.manual = NULL
 ) {
 
   data <- as.quitte(data) %>%
@@ -90,6 +93,7 @@ showLinePlots <- function(
         scales = scales,
         plot.priority = c("x_hist", "x", "x_proj"),
         color.dim.name = color.dim.name,
+        color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[mainHistModels]
       )
   }
@@ -104,6 +108,7 @@ showLinePlots <- function(
         plot.priority = c("x_hist", "x", "x_proj"),
         facet.ncol = 3,
         color.dim.name = color.dim.name,
+        color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[regiHistModels]
       )
   }

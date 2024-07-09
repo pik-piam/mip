@@ -98,7 +98,7 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
   }
 
   if (is.null(colour)) {
-    colour <- plotstyle(levels(x$variable))
+    colour <- plotstyle(levels(x$variable), strip_units = FALSE)
   }
 
   # make plot

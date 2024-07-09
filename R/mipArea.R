@@ -217,7 +217,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   # get the same order of colors for elements that are not defined in plotstyle.
   if (!is.factor(x[[dimToStack]])) x[[dimToStack]] <- factor(x[[dimToStack]], levels = unique(x[[dimToStack]]))
   # use plotstyle colours and labels by default
-  p <- p + scale_fill_manual(values = plotstyle(levels(x[[dimToStack]])),
+  p <- p + scale_fill_manual(values = plotstyle(levels(x[[dimToStack]]), strip_units = FALSE),
                              name   = "")
 
   # increase y-axis limits to hide all-zero data that was set to -1e-36

@@ -1,8 +1,8 @@
 Type: Package
 Package: mip
 Title: Comparison of multi-model runs
-Version: 0.148.21
-Date: 2024-07-02
+Version: 0.149.0
+Date: 2024-07-09
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),
@@ -25,7 +25,6 @@ Depends:
     magclass,
     quitte (>= 0.3072)
 Imports:
-    RColorBrewer,
     data.table,
     dplyr,
     ggplot2,
@@ -33,12 +32,14 @@ Imports:
     htmltools,
     lusweave (>= 1.43.2),
     plotly,
+    RColorBrewer,
     reshape2,
     rlang,
     shiny,
+    stringr,
     tidyr,
     trafficlight,
-    stringr
+    withr,
 Suggests:
     gdxrrw,
     knitr,
@@ -48,4 +49,4 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: yes
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

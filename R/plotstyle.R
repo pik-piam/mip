@@ -3,6 +3,7 @@
 #' Returns a named vector (using entity names) with style codes (e.g. colors)
 #' for given entities.
 #'
+#' @md
 #' @param ... One or more strings or a vector of strings with names of entities
 #'   (regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be
 #'   ignored. If left empty all available entities will be used
@@ -21,6 +22,9 @@
 #'   entities are expanded, non-matching entities are returned as the original
 #'   expression.  Does not generate default color maps. Implies \code{plot =
 #'   FALSE} and \code{verbosity = 0}.
+#' @param strip_units If `TRUE` everything from the first opening
+#'   brace (`'('`) on is stripped from the entity names.  Defaults to `TRUE` and
+#'   can be set globally using the `plotstyle.strip_units` option.
 #' @return Plot styles for given entities
 #' @section Colors for unknown entities:
 #' \if{html}{\figure{colors.png}{options: width="100\%"}}
@@ -49,8 +53,11 @@
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats runif
 
-plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE, verbosity = getOption("plotstyle.verbosity"),
-                      regexp = FALSE) {
+plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
+                      verbosity = getOption("plotstyle.verbosity"),
+                      regexp = FALSE,
+                      strip_units = getOption("plotstyle.strip_units",
+                                              default = TRUE)) {
 
   luplot <- list()
   luplot$plotstyle <- read.csv2(
@@ -73,7 +80,9 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE, verbosit
     entity <- row.names(luplot$plotstyle)
   } else {
     entity[is.na(entity)] <- "NA"
-    entity <- unlist(lapply(strsplit(entity, " \\("), function(x) x[1]))
+    if (isTRUE(strip_units)) {
+      entity <- unlist(lapply(strsplit(entity, " \\("), function(x) x[1]))
+    }
   }
 
   uqEntity <- unique(entity)

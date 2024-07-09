@@ -25,7 +25,6 @@ Depends:
     magclass,
     quitte (>= 0.3072)
 Imports:
-    RColorBrewer,
     data.table,
     dplyr,
     ggplot2,
@@ -33,12 +32,14 @@ Imports:
     htmltools,
     lusweave (>= 1.43.2),
     plotly,
+    RColorBrewer,
     reshape2,
     rlang,
     shiny,
+    stringr,
     tidyr,
     trafficlight,
-    stringr
+    withr,
 Suggests:
     gdxrrw,
     knitr,

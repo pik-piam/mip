@@ -48,8 +48,11 @@ shorten_legend <- function(x, maxchar = 20, identical_only = FALSE,  # nolint: o
   }
 
   if (! is.null(ylab)) {
+    # shorten labels by variable part of ylab
     ylabvariable <- magclass::unitsplit(ylab)$variable
-    x <- gsub("^\\|", "", gsub(ylabvariable, "", x, fixed = TRUE))
+    x_tmp <- gsub("^\\|", "", gsub(ylabvariable, "", x, fixed = TRUE))
+    # avoid empty labels
+    x <- ifelse(x_tmp == "", x, x_tmp)
   } else {
     sep_or <- paste0("\\", sep, collapse = "|")
     sep_no <- paste0("[^", paste0("\\", sep, collapse = ""), "]")

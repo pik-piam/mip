@@ -10,6 +10,8 @@
 #'   to be plotted. If \code{NULL} all rows from \code{data} are plotted.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
 #' @param color.dim.name name for the color-dimension used in the legend
+#' @param histModels A character vector filtering the historical models to include.
+#' Set to \code{NULL} (default) for no filtering.
 #' @inheritParams showAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -25,7 +27,8 @@
 #' @importFrom dplyr bind_rows
 showLinePlots <- function(
     data, vars = NULL, scales = "free_y", color.dim.name = NULL,
-    mainReg = getOption("mip.mainReg")
+    mainReg = getOption("mip.mainReg"),
+    histModels = NULL
 ) {
 
   data <- as.quitte(data) %>%
@@ -33,6 +36,7 @@ showLinePlots <- function(
 
   # Validate function arguments.
   stopifnot(is.character(vars) || is.null(vars))
+  stopifnot(is.character(histModels) || is.null(histModels))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
@@ -48,6 +52,11 @@ showLinePlots <- function(
       droplevels()
     unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
     label <- paste0(paste0(levels(d$variable), collapse = ","), unitlabel)
+  }
+
+  if (!is.null(histModels)) {
+    d <- d %>%
+      filter(.data$scenario != "historical" | .data$model %in% .env$histModels)
   }
 
   dMainScen <- d %>%

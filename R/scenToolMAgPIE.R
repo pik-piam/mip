@@ -158,24 +158,24 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
       #val$val_sel <- subset(val$val_sel,Variable %in% input$valvariable)
     })
 
-    #normalize
-    observeEvent(c(input$normalize),{
-      if(input$normalize) {
-        val$rep_sel_tmp <- val$rep_sel
-        print("normalize data")
-        years <- unique(val$rep_sel$period)
-        base_year <- val$rep_sel$value[val$rep_sel$period==years[1]]
-        val$rep_sel$value <- val$rep_sel$value/rep(base_year,length(years))
-        if(!is.null(val$val_sel)) {
-          val$val_sel_tmp <- val$val_sel
-          val$val_sel$value <- val$val_sel$value/rep(base_year,length(unique(val$val_sel$period)))
-        }
-      } else {
-        print("restore data")
-        if(!is.null(val$rep_sel_tmp)) val$rep_sel <- val$rep_sel_tmp
-        if(!is.null(val$val_sel_tmp)) val$val_sel <- val$val_sel_tmp
-      }
-    })
+    # #normalize
+    # observeEvent(c(input$normalize),{
+    #   if(input$normalize) {
+    #     val$rep_sel_tmp <- val$rep_sel
+    #     print("normalize data")
+    #     years <- unique(val$rep_sel$period)
+    #     base_year <- val$rep_sel$value[val$rep_sel$period==years[1]]
+    #     val$rep_sel$value <- val$rep_sel$value/rep(base_year,length(years))
+    #     if(!is.null(val$val_sel)) {
+    #       val$val_sel_tmp <- val$val_sel
+    #       val$val_sel$value <- val$val_sel$value/rep(base_year,length(unique(val$val_sel$period)))
+    #     }
+    #   } else {
+    #     print("restore data")
+    #     if(!is.null(val$rep_sel_tmp)) val$rep_sel <- val$rep_sel_tmp
+    #     if(!is.null(val$val_sel_tmp)) val$val_sel <- val$val_sel_tmp
+    #   }
+    # })
 
 
 
@@ -207,7 +207,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
 
     lineplot <- debounce(reactive({
       if(input$update_plot) {
-        p <- mipLineHistorical(x=val$rep_sel,x_hist=val$val_sel,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = input$scales,ylim=switch(input$auto_y + 1, 0, NULL))
+        p <- mipLineHistorical(x=val$rep_sel,x_hist=val$val_sel,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = ifelse(input$free_y,"free_y","fixed"),ylim=switch(input$auto_y + 1, 0, NULL), legend.ncol = if(length(levels(val$rep_sel$scenario)) > 5) 2 else 1)
       } else p <- NULL
       return(p)
     }), 500)
@@ -334,8 +334,13 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
                                                  wellPanel(
                                                    fluidRow(
                                                      column(3,
-                                                            selectInput('scales', 'Scales (Multi-Panel)',c("fixed","free_y","free_x","free"),selected="fixed"),
-                                                            checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL),
+                                                            #selectInput('scales', 'Scales (Multi-Panel)',c("fixed","free_y","free_x","free"),selected="fixed"),
+                                                            #checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL),
+                                                            checkboxInput('free_y', 'Free Y (Multi-Panel)', value = FALSE)
+                                                     ),
+                                                     column(3,
+                                                            #selectInput('scales', 'Scales (Multi-Panel)',c("fixed","free_y","free_x","free"),selected="fixed"),
+                                                            #checkboxInput('normalize', 'Normalize', value = FALSE, width = NULL),
                                                             checkboxInput('auto_y', 'Automatic Y scaling', value = FALSE)
                                                      )
                                                    )

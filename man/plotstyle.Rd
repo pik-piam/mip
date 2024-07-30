@@ -10,7 +10,8 @@ plotstyle(
   unknown = NULL,
   plot = FALSE,
   verbosity = getOption("plotstyle.verbosity"),
-  regexp = FALSE
+  regexp = FALSE,
+  strip_units = getOption("plotstyle.strip_units", default = TRUE)
 )
 }
 \arguments{
@@ -36,7 +37,11 @@ plotstyle brewed colors}
 \item{regexp}{If \code{TRUE}, match entities as regular expressions. Matching
 entities are expanded, non-matching entities are returned as the original
 expression.  Does not generate default color maps. Implies \code{plot =
-FALSE} and \code{verbosity = 0}.}
+  FALSE} and \code{verbosity = 0}.}
+
+\item{strip_units}{If \code{TRUE} everything from the first opening
+brace (\code{'('}) on is stripped from the entity names.  Defaults to \code{TRUE} and
+can be set globally using the \code{plotstyle.strip_units} option.}
 }
 \value{
 Plot styles for given entities

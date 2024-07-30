@@ -9,7 +9,8 @@ showLinePlots(
   vars = NULL,
   scales = "free_y",
   color.dim.name = NULL,
-  mainReg = getOption("mip.mainReg")
+  mainReg = getOption("mip.mainReg"),
+  color.dim.manual = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ to be plotted. If \code{NULL} all rows from \code{data} are plotted.}
 
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
+
+\item{color.dim.manual}{optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.}
 }
 \value{
 \code{NULL} is returned invisible.

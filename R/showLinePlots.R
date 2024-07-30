@@ -8,11 +8,14 @@
 #'
 #' @param vars A character vector. Usually just a single string. The variables
 #'   to be plotted. If \code{NULL} all rows from \code{data} are plotted.
+#' @param histVars A character vector. Usually just a single string. The historical variables
+#'   to be plotted. If \code{NULL}, it is set to \code{vars}.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
 #' @param color.dim.name name for the color-dimension used in the legend
 #' @param histModels A character vector filtering the historical models to include.
 #' Set to \code{NULL} (default) for no filtering.
-#' @param color.dim.manual optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.
+#' @param color.dim.manual optional vector with manual colors replacing default
+#' colors of color.dim, default is \code{NULL}.
 #' @inheritParams showAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -29,7 +32,11 @@
 #' @importFrom gridExtra arrangeGrob
 
 showLinePlots <- function(
-    data, vars = NULL, scales = "free_y", color.dim.name = NULL,
+    data,
+    vars = NULL,
+    histVars = NULL,
+    scales = "free_y",
+    color.dim.name = NULL,
     mainReg = getOption("mip.mainReg"),
     color.dim.manual = NULL,
     histModels = NULL
@@ -40,17 +47,23 @@ showLinePlots <- function(
 
   # Validate function arguments.
   stopifnot(is.character(vars) || is.null(vars))
+  stopifnot(is.character(histVars) || is.null(histVars))
   stopifnot(is.character(histModels) || is.null(histModels))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
+  if (is.null(histVars)) {
+    histVars <- vars
+  }
+
   if (!is.null(vars)) {
+    v <- unique(c(vars, histVars))
     d <- data %>%
-      filter(.data$variable %in% .env$vars) %>%
+      filter(.data$variable %in% .env$v) %>%
       droplevels()
     unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
-    label <- paste0(paste0(vars, collapse = ","), unitlabel)
+    label <- paste0(paste0(v, collapse = ","), unitlabel)
   } else {
     d <- data %>%
       droplevels()
@@ -64,16 +77,16 @@ showLinePlots <- function(
   }
 
   dMainScen <- d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
+    filter(.data$region == .env$mainReg, .data$scenario != "historical", .data$variable %in% .env$vars) %>%
     droplevels()
   dMainHist <- d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
+    filter(.data$region == .env$mainReg, .data$scenario == "historical", .data$variable %in% .env$histVars) %>%
     droplevels()
   dRegiScen <- d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
+    filter(.data$region != .env$mainReg, .data$scenario != "historical", .data$variable %in% .env$vars) %>%
     droplevels()
   dRegiHist <- d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
+    filter(.data$region != .env$mainReg, .data$scenario == "historical", .data$variable %in% .env$histVars) %>%
     droplevels()
 
   # make sure all plots use the same colors for historical models

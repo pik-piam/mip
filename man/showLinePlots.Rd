@@ -7,10 +7,12 @@
 showLinePlots(
   data,
   vars = NULL,
+  histVars = NULL,
   scales = "free_y",
   color.dim.name = NULL,
   mainReg = getOption("mip.mainReg"),
-  color.dim.manual = NULL
+  color.dim.manual = NULL,
+  histModels = NULL
 )
 }
 \arguments{
@@ -20,6 +22,9 @@ quitte object.}
 \item{vars}{A character vector. Usually just a single string. The variables
 to be plotted. If \code{NULL} all rows from \code{data} are plotted.}
 
+\item{histVars}{A character vector. Usually just a single string. The historical variables
+to be plotted. If \code{NULL}, it is set to \code{vars}.}
+
 \item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
 
 \item{color.dim.name}{name for the color-dimension used in the legend}
@@ -27,7 +32,11 @@ to be plotted. If \code{NULL} all rows from \code{data} are plotted.}
 \item{mainReg}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
 
-\item{color.dim.manual}{optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.}
+\item{color.dim.manual}{optional vector with manual colors replacing default
+colors of color.dim, default is \code{NULL}.}
+
+\item{histModels}{A character vector filtering the historical models to include.
+Set to \code{NULL} (default) for no filtering.}
 }
 \value{
 \code{NULL} is returned invisible.

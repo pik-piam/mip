@@ -3,7 +3,7 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 title: 'mip: Comparison of multi-model runs'
 version: 0.149.2
-date-released: '2024-07-30'
+date-released: '2024-08-01'
 abstract: Package contains generic functions to produce comparison plots of multi-model
   runs.
 authors:

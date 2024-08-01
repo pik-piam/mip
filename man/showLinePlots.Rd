@@ -12,7 +12,7 @@ showLinePlots(
   color.dim.name = NULL,
   mainReg = getOption("mip.mainReg"),
   color.dim.manual = NULL,
-  histModels = NULL
+  histModelsExclude = NULL
 )
 }
 \arguments{
@@ -35,8 +35,8 @@ Use \code{options(mip.mainReg=<value>)} to set globally.}
 \item{color.dim.manual}{optional vector with manual colors replacing default
 colors of color.dim, default is \code{NULL}.}
 
-\item{histModels}{A character vector filtering the historical models to include.
-Set to \code{NULL} (default) for no filtering.}
+\item{histModelsExclude}{A character vector with historical models to exclude.
+Set to \code{NULL} (default) for all available data.}
 }
 \value{
 \code{NULL} is returned invisible.

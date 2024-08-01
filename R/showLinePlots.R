@@ -12,8 +12,8 @@
 #'   to be plotted. If \code{NULL}, it is set to \code{vars}.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
 #' @param color.dim.name name for the color-dimension used in the legend
-#' @param histModels A character vector filtering the historical models to include.
-#' Set to \code{NULL} (default) for no filtering.
+#' @param histModelsExclude A character vector with historical models to exclude.
+#' Set to \code{NULL} (default) for all available data.
 #' @param color.dim.manual optional vector with manual colors replacing default
 #' colors of color.dim, default is \code{NULL}.
 #' @inheritParams showAreaAndBarPlots
@@ -39,7 +39,7 @@ showLinePlots <- function(
     color.dim.name = NULL,
     mainReg = getOption("mip.mainReg"),
     color.dim.manual = NULL,
-    histModels = NULL
+    histModelsExclude = NULL
 ) {
 
   data <- as.quitte(data) %>%
@@ -48,7 +48,7 @@ showLinePlots <- function(
   # Validate function arguments.
   stopifnot(is.character(vars) || is.null(vars))
   stopifnot(is.character(histVars) || is.null(histVars))
-  stopifnot(is.character(histModels) || is.null(histModels))
+  stopifnot(is.character(histModelsExclude) || is.null(histModelsExclude))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
@@ -71,9 +71,9 @@ showLinePlots <- function(
     label <- paste0(paste0(levels(d$variable), collapse = ","), unitlabel)
   }
 
-  if (!is.null(histModels)) {
+  if (!is.null(histModelsExclude)) {
     d <- d %>%
-      filter(.data$scenario != "historical" | .data$model %in% .env$histModels)
+      filter(.data$scenario != "historical" | !.data$model %in% .env$histModelsExclude)
   }
 
   dMainScen <- d %>%

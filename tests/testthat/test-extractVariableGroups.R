@@ -36,8 +36,9 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
   expect_warning(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1)))
   expect_identical(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1[!grepl(")$",x1)])),res3)
 
-  x4 <- c("B", "B|+|G", "A|++|C", "A|++|B", "A")
-  res4 <- list("A 2" = c("A|++|B", "A|++|C"), "B" = "B|+|G")
-  expect_identical(extractVariableGroups(x4, sorted = TRUE), res4)
-  
+  x4 <- c("B", "B|+|G", "A|++|C", "A|++|B", "A", "C|++++++++++++++++|A", "C")
+  res4 <- list("B" = "B|+|G", "A 2" = c("A|++|C", "A|++|B"), "C 16" = "C|++++++++++++++++|A")
+  res4sorted <- list("A 2" = c("A|++|B", "A|++|C"), "B" = "B|+|G", "C 16" = "C|++++++++++++++++|A")
+  expect_identical(extractVariableGroups(x4, sorted = FALSE), res4)
+  expect_identical(extractVariableGroups(x4, sorted = TRUE), res4sorted)
 })

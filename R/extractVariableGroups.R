@@ -6,11 +6,12 @@
 #' @param x a vector of variable names
 #' @param keepOrigNames if set, the returned list contains the original variables
 #' (to the value of which the grouped ones have to sum up) as names instead of
-#' made up group names, if they exist. The current implementation goes up to ten levels (++++++++++) deep.
+#' made up group names, if they exist.
 #' @param sorted boolean, indicating whether the variables within each group should be returned alp
 #' @return a named list of variable groups with group name as name and vector of entities as content
 #' @author Anastasis Giannousakis, David Klein, Jan Philipp Dietrich
 #' @seealso \code{\link{plotstyle.add}}
+#' @importFrom stringr str_match_all
 #' @examples
 #' x <- c("a|+|1|+|aa","a|+|2|abc","a|+|1|+|bb","a|+|1|+|cc","a|+|3|+|aa","a|+|3|+|bb")
 #' mip::extractVariableGroups(x)
@@ -40,8 +41,9 @@ extractVariableGroups <- function(x, keepOrigNames=FALSE, sorted = FALSE) {
     return(out)
   }
   if (any(grepl("\\|\\++\\|",x))) {
+    maxplus <- max(nchar(unlist(str_match_all(x, "\\++")), keepNA = FALSE))
     out <- list()
-    for(i in 1:10) {
+    for(i in seq(maxplus)) {
       sep <- paste0("|",paste(rep("+",i),collapse=""),"|")
       matches <- grep(sep,x,fixed=TRUE, value = TRUE)
       if(length(matches)==0) next()

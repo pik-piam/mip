@@ -11,7 +11,7 @@ extractVariableGroups(x, keepOrigNames = FALSE, sorted = FALSE)
 
 \item{keepOrigNames}{if set, the returned list contains the original variables
 (to the value of which the grouped ones have to sum up) as names instead of
-made up group names, if they exist. The current implementation goes up to ten levels (++++++++++) deep.}
+made up group names, if they exist.}
 
 \item{sorted}{boolean, indicating whether the variables within each group should be returned alp}
 }

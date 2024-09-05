@@ -194,6 +194,8 @@ showAreaAndBarPlots <- function(
     }
   }
 
+  cat("\\clearpage")
+
   # Show plots.
   if (showNonMainRegs) {
     grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)

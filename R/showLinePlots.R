@@ -158,6 +158,7 @@ showLinePlots <- function(
   }
 
   # Show plots.
+  cat("\\clearpage")
   grid.arrange(p1, p2, nrow = 1)
   cat("\n\n")
 

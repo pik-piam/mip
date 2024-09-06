@@ -68,7 +68,7 @@ extractVariableGroups <- function(x, keepOrigNames=FALSE, sorted = FALSE) {
     }
   }
   if (isTRUE(sorted)) {
-    out <- out[sort(names(out))]
+    out <- out[order(names(out))]
     out <- lapply(out, sort)
   }
   return(out)

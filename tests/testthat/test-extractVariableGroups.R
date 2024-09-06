@@ -35,5 +35,20 @@ test_that("check that extractVariableGroups correctly extracts variable groups",
   expect_identical(extractVariableGroups(x1,keepOrigNames = TRUE),res2)
   expect_warning(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1)))
   expect_identical(extractVariableGroups(gsub("\\|[\\+]{1,}","",x1[!grepl(")$",x1)])),res3)
-  
+
+  x4 <- c("B", "B|+|G", "A|++|C", "A|++|B", "A", "C|++++++++++++++++|A", "C")
+  res4 <- list("B" = "B|+|G", "A 2" = c("A|++|C", "A|++|B"), "C 16" = "C|++++++++++++++++|A")
+  res4sorted <- list("A 2" = c("A|++|B", "A|++|C"), "B" = "B|+|G", "C 16" = "C|++++++++++++++++|A")
+  expect_identical(extractVariableGroups(x4, sorted = FALSE), res4)
+  expect_identical(extractVariableGroups(x4, sorted = TRUE), res4sorted)
+
+  x5 <- c("A|+|FE", "A|FE|+|B", "A|FE|+|A", "A|FE|++|D", "A|FE|++|C")
+  res5 <- list("A" = "A|+|FE", "A|FE" = c("A|FE|+|B", "A|FE|+|A"), "A|FE 2" = c("A|FE|++|D", "A|FE|++|C"))
+  expect_identical(extractVariableGroups(x5, keepOrigNames = FALSE, sorted = FALSE), res5)
+  res5keep <- list("A" = "A|+|FE", "A|+|FE" = c("A|FE|+|B", "A|FE|+|A"), "A|+|FE" = c("A|FE|++|D", "A|FE|++|C"))
+  expect_identical(extractVariableGroups(x5, keepOrigNames = TRUE), res5keep)
+  res5sorted <- list("A" = "A|+|FE", "A|FE" = c("A|FE|+|A", "A|FE|+|B"), "A|FE 2" = c("A|FE|++|C", "A|FE|++|D"))
+  expect_identical(extractVariableGroups(x5, keepOrigNames = FALSE, sorted = FALSE), res5)
+  res5keepSorted <- list("A" = "A|+|FE", "A|+|FE" = c("A|FE|+|A", "A|FE|+|B"), "A|+|FE" = c("A|FE|++|C", "A|FE|++|D"))
+  expect_identical(extractVariableGroups(x5, keepOrigNames = TRUE, sorted = TRUE), res5keepSorted)
 })

@@ -16,6 +16,7 @@
 #' Set to \code{NULL} (default) for all available data.
 #' @param color.dim.manual optional vector with manual colors replacing default
 #' colors of color.dim, default is \code{NULL}.
+#' @param vlines period used for vertical line
 #' @inheritParams showAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
@@ -39,7 +40,8 @@ showLinePlots <- function(
     color.dim.name = NULL,
     mainReg = getOption("mip.mainReg"),
     color.dim.manual = NULL,
-    histModelsExclude = NULL
+    histModelsExclude = NULL,
+    vlines = NULL
 ) {
 
   data <- as.quitte(data) %>%
@@ -119,6 +121,9 @@ showLinePlots <- function(
         color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[mainHistModels]
       )
+    if (! is.null(vlines)) {
+      p1 <- p1 + geom_vline(xintercept = vlines, linetype = 3)
+    }
   }
   if (NROW(dRegiScen) == 0) {
     p2 <- ggplot() + theme_minimal()
@@ -134,6 +139,9 @@ showLinePlots <- function(
         color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[regiHistModels]
       )
+    if (! is.null(vlines)) {
+      p2 <- p2 + geom_vline(xintercept = vlines, linetype = 3)
+    }
   }
 
   # If a legend of the plots can be used as common legend for both plots,

@@ -172,6 +172,7 @@ showAreaAndBarPlots <- function(
         .data$region == .env$mainReg,
         .data$variable == .env$tot) %>%
       droplevels()
+    dMainTot$scenario <- dMainTot$identifier
     p1 <- p1 +
       geom_line(
         data = dMainTot,

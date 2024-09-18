@@ -14,7 +14,8 @@ showMultiLinePlotsByVariable(
   nrowNum = 1,
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel"),
-  yearsByVariable = getOption("mip.yearsBarPlot")
+  yearsByVariable = getOption("mip.yearsBarPlot"),
+  logscale = ""
 )
 }
 \arguments{
@@ -45,6 +46,9 @@ to set globally.}
 
 \item{yearsByVariable}{A numeric vector. The years to be marked in the plots.
 As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.}
+
+\item{logscale}{A string such as "x", "y" or "xy". Each axis mentioned in this string
+is displayed in logarithmic scale (base 10) instead of linear.}
 }
 \value{
 \code{NULL} is returned invisible.

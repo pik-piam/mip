@@ -82,40 +82,34 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   ###
   ### Find out which variables to stack and which to put to facet_grid
   ###
-  if ("identifier" %in% names(x)) {
-    # if the identifier is specified externally, us that + region as facet and stack variables
-    facets <- c("identifier", "region")
-    if (!is.null(hist)) x <- rbind(x, hist)
-    dimToStack <- "variable"
-  } else {
-    # Identify stacking and facet_grid based on data
-    # count levels of the given columns
-    nLevels <- vapply(subset(x, select = c("variable", "region", "scenario", "model")), nlevels, integer(1))
 
-    # Find first dimension in stack_priority that has more than one element.
-    # Initialize dimToStack (this applies if if all dimensions have only one element)
-    dimToStack <- stack_priority[1]
-    for (s in stack_priority) {
-      if (nLevels[s] > 1) {
-        dimToStack <- s
-        break
-      }
-    }
+  # count levels of the given columns
+  nLevels <- vapply(subset(x, select = c("variable", "region", "scenario", "model")), nlevels, integer(1))
 
-    # find and sort dimension with more than one element, exclude dimToStack
-    # sort: to be able to build the interaction with the smallest number of resulting combinations (further down)
-    facets <- sort(nLevels[nLevels > 1])
-    facets <- setdiff(names(facets), dimToStack)
-
-    # Combine data and historical data into one object
-    if (!is.null(hist)) x <- rbind(x, hist)
-
-    # if there are three facet dimensions that have more than one element combine the two
-    # smallest ones into the first one to be able to create a 2-D facet_grid later on
-    if (length(facets) == 3) {
-      x[, facets[1]] <- paste(x[[facets[2]]], x[[facets[1]]])
+  # Find first dimension in stack_priority that has more than one element.
+  # Initialize dimToStack (this applies if if all dimensions have only one element)
+  dimToStack <- stack_priority[1]
+  for (s in stack_priority) {
+    if (nLevels[s] > 1) {
+      dimToStack <- s
+      break
     }
   }
+
+  # find and sort dimension with more than one element, exclude dimToStack
+  # sort: to be able to build the interaction with the smallest number of resulting combinations (further down)
+  facets <- sort(nLevels[nLevels > 1])
+  facets <- setdiff(names(facets), dimToStack)
+
+  # Combine data and historical data into one object
+  if (!is.null(hist)) x <- rbind(x, hist)
+
+  # if there are three facet dimensions that have more than one element combine the two
+  # smallest ones into the first one to be able to create a 2-D facet_grid later on
+  if (length(facets) == 3) {
+    x[, facets[1]] <- paste(x[[facets[2]]], x[[facets[1]]])
+  }
+
   # if not provided by user calculate total by summing over dimToStack
   if (isTRUE(total)) {
     dimToGroup <- setdiff(c("model", "scenario", "region", "variable", "unit", "period"), dimToStack)

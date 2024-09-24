@@ -4,14 +4,16 @@
 \alias{extractVariableGroups}
 \title{extractVariableGroups}
 \usage{
-extractVariableGroups(x, keepOrigNames = FALSE)
+extractVariableGroups(x, keepOrigNames = FALSE, sorted = FALSE)
 }
 \arguments{
 \item{x}{a vector of variable names}
 
 \item{keepOrigNames}{if set, the returned list contains the original variables
 (to the value of which the grouped ones have to sum up) as names instead of
-made up group names, if they exist. The current implementation goes up to two levels (++) deep.}
+made up group names, if they exist.}
+
+\item{sorted}{boolean, indicating whether the variables within each group should be returned alp}
 }
 \value{
 a named list of variable groups with group name as name and vector of entities as content

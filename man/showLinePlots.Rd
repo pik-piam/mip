@@ -12,7 +12,8 @@ showLinePlots(
   color.dim.name = NULL,
   mainReg = getOption("mip.mainReg"),
   color.dim.manual = NULL,
-  histModelsExclude = NULL
+  histModelsExclude = NULL,
+  vlines = NULL
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ colors of color.dim, default is \code{NULL}.}
 
 \item{histModelsExclude}{A character vector with historical models to exclude.
 Set to \code{NULL} (default) for all available data.}
+
+\item{vlines}{period used for vertical line}
 }
 \value{
 \code{NULL} is returned invisible.

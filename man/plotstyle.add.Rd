@@ -27,15 +27,26 @@ plotstyle.add(
 \item{replace}{Logical (default FALSE) indicating whether existing data should be replaced with new data.}
 }
 \description{
-Adds plot styles locally to plotstyle object and returns a dataframe with all plotstyles including the added data. However, it does NOT change the "./inst/extdata/plotstyle.csv".
-To add new entities to "./inst/extdata/plotstyle.csv" please open the file in your editor and add or change values by hand.
-By default plotstyles of already existing entities will not be changed. Only new entities will be added. Use the \code{replace} switch to replace existing styles. 
-If you want to keep the legend text or the color of an already existing entity and only replace one of the two values, use the string "keep" for the value you want to keep.
+Adds plot styles locally to plotstyle object and returns a dataframe with all
+plotstyles including the added data.
+However, it does NOT change the "./inst/extdata/plotstyle.csv".
+To add new entities to "./inst/extdata/plotstyle.csv" please open the file in
+your editor and add or change values by hand.
+By default plotstyles of already existing entities will not be changed.
+Only new entities will be added. Use the \code{replace} switch to replace existing styles.
+If you want to keep the legend text or the color of an already existing entity and
+only replace one of the two values, use the string "keep" for the value you want to keep.
 }
 \examples{
-\dontrun{plotstyle.add("AFR","Africa","#000000")}
-\dontrun{plotstyle.add("AFR","keep","#FFFFFF")}
-\dontrun{plotstyle.add("AFR","keep","keep",marker=20,replace=TRUE)}
+\dontrun{
+plotstyle.add("AFR", "Africa", "#000000")
+}
+\dontrun{
+plotstyle.add("AFR", "keep", "#FFFFFF")
+}
+\dontrun{
+plotstyle.add("AFR", "keep", "keep", marker = 20, replace = TRUE)
+}
 }
 \seealso{
 \code{\link{plotstyle}}

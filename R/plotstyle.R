@@ -3,6 +3,10 @@
 #' Returns a named vector (using entity names) with style codes (e.g. colors)
 #' for given entities.
 #'
+#' If you have adjusted the plotstyle file locally using \link{plotstyle.add} and
+#' want to use these styles, make sure to set 'options("plotstyle.local" = TRUE)'
+#' to source your local plot styles.
+#'
 #' @md
 #' @param ... One or more strings or a vector of strings with names of entities
 #'   (regions, variable names, etc.). Units in brackets "(US$2005/GJ)" will be
@@ -33,9 +37,11 @@
 #' @examples
 #' entities <- c("AFR", "AAA", "AFR", "UNKNOWN_ELEMENT2")
 #' plotstyle(entities)
-#' unknown <- data.frame(row.names = c("AAA", "UNKNOWN_ELEMENT2"),
-#'                    color = c("#123456", "#345678"),
-#'                    legend = c("l_AAA", "l_UNKNOWN_ELEMENT2"))
+#' unknown <- data.frame(
+#'   row.names = c("AAA", "UNKNOWN_ELEMENT2"),
+#'   color = c("#123456", "#345678"),
+#'   legend = c("l_AAA", "l_UNKNOWN_ELEMENT2")
+#' )
 #' plotstyle(entities, unknown = unknown)
 #' plotstyle(entities, out = "legend")
 #' plotstyle(entities, out = "all")
@@ -54,16 +60,22 @@
 #' @importFrom stats runif
 
 plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
-                      verbosity = getOption("plotstyle.verbosity"),
-                      regexp = FALSE,
-                      strip_units = getOption("plotstyle.strip_units",
-                                              default = TRUE)) {
-
+                      verbosity = getOption("plotstyle.verbosity"), regexp = FALSE,
+                      strip_units = getOption("plotstyle.strip_units", default = TRUE)) {
   luplot <- list()
-  luplot$plotstyle <- read.csv2(
-    system.file("extdata", "plotstyle.csv", package = "mip"),
-    stringsAsFactors = FALSE,
-    row.names = 1)
+
+  if (getOption("plotstyle.local", default = FALSE)) {
+    if (file.exists(system.file("extdata", "plotstyle_local.csv", package = "mip"))) {
+      styleFile <- system.file("extdata", "plotstyle_local.csv", package = "mip")
+      message("Loading local plotsyles from ", styleFile)
+    } else {
+      stop("Cannot find plotstyle_local.csv. Set the option 'plotsyle.local' to FALSE and run again.")
+    }
+  } else {
+    styleFile <- system.file("extdata", "plotstyle.csv", package = "mip")
+  }
+
+  luplot$plotstyle <- read.csv2(styleFile, stringsAsFactors = FALSE, row.names = 1)
 
   if (is.null(out)) {
     out <- "color"
@@ -101,7 +113,8 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
       } else {
         # if none are found, add an 'NA'-row
         newRows <- luplot$plotstyle[paste(row.names(luplot$plotstyle),
-                                           collapse = ""), ]
+          collapse = ""
+        ), ]
         # with the regular expression as name
         row.names(newRows) <- r
       }
@@ -137,11 +150,13 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
         "#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#469990",
         "#9A6324", "#800000", "#808000", "#000075", "#f032e6", "#ffd610",
         "#404040", "#42d4f4", "#bfef45", "#B0B0B0", "#dcbeff", "#aaffc3",
-        "#fabed4")
+        "#fabed4"
+      )
       if (nna > length(goodColors)) {
         warning(paste(
           "Need to choose", nna, "colors, but only", length(goodColors),
-          "are well supported. The colors will be difficult to distinguish."))
+          "are well supported. The colors will be difficult to distinguish."
+        ))
         delta <- nna - length(goodColors)
 
         # Get more colors via the random number generator, but with a fixed
@@ -181,12 +196,12 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
     # prevent ggplot from sorting it alphabetical by giving order explicitly here
     df$x <- factor(df$x, levels = rev(uqEntity))
 
-    ncol    <- 30 # color bars per page
+    ncol <- 30 # color bars per page
     pagemax <- ceiling(length(res$color) / ncol) # number of pages
     for (page in 1:pagemax) {
       # start and end index for respective page
       from <- (page - 1) * ncol + 1
-      to   <- min(page * ncol, length(res$color))
+      to <- min(page * ncol, length(res$color))
       # create data frame
       x <- rownames(res)[from:to]
       c <- res$color[from:to]
@@ -196,13 +211,14 @@ plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
       # To yield the correct mapping between colors and labels the colors have to be also reversed
       df$x <- factor(df$x, levels = rev(x))
       # create bar plot
-      p1 <- ggplot(data = df, aes(x = x)) + geom_bar(stat = "count", fill = rev(df$c)) + coord_flip() +
-               theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-               labs(title = paste0("Color bars (plot ", page, " of ", pagemax, ")"))
+      p1 <- ggplot(data = df, aes(x = x)) +
+        geom_bar(stat = "count", fill = rev(df$c)) +
+        coord_flip() +
+        theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+        labs(title = paste0("Color bars (plot ", page, " of ", pagemax, ")"))
 
       print(p1)
     }
-
   }
 
   res <- res[entity, ]

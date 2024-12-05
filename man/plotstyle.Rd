@@ -50,6 +50,11 @@ Plot styles for given entities
 Returns a named vector (using entity names) with style codes (e.g. colors)
 for given entities.
 }
+\details{
+If you have adjusted the plotstyle file locally using \link{plotstyle.add} and
+want to use these styles, make sure to set 'options("plotstyle.local" = TRUE)'
+to source your local file plots
+}
 \section{Colors for unknown entities}{
 
 \if{html}{\figure{colors.png}{options: width="100\%"}}
@@ -58,9 +63,11 @@ for given entities.
 \examples{
 entities <- c("AFR", "AAA", "AFR", "UNKNOWN_ELEMENT2")
 plotstyle(entities)
-unknown <- data.frame(row.names = c("AAA", "UNKNOWN_ELEMENT2"),
-                   color = c("#123456", "#345678"),
-                   legend = c("l_AAA", "l_UNKNOWN_ELEMENT2"))
+unknown <- data.frame(
+  row.names = c("AAA", "UNKNOWN_ELEMENT2"),
+  color = c("#123456", "#345678"),
+  legend = c("l_AAA", "l_UNKNOWN_ELEMENT2")
+)
 plotstyle(entities, unknown = unknown)
 plotstyle(entities, out = "legend")
 plotstyle(entities, out = "all")

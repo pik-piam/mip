@@ -26,5 +26,6 @@ vignettes/*.R
 *.knit.md
 .Rproj.user
 inst/doc
+inst/extdata/plotstyle_local.csv
 # output used to generate plots
 output

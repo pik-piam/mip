@@ -53,164 +53,172 @@
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats runif
 
-plotstyle <- function(..., out = "color", unknown = NULL, plot = FALSE,
-                      verbosity = getOption("plotstyle.verbosity"),
-                      regexp = FALSE,
-                      strip_units = getOption("plotstyle.strip_units",
-                                              default = TRUE)) {
-
-  luplot <- list()
-  luplot$plotstyle <- read.csv2(
+plotstyle <- (function()
+{
+  cache <- new.env(parent = emptyenv())
+  cache$ps <- read.csv2(
     system.file("extdata", "plotstyle.csv", package = "mip"),
     stringsAsFactors = FALSE,
     row.names = 1)
 
-  if (is.null(out)) {
-    out <- "color"
-  } else if (!(out %in% c(names(luplot$plotstyle), "all"))) {
-    stop('Unknown style type "', out, '"!')
-  }
+  function(..., out = "color", unknown = NULL, plot = FALSE,
+           verbosity = getOption("plotstyle.verbosity"),
+           regexp = FALSE,
+           strip_units = getOption("plotstyle.strip_units",
+                                   default = TRUE)) {
 
-  # make sure that luplot$plotstyle is of type data.frame
-  class(luplot$plotstyle) <- "data.frame"
+    luplot <- list()
+    luplot$plotstyle <- getElement(get('cache', envir = environment(plotstyle),
+                                       inherits = FALSE),
+                                   'ps')
 
-  # choose plot colors for given entities
-  entity <- c(...)
-  if (is.null(entity)) {
-    entity <- row.names(luplot$plotstyle)
-  } else {
-    entity[is.na(entity)] <- "NA"
-    if (isTRUE(strip_units)) {
-      entity <- unlist(lapply(strsplit(entity, " \\("), function(x) x[1]))
-    }
-  }
-
-  uqEntity <- unique(entity)
-  res <- luplot$plotstyle[uqEntity, ]
-  row.names(res) <- uqEntity
-
-  # ignore rest of function if regexp is used
-  if (regexp) {
-    res <- data.frame()
-    for (r in uqEntity) {
-      # get rows that match the regular expression
-      indices <- which(grepl(r, row.names(luplot$plotstyle)))
-      # add rows found
-      if (0 < length(indices)) {
-        newRows <- luplot$plotstyle[indices, ]
-      } else {
-        # if none are found, add an 'NA'-row
-        newRows <- luplot$plotstyle[paste(row.names(luplot$plotstyle),
-                                           collapse = ""), ]
-        # with the regular expression as name
-        row.names(newRows) <- r
-      }
-      res <- rbind(res, newRows)
+    if (is.null(out)) {
+      out <- "color"
+    } else if (!(out %in% c(names(luplot$plotstyle), "all"))) {
+      stop('Unknown style type "', out, '"!')
     }
 
-    if ("all" == out) {
-      return(res)
+    # make sure that luplot$plotstyle is of type data.frame
+    class(luplot$plotstyle) <- "data.frame"
+
+    # choose plot colors for given entities
+    entity <- c(...)
+    if (is.null(entity)) {
+      entity <- row.names(luplot$plotstyle)
     } else {
-      return(setNames(getElement(res, out), rownames(res)))
+      entity[is.na(entity)] <- "NA"
+      if (isTRUE(strip_units)) {
+        entity <- unlist(lapply(strsplit(entity, " \\("), function(x) x[1]))
+      }
     }
-  }
 
-  # count unknown entities, i.e. count rows that have NA only,
-  # i.e. where number of columns is the same as number of NAs
-  ina <- rowSums(is.na(res)) == NCOL(res)
-  nna <- sum(ina)
+    uqEntity <- unique(entity)
+    res <- luplot$plotstyle[uqEntity, ]
+    row.names(res) <- uqEntity
 
-  # replace NA
-  if (nna != 0) {
-    if (is.null(unknown)) {
-      if (!is.null(verbosity)) {
-        cat("Brewed colors for", nna, "unknown entities:\n")
-        cat(row.names(res)[ina], sep = "\n")
-      }
-      # The following vector goodColors contains easily distinguishable colors.
-      # If you need n <= length(goodColors) colors, choose the first n colors
-      # from this vector. If you need more colors, additional colors are
-      # appended. But this may result in a poor choice of colors. A warning is
-      # produced, as the elements of a plot with these colors may not be
-      # distinguishable by color.
-      goodColors <- c(
-        "#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#469990",
-        "#9A6324", "#800000", "#808000", "#000075", "#f032e6", "#ffd610",
-        "#404040", "#42d4f4", "#bfef45", "#B0B0B0", "#dcbeff", "#aaffc3",
-        "#fabed4")
-      if (nna > length(goodColors)) {
-        warning(paste(
-          "Need to choose", nna, "colors, but only", length(goodColors),
-          "are well supported. The colors will be difficult to distinguish."))
-        delta <- nna - length(goodColors)
-
-        # Get more colors via the random number generator, but with a fixed
-        # seed, to make it deterministic. Also do not change the state of the
-        # random number generator in the process.
-        oldRandomSeed <- get(".Random.seed", globalenv(), mode = "integer", inherits = FALSE)
-        set.seed(0)
-        rgbValues <- matrix(runif(3 * delta), nrow = 3)
-        assign(".Random.seed", oldRandomSeed, globalenv())
-
-        moreColors <- grDevices::rgb(r = rgbValues[1, ], g = rgbValues[2, ], b = rgbValues[3, ])
-      } else {
-        moreColors <- character(0)
-      }
-      res$color[ina] <- c(goodColors, moreColors)[seq_len(nna)]
-      # replace NA in legends with row names (= entity name)
-      res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend), ])
-    } else {
-      if (out == "all") {
-        if (!all(names(unknown) %in% names(luplot$plotstyle))) {
-          stop("There are elements in names(unknown) that are not in names(plotstyle)!")
+    # ignore rest of function if regexp is used
+    if (regexp) {
+      res <- data.frame()
+      for (r in uqEntity) {
+        # get rows that match the regular expression
+        indices <- which(grepl(r, row.names(luplot$plotstyle)))
+        # add rows found
+        if (0 < length(indices)) {
+          newRows <- luplot$plotstyle[indices, ]
+        } else {
+          # if none are found, add an 'NA'-row
+          newRows <- luplot$plotstyle[paste(row.names(luplot$plotstyle),
+                                            collapse = ""), ]
+          # with the regular expression as name
+          row.names(newRows) <- r
         }
-        for (n in names(unknown)) {
-          res[[n]][is.na(res[[n]])] <- as.character((unknown[[n]][1:nna]))
-        }
-      } else if (!(out %in% names(unknown))) {
-        stop('Style type "', out, '" is not existing in argument "unknown"!')
+        res <- rbind(res, newRows)
+      }
+
+      if ("all" == out) {
+        return(res)
       } else {
-        rowsWithoutData <- rownames(subset(res, is.na(res[[out]])))
-        res[rowsWithoutData, out] <- as.character(unknown[rowsWithoutData, out])
+        return(setNames(getElement(res, out), rownames(res)))
       }
     }
-  }
 
-  if (plot) {
-    df <- data.frame(x = uqEntity, c = res$color)
-    # prevent ggplot from sorting it alphabetical by giving order explicitly here
-    df$x <- factor(df$x, levels = rev(uqEntity))
+    # count unknown entities, i.e. count rows that have NA only,
+    # i.e. where number of columns is the same as number of NAs
+    ina <- rowSums(is.na(res)) == NCOL(res)
+    nna <- sum(ina)
 
-    ncol    <- 30 # color bars per page
-    pagemax <- ceiling(length(res$color) / ncol) # number of pages
-    for (page in 1:pagemax) {
-      # start and end index for respective page
-      from <- (page - 1) * ncol + 1
-      to   <- min(page * ncol, length(res$color))
-      # create data frame
-      x <- rownames(res)[from:to]
-      c <- res$color[from:to]
-      df <- data.frame(x = x, c = c)
-      # prevent ggplot from sorting it alphabetically by giving order explicitly here
-      # using original order of rownames. Reversing it because the bar plot reverses it again
-      # To yield the correct mapping between colors and labels the colors have to be also reversed
-      df$x <- factor(df$x, levels = rev(x))
-      # create bar plot
-      p1 <- ggplot(data = df, aes(x = x)) + geom_bar(stat = "count", fill = rev(df$c)) + coord_flip() +
-               theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-               labs(title = paste0("Color bars (plot ", page, " of ", pagemax, ")"))
+    # replace NA
+    if (nna != 0) {
+      if (is.null(unknown)) {
+        if (!is.null(verbosity)) {
+          cat("Brewed colors for", nna, "unknown entities:\n")
+          cat(row.names(res)[ina], sep = "\n")
+        }
+        # The following vector goodColors contains easily distinguishable colors.
+        # If you need n <= length(goodColors) colors, choose the first n colors
+        # from this vector. If you need more colors, additional colors are
+        # appended. But this may result in a poor choice of colors. A warning is
+        # produced, as the elements of a plot with these colors may not be
+        # distinguishable by color.
+        goodColors <- c(
+          "#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#469990",
+          "#9A6324", "#800000", "#808000", "#000075", "#f032e6", "#ffd610",
+          "#404040", "#42d4f4", "#bfef45", "#B0B0B0", "#dcbeff", "#aaffc3",
+          "#fabed4")
+        if (nna > length(goodColors)) {
+          warning(paste(
+            "Need to choose", nna, "colors, but only", length(goodColors),
+            "are well supported. The colors will be difficult to distinguish."))
+          delta <- nna - length(goodColors)
 
-      print(p1)
+          # Get more colors via the random number generator, but with a fixed
+          # seed, to make it deterministic. Also do not change the state of the
+          # random number generator in the process.
+          oldRandomSeed <- get(".Random.seed", globalenv(), mode = "integer", inherits = FALSE)
+          set.seed(0)
+          rgbValues <- matrix(runif(3 * delta), nrow = 3)
+          assign(".Random.seed", oldRandomSeed, globalenv())
+
+          moreColors <- grDevices::rgb(r = rgbValues[1, ], g = rgbValues[2, ], b = rgbValues[3, ])
+        } else {
+          moreColors <- character(0)
+        }
+        res$color[ina] <- c(goodColors, moreColors)[seq_len(nna)]
+        # replace NA in legends with row names (= entity name)
+        res$legend[is.na(res$legend)] <- row.names(res[is.na(res$legend), ])
+      } else {
+        if (out == "all") {
+          if (!all(names(unknown) %in% names(luplot$plotstyle))) {
+            stop("There are elements in names(unknown) that are not in names(plotstyle)!")
+          }
+          for (n in names(unknown)) {
+            res[[n]][is.na(res[[n]])] <- as.character((unknown[[n]][1:nna]))
+          }
+        } else if (!(out %in% names(unknown))) {
+          stop('Style type "', out, '" is not existing in argument "unknown"!')
+        } else {
+          rowsWithoutData <- rownames(subset(res, is.na(res[[out]])))
+          res[rowsWithoutData, out] <- as.character(unknown[rowsWithoutData, out])
+        }
+      }
     }
 
-  }
+    if (plot) {
+      df <- data.frame(x = uqEntity, c = res$color)
+      # prevent ggplot from sorting it alphabetical by giving order explicitly here
+      df$x <- factor(df$x, levels = rev(uqEntity))
 
-  res <- res[entity, ]
+      ncol    <- 30 # color bars per page
+      pagemax <- ceiling(length(res$color) / ncol) # number of pages
+      for (page in 1:pagemax) {
+        # start and end index for respective page
+        from <- (page - 1) * ncol + 1
+        to   <- min(page * ncol, length(res$color))
+        # create data frame
+        x <- rownames(res)[from:to]
+        c <- res$color[from:to]
+        df <- data.frame(x = x, c = c)
+        # prevent ggplot from sorting it alphabetically by giving order explicitly here
+        # using original order of rownames. Reversing it because the bar plot reverses it again
+        # To yield the correct mapping between colors and labels the colors have to be also reversed
+        df$x <- factor(df$x, levels = rev(x))
+        # create bar plot
+        p1 <- ggplot(data = df, aes(x = x)) + geom_bar(stat = "count", fill = rev(df$c)) + coord_flip() +
+          theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+          labs(title = paste0("Color bars (plot ", page, " of ", pagemax, ")"))
 
-  # select the output data from res according to "out"
-  if (out != "all") {
-    res <- res[[out]]
-    names(res) <- entity
+        print(p1)
+      }
+
+    }
+
+    res <- res[entity, ]
+
+    # select the output data from res according to "out"
+    if (out != "all") {
+      res <- res[[out]]
+      names(res) <- entity
+    }
+    return(res)
   }
-  return(res)
-}
+})()

@@ -1,45 +1,68 @@
 #' Adds plot styles locally to plotstyle.csv
-#' 
-#' Adds plot styles locally to plotstyle object and returns a dataframe with all plotstyles including the added data. However, it does NOT change the "./inst/extdata/plotstyle.csv".
-#' To add new entities to "./inst/extdata/plotstyle.csv" please open the file in your editor and add or change values by hand.
-#' By default plotstyles of already existing entities will not be changed. Only new entities will be added. Use the \code{replace} switch to replace existing styles. 
-#' If you want to keep the legend text or the color of an already existing entity and only replace one of the two values, use the string "keep" for the value you want to keep.
-#' 
-#' @param entity Vector of strings with names of entities (regions, variable names, etc.)
+#'
+#' Adds plot styles locally as a per-session setting and returns a dataframe
+#' with all plot styles including the added data.
+#'
+#' By default, plot styles of already existing entities will not be changed.
+#' Only new entities will be added.  Use the `replace` switch to replace
+#' existing styles.  If you want to keep the legend text or the color of an
+#' already existing entity and only replace one of the two values, use the
+#' string `"keep"` for the value you want to keep.
+#'
+#' To change plot styles permanently, use the `writefile` argument to write the
+#' updated plot styles to a `.csv` file, use it to update
+#' `./inst/extdata/plotstyle.csv`, and build a new package version.
+#'
+#' @md
+#' @param entity Vector of strings with names of entities (regions, variable
+#'     names, etc.)
 #' @param legend Vector of strings with legend names of entities.
 #' @param color Vector of strings containing hexadecimal color codes.
 #' @param marker optional Vector of strings with marker codes.
-#' @param linestyle optional Vector of strings containing linestyle codes .
-#' @param replace Logical (default FALSE) indicating whether existing data should be replaced with new data.
+#' @param linestyle optional Vector of strings containing linestyle codes.
+#' @param replace Logical (default `FALSE`) indicating whether existing data
+#'     should be replaced with new data.
+#' @param write_file If `TRUE`, the updated plot styles are write to the file
+#'     `plotstyles.csv` in the current working directory.
+#'
+#'
 #' @author David Klein, Jan Philipp Dietrich
-#' @seealso \code{\link{plotstyle}}
+#'
+#' @seealso [plotstyle()]
+#'
 #' @examples
-#' \dontrun{plotstyle.add("AFR","Africa","#000000")}
-#' \dontrun{plotstyle.add("AFR","keep","#FFFFFF")}
-#' \dontrun{plotstyle.add("AFR","keep","keep",marker=20,replace=TRUE)}
-#' @importFrom utils read.csv2 write.csv2
+#' \dontrun{plotstyle.add("AFR", "Africa", "#000000")}
+#' \dontrun{plotstyle.add("AFR", "keep",   "#FFFFFF")}
+#' \dontrun{plotstyle.add("AFR", "keep",   "keep", marker = 20, replace = TRUE)}
+#'
+#' @importFrom utils write.csv2
 #' @export
-plotstyle.add <- function (entity, legend, color, marker=NULL, linestyle=NULL, replace=FALSE) {
-  
+plotstyle.add <- function(entity, legend, color, marker = NULL,
+                          linestyle = NULL, replace = FALSE, write_file = FALSE)
+{
+
   # in no data is given for marker and linestyle fill with NA
   if (is.null(marker))    marker    <- rep(NA,time=length(entity))
   if (is.null(linestyle)) linestyle <- rep(NA,time=length(entity))
-  
+
   # Check if all parameters are of the same length
   a <- diff(range(c(length(entity),length(legend),length(color),length(marker),length(linestyle))))
   if (a > .Machine$double.eps ^ 0.5) {
     stop("Entities, legend names, and colors have to be of the same length.")
   }
 
-  plotstyles <- read.csv2(system.file("extdata","plotstyle.csv",package = "mip"),stringsAsFactors = F,row.names=1)
+  # read plotstyles from plotstyles()-internal cache
+  plotstyles <- getElement(get('cache', envir = environment(plotstyle),
+                               inherits = FALSE),
+                           'ps')
   class(plotstyles) <- "data.frame"
-  
+
   # find existing entries
   dup <- which(entity %in% rownames(plotstyles))
-  
+
   # create data.frame with new data
   newdata <- data.frame(row.names=entity,legend=legend,color=color,marker=marker,linestyle=linestyle,stringsAsFactors=FALSE)
-  
+
   # add new data to existing data and replace if wanted
   if (length(dup)==0) {
     # if no duplicates are found between old and new data append new data
@@ -63,14 +86,19 @@ plotstyle.add <- function (entity, legend, color, marker=NULL, linestyle=NULL, r
     plotstyles[entity,] <- newdata
   } else {
     # append new data without replacing duplicates in existing data
-    cat("Element",entity[dup],"already exist. It has not been added. Please use replace=TRUE to replace it. All other data has been added\n")
+    warning("Element", entity[dup], "already exist. It has not been added. ",
+            "Please use replace=TRUE to replace it. All other data has been",
+            " added")
     plotstyles <- rbind(plotstyles,newdata[-dup,])
   }
 
-  cat("\nNOTE: This function adds new elements to inst/extdata/plotstyle_new.csv locally only! 
-      To make it available for everyone please rebuild the library after adding entities, commit your changes and install it on the cluster.
-      Here you find the how-to: https://redmine.pik-potsdam.de/projects/mo/wiki/R_-_Libraries_-_Installation_Updating_and_Commiting\n")
-  
-  write.csv2(plotstyles,file=system.file("extdata","plotstyle.csv",package = "mip"),quote=FALSE)
+  # save plot styles to plotstyle()-internal cache
+  assign(x = 'ps', value = plotstyles, envir = environment(plotstyle),
+         inherits = FALSE)
+
+  if (isTRUE(write_file)) {
+    write.csv2(x = plotstyles, file = 'plotstyles.csv', quote = FALSE)
+  }
+
   return(plotstyles)
 }

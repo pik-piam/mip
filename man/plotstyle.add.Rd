@@ -10,11 +10,13 @@ plotstyle.add(
   color,
   marker = NULL,
   linestyle = NULL,
-  replace = FALSE
+  replace = FALSE,
+  write_file = FALSE
 )
 }
 \arguments{
-\item{entity}{Vector of strings with names of entities (regions, variable names, etc.)}
+\item{entity}{Vector of strings with names of entities (regions, variable
+names, etc.)}
 
 \item{legend}{Vector of strings with legend names of entities.}
 
@@ -22,23 +24,37 @@ plotstyle.add(
 
 \item{marker}{optional Vector of strings with marker codes.}
 
-\item{linestyle}{optional Vector of strings containing linestyle codes .}
+\item{linestyle}{optional Vector of strings containing linestyle codes.}
 
-\item{replace}{Logical (default FALSE) indicating whether existing data should be replaced with new data.}
+\item{replace}{Logical (default \code{FALSE}) indicating whether existing data
+should be replaced with new data.}
+
+\item{write_file}{If \code{TRUE}, the updated plot styles are write to the file
+\code{plotstyles.csv} in the current working directory.}
 }
 \description{
-Adds plot styles locally to plotstyle object and returns a dataframe with all plotstyles including the added data. However, it does NOT change the "./inst/extdata/plotstyle.csv".
-To add new entities to "./inst/extdata/plotstyle.csv" please open the file in your editor and add or change values by hand.
-By default plotstyles of already existing entities will not be changed. Only new entities will be added. Use the \code{replace} switch to replace existing styles. 
-If you want to keep the legend text or the color of an already existing entity and only replace one of the two values, use the string "keep" for the value you want to keep.
+Adds plot styles locally as a per-session setting and returns a dataframe
+with all plot styles including the added data.
+}
+\details{
+By default, plot styles of already existing entities will not be changed.
+Only new entities will be added.  Use the \code{replace} switch to replace
+existing styles.  If you want to keep the legend text or the color of an
+already existing entity and only replace one of the two values, use the
+string \code{"keep"} for the value you want to keep.
+
+To change plot styles permanently, use the \code{writefile} argument to write the
+updated plot styles to a \code{.csv} file, use it to update
+\code{./inst/extdata/plotstyle.csv}, and build a new package version.
 }
 \examples{
-\dontrun{plotstyle.add("AFR","Africa","#000000")}
-\dontrun{plotstyle.add("AFR","keep","#FFFFFF")}
-\dontrun{plotstyle.add("AFR","keep","keep",marker=20,replace=TRUE)}
+\dontrun{plotstyle.add("AFR", "Africa", "#000000")}
+\dontrun{plotstyle.add("AFR", "keep",   "#FFFFFF")}
+\dontrun{plotstyle.add("AFR", "keep",   "keep", marker = 20, replace = TRUE)}
+
 }
 \seealso{
-\code{\link{plotstyle}}
+\code{\link[=plotstyle]{plotstyle()}}
 }
 \author{
 David Klein, Jan Philipp Dietrich

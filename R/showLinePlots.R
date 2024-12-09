@@ -160,13 +160,13 @@ showLinePlots <- function(
       p1 + theme(legend.position = "none"),
       lgnd,
       ncol = 1,
-      heights = c(0.76, 0.24)
+      heights = c(0.6, 0.4)
     )
     p2 <- p2 + theme(legend.position = "none")
   }
 
   # Show plots.
-  grid.arrange(p1, p2, nrow = 1)
+  grid.arrange(p1, p2, nrow = 1, widths = c(2, 3))
   cat("\n\n")
 
   return(invisible(NULL))

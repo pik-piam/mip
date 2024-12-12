@@ -55,17 +55,21 @@ showLinePlots <- function(
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
-  if (is.null(histVars)) {
-    histVars <- vars
-  }
-
   if (!is.null(vars)) {
-    v <- unique(c(vars, histVars))
+
+    if (is.null(histVars)) {
+      histVars <- vars
+    }
+
     d <- data %>%
-      filter(.data$variable %in% .env$v) %>%
+      filter(
+        (.data$variable %in% .env$vars & .data$scenario != "historical") |
+        (.data$variable %in% .env$histVars & .data$scenario == "historical")
+      ) %>%
       droplevels()
+
     unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
-    label <- paste0(paste0(v, collapse = ","), unitlabel)
+    label <- paste0(paste0(vars, collapse = ","), unitlabel)
   } else {
     d <- data %>%
       droplevels()
@@ -79,16 +83,16 @@ showLinePlots <- function(
   }
 
   dMainScen <- d %>%
-    filter(.data$region == .env$mainReg, .data$scenario != "historical", .data$variable %in% .env$vars) %>%
+    filter(.data$region == .env$mainReg, .data$scenario != "historical") %>%
     droplevels()
   dMainHist <- d %>%
-    filter(.data$region == .env$mainReg, .data$scenario == "historical", .data$variable %in% .env$histVars) %>%
+    filter(.data$region == .env$mainReg, .data$scenario == "historical") %>%
     droplevels()
   dRegiScen <- d %>%
-    filter(.data$region != .env$mainReg, .data$scenario != "historical", .data$variable %in% .env$vars) %>%
+    filter(.data$region != .env$mainReg, .data$scenario != "historical") %>%
     droplevels()
   dRegiHist <- d %>%
-    filter(.data$region != .env$mainReg, .data$scenario == "historical", .data$variable %in% .env$histVars) %>%
+    filter(.data$region != .env$mainReg, .data$scenario == "historical") %>%
     droplevels()
 
   # make sure all plots use the same colors for historical models

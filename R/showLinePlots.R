@@ -6,14 +6,15 @@
 #' in \code{vars} over time. Faceting is done by \code{region}. The plots
 #' arranged and shown.
 #'
-#' @param vars A character vector. Usually just a single string. The variables
-#'   to be plotted. If \code{NULL} all rows from \code{data} are plotted.
-#' @param histVars A character vector. Usually just a single string. The historical variables
-#'   to be plotted. If \code{NULL}, it is set to \code{vars}.
+#' @md
+#' @param vars A character vector of variables to be plotted.  Defaults to all
+#'   variables in `data`.
+#' @param histVars A character vector of historical variables to be plotted.
+#'   Defaults to `vars`.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
 #' @param color.dim.name name for the color-dimension used in the legend
-#' @param histModelsExclude A character vector with historical models to exclude.
-#' Set to \code{NULL} (default) for all available data.
+#' @param histModelsExclude A character vector with historical models to
+#'   exclude.
 #' @param color.dim.manual optional vector with manual colors replacing default
 #' colors of color.dim, default is \code{NULL}.
 #' @param vlines period used for vertical line
@@ -28,55 +29,42 @@
 #' showLinePlots(data, "Policy Cost|GDP Loss")
 #' }
 #' @export
-#' @importFrom rlang .data .env
 #' @importFrom dplyr bind_rows
 #' @importFrom gridExtra arrangeGrob
+#' @importFrom quitte as.quitte getVars
+#' @importFrom rlang .data .env
 
 showLinePlots <- function(
     data,
-    vars = NULL,
-    histVars = NULL,
+    vars = getVars(as.quitte(data)),
+    histVars = vars,
     scales = "free_y",
     color.dim.name = NULL,
     mainReg = getOption("mip.mainReg"),
     color.dim.manual = NULL,
-    histModelsExclude = NULL,
+    histModelsExclude = character(),
     vlines = NULL
 ) {
-
-  data <- as.quitte(data) %>%
-    filter(!is.na(.data$value))
-
   # Validate function arguments.
-  stopifnot(is.character(vars) || is.null(vars))
-  stopifnot(is.character(histVars) || is.null(histVars))
-  stopifnot(is.character(histModelsExclude) || is.null(histModelsExclude))
+  stopifnot(is.character(vars))
+  stopifnot(is.character(histVars))
+  stopifnot(is.character(histModelsExclude))
   stopifnot(is.character(scales) && length(scales) == 1)
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
-  if (is.null(histVars)) {
-    histVars <- vars
-  }
+  d <- as.quitte(data) %>%
+    filter(!is.na(.data$value),
+           ( (.data$variable %in% .env$vars & .data$scenario != "historical")
+           | (  .data$variable %in% .env$histVars
+             &  .data$scenario ==   "historical"
+             & !.data$model    %in% .env$histModelsExclude)
+           )) %>%
+    droplevels()
 
-  if (!is.null(vars)) {
-    v <- unique(c(vars, histVars))
-    d <- data %>%
-      filter(.data$variable %in% .env$v) %>%
-      droplevels()
-    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
-    label <- paste0(paste0(v, collapse = ","), unitlabel)
-  } else {
-    d <- data %>%
-      droplevels()
-    unitlabel <- ifelse(length(levels(d$unit)) == 0, "", paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
-    label <- paste0(paste0(levels(d$variable), collapse = ","), unitlabel)
-  }
-
-  if (!is.null(histModelsExclude)) {
-    d <- d %>%
-      filter(.data$scenario != "historical" | !.data$model %in% .env$histModelsExclude)
-  }
+  unitlabel <- ifelse(identical("(Missing)", levels(d$unit)), "",
+                      paste0(" (", paste0(levels(d$unit), collapse = ","), ")"))
+  label <- paste0(paste0(unique(d$variable), collapse = ","), unitlabel)
 
   dMainScen <- d %>%
     filter(.data$region == .env$mainReg, .data$scenario != "historical", .data$variable %in% .env$vars) %>%
@@ -101,8 +89,8 @@ showLinePlots <- function(
     color.dim.manual.hist <- plotstyle(union(mainHistModels, regiHistModels))
   }
 
-  if (!is.null(vars))
-    warnMissingVars(bind_rows(dMainScen, dRegiScen), vars)
+  warnMissingVars(bind_rows(dMainScen, dRegiScen), vars)
+
   if (NROW(dMainScen) == 0 && NROW(dRegiScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
@@ -121,7 +109,7 @@ showLinePlots <- function(
         color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[mainHistModels]
       )
-    if (! is.null(vlines)) {
+    if (!is.null(vlines)) {
       p1 <- p1 + geom_vline(xintercept = vlines, linetype = 3)
     }
   }
@@ -139,7 +127,7 @@ showLinePlots <- function(
         color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[regiHistModels]
       )
-    if (! is.null(vlines)) {
+    if (!is.null(vlines)) {
       p2 <- p2 + geom_vline(xintercept = vlines, linetype = 3)
     }
   }

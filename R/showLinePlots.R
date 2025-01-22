@@ -12,6 +12,8 @@
 #' @param histVars A character vector of historical variables to be plotted.
 #'   Defaults to `vars`.
 #' @param scales A single string. choose either \code{"free_y"} or \code{"fixed"}.
+#' @param ylim   y limits
+#' @param show.dots   If TRUE: shows geom_point dots on line. If FALSE: only plots geom_line without geom_point
 #' @param color.dim.name name for the color-dimension used in the legend
 #' @param histModelsExclude A character vector with historical models to
 #'   exclude.
@@ -39,6 +41,8 @@ showLinePlots <- function(
     vars = getVars(as.quitte(data)),
     histVars = vars,
     scales = "free_y",
+    ylim = 0,
+    show.dots = TRUE,
     color.dim.name = NULL,
     mainReg = getOption("mip.mainReg"),
     color.dim.manual = NULL,
@@ -55,10 +59,10 @@ showLinePlots <- function(
 
   d <- as.quitte(data) %>%
     filter(!is.na(.data$value),
-           ( (.data$variable %in% .env$vars & .data$scenario != "historical")
-           | (  .data$variable %in% .env$histVars
-             &  .data$scenario ==   "historical"
-             & !.data$model    %in% .env$histModelsExclude)
+           ((.data$variable %in% .env$vars & .data$scenario != "historical")           |
+ (.data$variable %in% .env$histVars             &
+  .data$scenario ==   "historical"             &
+ !.data$model    %in% .env$histModelsExclude)
            )) %>%
     droplevels()
 
@@ -104,6 +108,8 @@ showLinePlots <- function(
         x_hist = dMainHist,
         ylab = label,
         scales = scales,
+        ylim = ylim,
+        show.dots = show.dots,
         plot.priority = c("x_hist", "x", "x_proj"),
         color.dim.name = color.dim.name,
         color.dim.manual = color.dim.manual,
@@ -121,6 +127,8 @@ showLinePlots <- function(
         x_hist = dRegiHist,
         ylab = NULL,
         scales = scales,
+        ylim = ylim,
+        show.dots = show.dots,
         plot.priority = c("x_hist", "x", "x_proj"),
         facet.ncol = 3,
         color.dim.name = color.dim.name,

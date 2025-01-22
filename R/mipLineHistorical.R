@@ -11,6 +11,7 @@
 #' @param color.dim.name name for the color-dimension used in the legend
 #' @param title       title of the plot
 #' @param ybreaks      add breaks for the y axis
+#' @param show.dots   If TRUE: shows geom_point dots on line. If FALSE: only plots geom_line without geom_point
 #' @param ylim        y limits
 #' @param ylog        =T if the-axis should be logarithmic
 #' @param size        text size in the plot
@@ -44,7 +45,7 @@
 #'
 
 mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=NULL,facet.dim="region",funnel.dim=NULL,
-                              ylab=NULL,xlab="Year",title=NULL,color.dim.name=NULL,ybreaks=NULL,ylim=0,
+                              ylab=NULL,xlab="Year",title=NULL,color.dim.name=NULL,ybreaks=NULL,ylim=0,show.dots=TRUE,
                               ylog=NULL, size=14, scales="fixed", leg.proj=FALSE, plot.priority=c("x","x_hist","x_proj"),
                               ggobject=TRUE,paper_style=FALSE,xlim=NULL,facet.ncol=3,legend.ncol=1,hlines=NULL,hlines.labels=NULL,
                               color.dim.manual=NULL, color.dim.manual.hist=NULL) {
@@ -126,17 +127,21 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=
   # internal functions for plotting of different types of data
   priority_x <- function(p){
     p <- p + geom_line(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim,linetype=linetype.dim),linewidth=1)
-    p <- p + geom_point(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim),size=1.5)
+    if (show.dots) {
+      p <- p + geom_point(data=a[a$id=="x",], aes_string(x="period",y="value",color=color.dim),size=1.5)
+    }
     return(p)
   }
 
   priority_x_hist <- function(p,MarkerSize=2.5){
     if(any(a$id=="x_hist")) {
       p <- p + geom_line(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model"),linewidth=1, alpha=0.3)
-      #plot for creating the legend
-      p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model",fill="model"),size=0)
-      #plot the data without legend
-      p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model",fill="model"),size=MarkerSize, shape="+", alpha=0.8,show.legend = FALSE)
+      if (show.dots) {
+        #plot for creating the legend
+        p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model",fill="model"),size=0)
+        #plot the data without legend
+        p <- p + geom_point(data=a[a$id=="x_hist",], aes_string(x="period",y="value",color="model",fill="model"),size=MarkerSize, shape="+", alpha=0.8,show.legend = FALSE)
+      }
     }
     return(p)
   }
@@ -331,7 +336,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=
   if(lsh$col1>0){
     l1 <- ggplot(data=a[a$id=="x",])
     l1 <- l1 + geom_line(aes_(x=~period,y=~value,color=~identifier),linewidth=1)
-    l1 <- l1 + geom_point(aes_(x=~period,y=~value,color=~identifier),size=1.5)
+    if (show.dots) {
+      l1 <- l1 + geom_point(aes_(x=~period,y=~value,color=~identifier),size=1.5)
+    }
     l1 <- l1 + scale_color_manual(values=color_set[1:lsh$col1],
                                   breaks=interaction(unlist(a[a$id=="x","model"]),unlist(a[a$id=="x","scenario"])),
                                 labels=shorten_legend(interaction(unlist(a[a$id=="x","model"]),unlist(a[a$id=="x","scenario"]),sep=" "),lsh$nchar[1]),
@@ -344,7 +351,9 @@ mipLineHistorical <- function(x,x_hist=NULL,color.dim="identifier",linetype.dim=
   if(lsh$col2>0 & "x_hist" %in% levels(a$id)){
     l2 <- ggplot(data=a[a$id=="x_hist",])
     l2 <- l2 + geom_line(aes_(x=~period,y=~value,color=~model),linewidth=1,alpha=.15)
-    l2 <- l2 + geom_point(aes_(x=~period,y=~value,color=~model),size=3.5,shape="+")
+    if (show.dots) {
+      l2 <- l2 + geom_point(aes_(x=~period,y=~value,color=~model),size=3.5,shape="+")
+    }
     l2 <- l2 + scale_color_manual(values=as.vector(color_set[(lsh$col1+1):(lsh$col1+lsh$col2)]),name="Historical data")
     l2 <- l2 + theme_legend()
     leg[["historical"]] <- g_legend(l2)

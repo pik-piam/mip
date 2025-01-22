@@ -17,6 +17,7 @@ mipLineHistorical(
   color.dim.name = NULL,
   ybreaks = NULL,
   ylim = 0,
+  show.dots = TRUE,
   ylog = NULL,
   size = 14,
   scales = "fixed",
@@ -57,6 +58,8 @@ mipLineHistorical(
 \item{ybreaks}{add breaks for the y axis}
 
 \item{ylim}{y limits}
+
+\item{show.dots}{If TRUE: shows geom_point dots on line. If FALSE: only plots geom_line without geom_point}
 
 \item{ylog}{=T if the-axis should be logarithmic}
 

@@ -37,7 +37,8 @@ mipLineHistorical(
 \arguments{
 \item{x}{Data to plot. Allowed data formats: magpie or quitte}
 
-\item{x_hist}{historical data to plot. Allowed data formats: magpie or quitte, If no historic information is provided the plot will ignore it.}
+\item{x_hist}{historical data to plot. Allowed data formats: magpie or quitte,
+If no historic information is provided the plot will ignore it.}
 
 \item{color.dim}{dimension used for different colors, default="identifier"; can only be chosen freely if x_hist is NULL.}
 
@@ -69,7 +70,7 @@ mipLineHistorical(
 
 \item{leg.proj}{to add a detailed legend for the projected data. Default is \code{FALSE}.}
 
-\item{plot.priority}{Sets the order of ploting and overlap of the data by specifying a vector of three stirng elements. Argument \code{x} stands for model output, \code{x_hist} is for obeserved (historical data) and \code{x_proj} is for projected data from other models.}
+\item{plot.priority}{Sets the order of ploting and overlap of the data by specifying a vector of three string elements. Argument \code{x} stands for model output, \code{x_hist} is for obeserved (historical data) and \code{x_proj} is for projected data from other models.}
 
 \item{ggobject}{returns a ggplot object. Default is \code{TRUE}.}
 
@@ -87,7 +88,8 @@ mipLineHistorical(
 
 \item{color.dim.manual}{optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.}
 
-\item{color.dim.manual.hist}{optional vector with manual colors replacing default colors of color.dim for historical data, default is \code{NULL}.}
+\item{color.dim.manual.hist}{optional vector with manual colors replacing default
+colors of color.dim for historical data, default is \code{NULL}.}
 }
 \description{
 Compares data by producing line plot

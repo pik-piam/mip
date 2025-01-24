@@ -217,7 +217,7 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
         ") does not match number of items defined in color.dim (#", length(color_set[model_output]), ")"
       ))
     } else {
-      color_set[model_output] <- color.dim.manual
+      color_set <- c(color.dim.manual, color_set[historical])
     }
   }
 
@@ -228,7 +228,7 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
         ") does not match number of items defined in color.dim (#", length(color_set[historical]), ")"
       ))
     } else {
-      color_set[historical] <- color.dim.manual.hist
+      color_set <- c(color_set[model_output], color.dim.manual.hist)
     }
   }
 
@@ -279,6 +279,7 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
     # color: show only model_output
     # fill: add colors for historical and keep shape symbol
     # alpha: add colors for projection depending on leg.proj
+
     p <- p + scale_color_manual(color.dim.name,
       values = color_set,
       breaks = model_output,

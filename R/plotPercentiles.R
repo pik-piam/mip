@@ -43,7 +43,7 @@ plotPercentiles <- function(df, scenarios = NULL, variables = NULL) {
     as.quitte(na.rm = TRUE) %>%
     # Only use necessary columns. The .data-prefix in col names was deprecated in tidyselect since v1.2.0.
     select(all_of(necessaryCols)) %>%
-    # Variable names in the quitte data frame follow the format "Any|Variable|5.0th Percentile". The regular 
+    # Variable names in the quitte data frame follow the format "Any|Variable|5.0th Percentile". The regular
     # expressions below divide the variable name into the prefix and the percentile specifier
     mutate(
       "percentile" = stringr::str_extract(.data$variable, "[^\\|]+?$"),

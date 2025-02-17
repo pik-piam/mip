@@ -1,6 +1,6 @@
 #' @title scenTool
 #' @description scenTool allows to explore and visualize time series of modelling results. The app is based on shiny opens in an external web brower. For more details: https://github.com/flohump/scenTool
-#' 
+#'
 #' @param file model data in CSV file in MIF format (NULL by default; in this case the user can upload files directly in the tool)
 #' @param valfile validation data in CSV file in MIF format (NULL by default; in this case the user can upload files directly in the tool)
 #' @author Florian Humpenoeder
@@ -8,7 +8,7 @@
 #'   \dontrun{
 #'     scenTool("testdata.mif")
 #'   }
-#' 
+#'
 #' @importFrom ggplot2 ggsave theme_minimal aes_ aes_string ylab scale_color_manual scale_x_continuous xlim stat_summary
 #' @importFrom reshape2 melt dcast
 #' @importFrom shiny reactiveValues observeEvent updateTextInput observe updateSelectInput reactive hoverOpts uiOutput sliderInput
@@ -25,7 +25,7 @@
 #'
 scenTool <- function(file=NULL,valfile=NULL) {
   Model <- Scenario <- Region <- Year <- Variable <- NULL
-  
+
   #limit for file upload set to 300 MB
   options(shiny.maxRequestSize = 300*1024^2)
 
@@ -39,7 +39,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
         s <- fread(inFile,sep=";",header=FALSE,nrows=1)
 
         if (all(names(s) == "V1")) sep <- "," else sep <- ";"
-        
+
         #fread is much faster than read.table
         wide <- fread(inFile,sep=sep,header=TRUE,stringsAsFactors = TRUE,na.strings = "N/A",check.names = FALSE)
 
@@ -48,7 +48,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
         if (length(del) > 0) wide <- wide[,-del]
         #convert data from wide to long format
         long <- melt(wide, id.vars=c(1:5),variable.name = "Year",value.name = "Value",na.rm = FALSE)
-        
+
         #reorder columns
         setcolorder(long,c(1,2,3,6,4,5,7))
 
@@ -72,10 +72,10 @@ scenTool <- function(file=NULL,valfile=NULL) {
         return(long)
       }
     }
-    
+
     #initialize reactive value
     val <- reactiveValues(a = NULL,sel=NULL,title=NULL,ylab=NULL)
-    
+
     if(is.null(file)) {
       #create dummy data for testing the tool
       model <- factor(c("Model1","Model2","Model3"))
@@ -89,17 +89,17 @@ scenTool <- function(file=NULL,valfile=NULL) {
       val$a <- as.data.table(long)
     } else val$a <- read.mif(file)
     if(!is.null(valfile)) val$b <- read.mif(valfile)
+
     
-    
-    
+
     #Upload and read in data file if there is a change in input$datafile
     observeEvent(input$datafile, {
       print("read data")
       #assing to reactive value
       val$a <- read.mif(input$datafile$datapath)
-      
+
     })
-    
+
     #Upload and read in data file if there is a change in input$datafile
     observeEvent(input$valfile, {
       print("read val data")
@@ -108,7 +108,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       setnames(val$b,"Model","Validation Source")
       #print(str(val$b))
     })
-    
+
     #subsetting the data stepwise is faster than all at once
     observeEvent(c(input$model,input$scenario,input$region,input$year,input$variable,input$normalize,input$auto_val_sel),{
       print("subset data")
@@ -118,7 +118,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       val$sel <- subset(val$sel,Year %in% input$year)
       val$sel <- subset(val$sel,Variable %in% input$variable)
       val$sel <- droplevels(val$sel)
-      
+
       years <- unique(val$sel$Year)
       first_year <- rep(val$sel$Value[val$sel$Year==years[1]],length(years))
       if(input$normalize) {
@@ -144,7 +144,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       val$val <- subset(val$val,Year %in% input$valyear)
       val$val <- subset(val$val,Variable %in% input$valvariable)
     })
-    
+
     observeEvent(c(input$variable,input$stackshare,input$plottype,input$switchaxis,input$short_legend),{
       if(length(input$variable) == 1) {
         val$title <- strsplit(input$variable[1]," \\(")[[1]][1]
@@ -176,12 +176,12 @@ scenTool <- function(file=NULL,valfile=NULL) {
       updateTextInput(session, "plottitle", value = val$title)
       updateTextInput(session, "ylab", value = val$ylab)
     })
-    
+
     observeEvent(c(input$plottitle,input$ylab),{
       val$title <- input$plottitle
       val$ylab <- input$ylab
     })
-    
+
     observe({
       print("update choices data")
       updateSelectInput(session, "model", choices = levels(val$a$Model),selected = levels(val$a$Model)[1])
@@ -190,7 +190,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       updateSelectInput(session, "year", choices = unique(val$a$Year),selected = unique(val$a$Year))
       #updateSliderInput(session, "year", min = min(unique(val$a$Year)), max = max(unique(val$a$Year)), value=range(unique(val$a$Year)))#step=(max(unique(val$a$Year))-min(unique(val$a$Year)))/length(unique(val$a$Year))
       updateSelectInput(session, "variable", choices = levels(val$a$Variable),selected = levels(val$a$Variable)[1])
-      
+
       years_a <- unique(val$a$Year)
       if(!is.null(val$b)) {
         years_b <- unique(val$b$Year)
@@ -207,7 +207,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       updateSelectInput(session, "valyear", choices = unique(val$valtmp$Year),selected = unique(val$valtmp$Year))
       updateSelectInput(session, "valvariable", choices = levels(val$valtmp$Variable),selected = levels(val$valtmp$Variable)[1])
       })
-    
+
     
     # observe({
     #   print("update presets")
@@ -228,7 +228,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
     #     updateSelectInput(session, "plottype",selected = "line")
     #   }
     # })
-        
+
     observe({
       print("update plot settings")
       if(input$plottype=="area") {
@@ -261,7 +261,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
         updateSelectInput(session, "facet_y",selected = "NULL")
       }
     })
-    
+
     
     plot <- reactive({
       myBreaks <- function(x){
@@ -273,7 +273,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
         names(breaks) <- attr(breaks,"labels")
         breaks
       }
-      
+
       ggname <- function(x) {
         if (class(x) != "character") {
           return(x)
@@ -287,9 +287,9 @@ scenTool <- function(file=NULL,valfile=NULL) {
           }
         }
         )
-        y 
+        y
       }
-      
+
       color <- input$color
       fill <- input$fill
       if(input$plottype == 'line') fill <- NULL
@@ -332,9 +332,9 @@ scenTool <- function(file=NULL,valfile=NULL) {
           #p <- p + stat_summary(geom="line", fun.y = median, aes_string(color=color))
         }
         if(input$stat_type != "NULL") p <- p + stat_summary(geom="line", fun.y = input$stat_type, aes_string(color=input$stat_dim))
-        
+
         #p <- p + geom_line(aes_string(color=color,group="Model"))# + geom_point(aes_string(color=color,shape=input$shape))
-        
+
 #        p <- p + geom_line(aes_string(color=color,group=paste0("interaction(", paste0(c(color,input$linetype),collapse =  ", "), ")")))# + geom_point(aes_string(color=color,shape=input$shape))
         p <- p + scale_color_manual(values=as.character(plotstyle(as.character(unique(sel[[color]])),out="color")))
         p <- p + scale_x_continuous(breaks = myBreaks(sel$Year))
@@ -369,16 +369,16 @@ scenTool <- function(file=NULL,valfile=NULL) {
             if (any(data_pos$Value >= 0,na.rm=TRUE)) p <- p + geom_area(data=data_pos,position='stack',stat='identity',aes_string(fill=fill))
             if (any(data_neg$Value < 0,na.rm=TRUE)) p <- p + geom_area(data=data_neg,position='stack',stat='identity',aes_string(fill=fill))
           }
-          
+
         } else p <- p + geom_area(data=sel,position='dodge',stat='identity',aes_string(fill=fill))
         if(input$stat_type != "NULL") p <- p + stat_summary(geom="line", fun.y = input$stat_type, aes_string(color=input$stat_dim))
         p <- p + scale_x_continuous(breaks = myBreaks(sel$Year))
       }
-      
+
       if (!is.null(input$facet_y)) {
         p <- p + facet_grid(as.formula(paste(paste(input$facet_y,collapse = '+'), "~",if(is.null(input$facet_x)) "." else paste(input$facet_x,collapse = '+'))),scales=if(input$free_scale) {"free"} else {"fixed"})
       } else if (!is.null(input$facet_x)) p <- p + facet_wrap(as.formula(paste("~", paste(input$facet_x,collapse = '+'))), ncol=input$ncol, scales=if(input$free_scale) {"free"} else {"fixed"})
-      
+
       p <- p + ylab(val$ylab) + ggtitle(val$title)
 #      p <- p + theme(axis.text.x = element_text(angle=90, vjust=0.5),legend.position = "bottom",legend.direction = "vertical")
       if(input$hide_legend) {
@@ -395,19 +395,19 @@ scenTool <- function(file=NULL,valfile=NULL) {
 
       return(p)
     })
-    
+
     output$plotly <- renderPlotly({
       #layout(p = ggplotly(plot(),tooltip="all"),margin = list(b = 50,l = 50))
       p <- ggplotly(plot(),tooltip=c("y",if(input$plottype == "line") {c("colour","shape","linetype")} else if (input$plottype %in% c("bar","area")) {"fill"} else if (input$plottype == "scatter") {c("x","colour","shape")}))
       #print(p[['x']][['sel']])
       if (input$legend_inside) {
-        layout(p = p,margin = list(b = 50,l = 70),legend = list(x = 0.1, y = 0.9, orientation = 'v'))  
+        layout(p = p,margin = list(b = 50,l = 70),legend = list(x = 0.1, y = 0.9, orientation = 'v'))
       } else layout(p = p,margin = list(b = 50,l = 70))
     })
-    
+
     output$plot <- renderPlot({
       plot()},res = 120)#height = 400, width = 500
-    
+
     output$summary <- renderPrint({
       summary(val$sel$Value)
     })
@@ -440,7 +440,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
         write.csv(out, file ,row.names = FALSE,quote = FALSE)
       }
     )
-    
+
     output$hover_info <- renderUI({
       hover <- input$plot_hover
       if (input$plottype == "scatter") {
@@ -497,11 +497,11 @@ scenTool <- function(file=NULL,valfile=NULL) {
       }
     })
   }
-  
+
   #client-sided function
   ui <- fluidPage(
                         sidebarLayout(
-                          
+
                           sidebarPanel(
                             tabsetPanel(id="side",type = "tabs",
                             tabPanel("Model Data",
@@ -526,9 +526,9 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                      #sliderInput("year", "Year",min=2000,max=2100,value=c(2000,2100),step=10),
                                      selectInput('valvariable', 'Variable', "Pending upload",multiple = TRUE)
                             )
-                            
+
                             )
-                            
+
                             ,width=3),
                           # sidebarPanel(
                           #   selectInput('color', 'Color', c("Model","Scenario","Region","Variable"),multiple = FALSE,selected = "Scenario")
@@ -561,10 +561,10 @@ scenTool <- function(file=NULL,valfile=NULL) {
                                                                              selectInput('color_scatter', 'Point Color', c("Model","Scenario","Region","Year"),selected = "Year")),
                                                             #conditionalPanel(condition = "input.plottype == 'line' && input.summarize != 'Simple'", selectInput('linetype', 'Line Type', c("NULL","Model","Scenario","Region","Variable"),selected = NULL)),
                                                             #conditionalPanel(condition = "input.plottype == 'scatter' && input.showline", selectInput('linetype_scatter', 'Line Type', c("NULL","Model","Scenario","Region","Year"),selected = NULL)),
-                                                            conditionalPanel(condition = "input.plottype == 'line' && input.summarize != 'Simple'", selectInput('shape', 'Point Shape', c("NULL","Model","Scenario","Region","Variable"),selected = NULL)),# 
+                                                            conditionalPanel(condition = "input.plottype == 'line' && input.summarize != 'Simple'", selectInput('shape', 'Point Shape', c("NULL","Model","Scenario","Region","Variable"),selected = NULL)),#
                                                             conditionalPanel(condition = "input.plottype == 'scatter'", selectInput('shape_scatter', 'Point Shape', c("NULL","Model","Scenario","Region","Year"),selected = NULL)),
                                                             conditionalPanel(condition = "input.plottype == 'line'", sliderInput("xlim", "X axis",min=1900,max=2100,value=c(2000,2100),step=5))
-                                                            
+
                                                      ),
                                                      # column(2,
                                                      #        checkboxGroupInput('group', 'Group', c("Model","Scenario","Region","Variable"),selected = NULL)
@@ -595,14 +595,14 @@ scenTool <- function(file=NULL,valfile=NULL) {
 
 
                                                    )
-                                                   
+
                                                  )
                                         ),
-                                        tabPanel("Table", 
+                                        tabPanel("Table",
                                                  dataTableOutput("data"),
                                                  wellPanel(downloadButton('downloadData', 'Download Data'))
                                         ),
-                                        tabPanel("Info", 
+                                        tabPanel("Info",
                                                  h2("Summary"),
                                                  verbatimTextOutput("summary"),
                                                  h2("General information about the dataset"),
@@ -612,9 +612,9 @@ scenTool <- function(file=NULL,valfile=NULL) {
                           )
                         )
                )
+
   
-  
-  
+
   #start the app
   shinyApp(ui = ui, server = server)
-  }  
+  }

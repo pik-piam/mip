@@ -48,7 +48,7 @@ showMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   showHistorical = FALSE,
   showGlobal = FALSE,
-  nrowNum = 1, 
+  nrowNum = 1,
   mainReg = getOption("mip.mainReg"),
   histRefModel = getOption("mip.histRefModel"),
   yearsByVariable = getOption("mip.yearsBarPlot"),
@@ -88,7 +88,7 @@ showMultiLinePlotsByVariable <- function(
 	logscaleRange <- function(dataValues) c(floor(log10(min(dataValues))*10)/10, ceiling(log10(max(dataValues))*10)/10)
 	logscaleBreaks <- function(dataValues) {
 		majorBreaks <- 10^seq(floor(log10(min(dataValues))), ceiling(log10(max(dataValues))), 1) # 10 100 1000
-		minorBreaks <- as.vector(outer(1:9, head(majorBreaks,-1), "*")) # 10 20 .. 90 100 200 .. 900 
+		minorBreaks <- as.vector(outer(1:9, head(majorBreaks,-1), "*")) # 10 20 .. 90 100 200 .. 900
 		if(diff(logscaleRange(dataValues)) < 3) majorBreaks <- minorBreaks
 		return(list(majorBreaks, minorBreaks))
 	}
@@ -135,9 +135,9 @@ showMultiLinePlotsByVariable <- function(
 	dRegiScen <- d %>% filter(.data$region != .env$mainReg, .data$scenario != "historical") %>% droplevels()
 	regions <- levels(dRegiScen$region)
 	plotRegi <- dRegiScen %>% plotOptions() +
-		aes(color = .data$region) + 
+		aes(color = .data$region) +
 		scale_color_manual(values = plotstyle(regions))
-	
+
 
 	# add historical data 
 	if (showHistorical) {

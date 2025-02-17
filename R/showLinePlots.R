@@ -115,7 +115,17 @@ showLinePlots <- function(
         color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[mainHistModels]
       )
-    if (!is.null(vlines)) {
+
+    # make World match regional facets for fixed scales
+    if ('fixed' == scales) {
+      p1 <- p1 +
+        geom_blank(
+          data = dRegiScen %>%
+            select(-'region'),
+          mapping = aes(x = .data$period, y = .data$value))
+    }
+
+    if (! is.null(vlines)) {
       p1 <- p1 + geom_vline(xintercept = vlines, linetype = 3)
     }
   }

@@ -102,5 +102,3 @@ scratchSimplify<-function(x,simplify="default"){
   x=as.quitte(x)
   return(x)
 }
-
-

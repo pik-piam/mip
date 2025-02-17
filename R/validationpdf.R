@@ -26,12 +26,12 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
   if(is.null(debug)) debug <- FALSE
   styles <- c("trafficlight","comparison","detailed")
   if(!(style %in% styles)) stop("Unknown style \"",style,"\", please use one of the following: ",paste(styles,collapse=", "))
-  
+
   # convert x into a quitte object
   if(is.character(x)) {
     filetype <- sub("^.*\\.","",x)
     if(filetype=="rds") {
-      x <- readRDS(x) 
+      x <- readRDS(x)
     } else {
       x <- read.quitte(x, check.duplicates = FALSE)
     }
@@ -44,12 +44,12 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     x <- x[x$period %in% y,]
     x <- as.quitte(x)
   }
-  
+
   if(!is.null(hist)) {
     if(is.character(hist)) {
       filetype <- sub("^.*\\.","",hist)
       if(filetype=="rds") {
-        hist <- readRDS(hist) 
+        hist <- readRDS(hist)
       } else {
         hist <- read.quitte(hist, check.duplicates = FALSE)
       }
@@ -59,7 +59,7 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     # strip down NAs
     hist <- hist[!is.na(hist$value),]
   }
-  
+
   colcheck <- names(hist) %in% c("model","scenario","region","variable","unit","period","value")
   if(any(!colcheck)) {
     hist <- hist[colcheck]

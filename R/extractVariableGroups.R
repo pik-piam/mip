@@ -1,8 +1,8 @@
 #' extractVariableGroups
-#' 
+#'
 #' Groups variable names by summation groups based on the |+| separators given in the variable names.
 #' If no |+| are present the function will try to derive summation groups based on | separators.
-#' 
+#'
 #' @param x a vector of variable names
 #' @param keepOrigNames if set, the returned list contains the original variables
 #' (to the value of which the grouped ones have to sum up) as names instead of
@@ -18,11 +18,11 @@
 #' @export
 
 extractVariableGroups <- function(x, keepOrigNames=FALSE, sorted = FALSE) {
-  
+
   spltM<-function(y) {
     return(strsplit(y,"\\|"))
   }
-  
+
   tmp <- function(x,sep="|+|",ext="",allVars,keepOrigNames=FALSE) {
     if (keepOrigNames) ext<-""
     y <- strsplit(x,sep, fixed=TRUE)

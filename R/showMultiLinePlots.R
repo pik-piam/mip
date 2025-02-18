@@ -28,7 +28,7 @@
 #' @importFrom ggplot2 ylim
 showMultiLinePlots <- function(
   data, vars, scales = "free_y",
-  nrowNum = 1, 
+  nrowNum = 1,
   mainReg = getOption("mip.mainReg")
 ) {
 
@@ -64,7 +64,7 @@ showMultiLinePlots <- function(
   }
 
   label <- paste0("(", paste0(levels(d$unit), collapse = ","), ")")
-  
+
   p1 <- dMainScen %>%
     ggplot(aes(.data$period, .data$value)) +
     geom_line(aes(linetype = .data$scenario)) +
@@ -74,7 +74,7 @@ showMultiLinePlots <- function(
     theme_minimal() +
     expand_limits(y = 0) +
     ylab(label)
-  
+
   p2 <- dRegiScen %>%
     ggplot(aes(.data$period, .data$value, color = .data$region)) +
     geom_line(aes(linetype = .data$scenario)) +

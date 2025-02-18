@@ -28,3 +28,4 @@ vignettes/*.R
 inst/doc
 # output used to generate plots
 output
+mip.Rproj

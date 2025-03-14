@@ -24,6 +24,7 @@
 #' @param xlim        x axis limits as vector with min and max year
 #' @param facet.ncol  number of columns used for faceting, default=3.
 #' @param legend.ncol number of columns used in legends, default=1.
+#' @param legend.pos  position of the legend, default="bottom".
 #' @param hlines optional horizontal lines to be added to the plot, Allowed data formats: magpie, Default is \code{NULL}.
 #' @param hlines.labels optional labels for horizontal lines, Allowed data formats: named vector, where each name corresponds to exactly one variable in hlines, Default is \code{NULL}.
 #' @param color.dim.manual optional vector with manual colors replacing default colors of color.dim, default is \code{NULL}.
@@ -55,7 +56,8 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
                               ylog = NULL, size = 14, scales = "fixed",
                               leg.proj = FALSE, plot.priority = c("x", "x_hist", "x_proj"),
                               ggobject = TRUE, paper_style = FALSE, xlim = NULL,
-                              facet.ncol = 3, legend.ncol = 1, hlines = NULL, hlines.labels = NULL,
+                              facet.ncol = 3, legend.ncol = 1, legend.pos = "bottom",
+                              hlines = NULL, hlines.labels = NULL,
                               color.dim.manual = NULL, color.dim.manual.hist = NULL) {
   x <- as.quitte(x)
 
@@ -265,8 +267,9 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
       axis.text.y = element_text(size = text_size, colour = "black"),
       axis.title.x = element_text(size = text_size, face = "bold", vjust = -0.3),
       axis.text.x = element_text(size = text_size, angle = 90, hjust = .5, colour = "black"),
-      legend.position = "bottom",
+      legend.position = legend.pos,
       legend.direction = "horizontal",
+      legend.justification = "top",
       legend.title = element_text(size = text_size, face = "bold", hjust = 0),
       legend.text = element_text(size = text_size - 2),
       legend.key = element_blank(),

@@ -16,6 +16,7 @@
 #' objects, the dimension that contains the variables must have one of the following names: variable, scenario, model.
 #' @param hist_source If there are multiple historical sources the name of the source that you want to be plotted.
 #' @param ylab y-axis text
+#' @param transpose Transposes the facet grid, swapping scenarios and regions being the horizontal and vertical axes.
 #' @author David Klein, Jan Philipp Dietrich
 #' @section Example Plot:
 #' \if{html}{\figure{mipArea.png}{example plot}}
@@ -38,7 +39,7 @@
 #' @importFrom rlang .data
 #' @export
 mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, scales = "fixed", shorten = TRUE, #nolint
-                    hist = NULL, hist_source = "first", ylab = NULL) { #nolint
+                    hist = NULL, hist_source = "first", ylab = NULL, transpose = FALSE) { #nolint
   ############################################
   ######  P R E P A R E   D A T A  ###########
   ############################################
@@ -187,10 +188,17 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
 
 
   # define facet_grid
-  if (length(facets) == 1) p <- p + facet_wrap(as.formula(paste("~", facets)), scales = scales)
-  if (length(facets) == 2) p <- p + facet_grid(as.formula(paste(facets[1], "~", facets[2])), scales = scales)
-  # facet 1 and 2 are combined in dim 1
-  if (length(facets) == 3) p <- p + facet_grid(as.formula(paste(facets[1], "~", facets[3])), scales = scales)
+  if (!transpose) {
+    if (length(facets) == 1) p <- p + facet_wrap(as.formula(paste("~", facets)), scales = scales)
+    if (length(facets) == 2) p <- p + facet_grid(as.formula(paste(facets[1], "~", facets[2])), scales = scales)
+    # facet 1 and 2 are combined in dim 1
+    if (length(facets) == 3) p <- p + facet_grid(as.formula(paste(facets[1], "~", facets[3])), scales = scales)
+  } else {
+    if (length(facets) == 1) p <- p + facet_wrap(as.formula(paste(facets,"~")), scales = scales)
+    if (length(facets) == 2) p <- p + facet_grid(as.formula(paste(facets[2], "~", facets[1])), scales = scales)
+    # facet 1 and 2 are combined in dim 1
+    if (length(facets) == 3) p <- p + facet_grid(as.formula(paste(facets[3], "~", facets[1])), scales = scales)
+  }
 
   # add total to plot as black line
   if (is.quitte(total)) {

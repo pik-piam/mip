@@ -12,7 +12,8 @@ mipArea(
   shorten = TRUE,
   hist = NULL,
   hist_source = "first",
-  ylab = NULL
+  ylab = NULL,
+  transpose = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ objects, the dimension that contains the variables must have one of the followin
 \item{hist_source}{If there are multiple historical sources the name of the source that you want to be plotted.}
 
 \item{ylab}{y-axis text}
+
+\item{transpose}{Transposes the facet grid, swapping scenarios and regions being the horizontal and vertical axes.}
 }
 \description{
 Generic area plot function. Automatically creates facet grid from data. Optionally adds total line.

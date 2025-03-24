@@ -42,8 +42,8 @@ plotstyle.add <- function(entity, legend, color, marker = NULL,
 {
 
   # in no data is given for marker and linestyle fill with NA
-  if (is.null(marker))    marker    <- rep(NA,time=length(entity))
-  if (is.null(linestyle)) linestyle <- rep(NA,time=length(entity))
+  if (is.null(marker))    marker    <- rep(NA, times= length(entity))
+  if (is.null(linestyle)) linestyle <- rep(NA, times= length(entity))
 
   # Check if all parameters are of the same length
   a <- diff(range(c(length(entity),length(legend),length(color),length(marker),length(linestyle))))

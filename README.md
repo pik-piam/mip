@@ -56,7 +56,7 @@ A BibTeX entry for LaTeX users is
   title = {mip: Comparison of multi-model runs},
   author = {David Klein and Jan Philipp Dietrich and Lavinia Baumstark and Florian Humpenoeder and Miodrag Stevanovic and Stephen Wirth and Pascal Führlich and Oliver Richters and Tonn Rüter},
   doi = {10.5281/zenodo.1158586},
-  date = {2025-03-24},
+  date = {2025-03-25},
   year = {2025},
   url = {https://github.com/pik-piam/mip},
   note = {Version: 0.154.0},

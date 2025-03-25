@@ -93,7 +93,8 @@ plotstyle.add <- function(entity, legend, color, marker = NULL,
   }
 
   # save plot styles to plotstyle()-internal cache
-  assign(x = 'ps', value = plotstyles, envir = environment(plotstyle),
+  assign(x = 'ps', value = plotstyles,
+         envir = get('cache', envir = environment(plotstyle)),
          inherits = FALSE)
 
   if (isTRUE(write_file)) {

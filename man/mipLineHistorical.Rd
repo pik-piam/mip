@@ -28,6 +28,7 @@ mipLineHistorical(
   xlim = NULL,
   facet.ncol = 3,
   legend.ncol = 1,
+  legend.pos = "bottom",
   hlines = NULL,
   hlines.labels = NULL,
   color.dim.manual = NULL,
@@ -81,6 +82,8 @@ If no historic information is provided the plot will ignore it.}
 \item{facet.ncol}{number of columns used for faceting, default=3.}
 
 \item{legend.ncol}{number of columns used in legends, default=1.}
+
+\item{legend.pos}{position of the legend, default="bottom".}
 
 \item{hlines}{optional horizontal lines to be added to the plot, Allowed data formats: magpie, Default is \code{NULL}.}
 

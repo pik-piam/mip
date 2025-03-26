@@ -57,10 +57,8 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   if (all(is.na(x$scenario))) x$scenario <- "default"
 
   # if not given derive y-axis label, shorten variables accordingly
-  if (is.null(ylab)) {
-    shortenedVariables <- shorten_legend(x$variable, identical_only = TRUE, unit = x$unit)
-    ylab <- attr(shortenedVariables, "ylab")
-  }
+  shortenedVariables <- shorten_legend(x$variable, identical_only = TRUE, unit = x$unit)
+  ylab <- attr(shortenedVariables, "ylab")
 
   # Repeat the same for history
   if (!is.null(hist)) {
@@ -185,7 +183,6 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
     p <- p + geom_area(data = posH, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))), alpha = 0.3)
     p <- p + geom_area(data = negH, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))), alpha = 0.3)
   }
-
 
   # define facet_grid
   if (!transpose) {

@@ -46,7 +46,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
 
   # To ensure correct conversion to quitte objects, there should be at least
   # one dimension named "variable" or "scenario" or "model" in MAgPIE objects.
-  if (is.magpie(x) & !any(c("variable", "model", "scenario") %in% getSets(x))) {
+  if (is.magpie(x) && !any(c("variable", "model", "scenario") %in% getSets(x))) {
     stop("MAgPIE objects need to have at least one dimension named 'variable' or 'model' or 'scenario'.")
   }
 
@@ -57,18 +57,18 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   if (all(is.na(x$scenario))) x$scenario <- "default"
 
   # if not given derive y-axis label, shorten variables accordingly
-  shortenedVariables <- shorten_legend(x$variable, identical_only = TRUE, ylab = ylab, unit = x$unit)
-  if (shorten) x$variable <- shortenedVariables
-  ylab <- attr(shortenedVariables, "ylab")
+  if (is.null(ylab)) {
+    shortenedVariables <- shorten_legend(x$variable, identical_only = TRUE, unit = x$unit)
+    ylab <- attr(shortenedVariables, "ylab")
+  }
 
   # Repeat the same for history
   if (!is.null(hist)) {
-    if (is.magpie(hist) & !any(c("variable", "model", "scenario") %in% getSets(hist))) {
+    if (is.magpie(hist) && !any(c("variable", "model", "scenario") %in% getSets(hist))) {
       stop("MAgPIE objects with historical data need to have at least one ",
            "dimension named 'variable' or 'model' or 'scenario'.")
     }
     hist <- as.quitte(hist)
-    if (shorten) hist$variable <- shorten_legend(hist$variable, ylab = ylab, identical_only = TRUE)
     # select historical data source
     if (hist_source == "first") {
       hist <- hist[hist$model == levels(hist$model)[1], ]
@@ -162,7 +162,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
     totalX <- droplevels(total[total$scenario != "historical", ])
   }
 
-  if (!is.null(hist) & !identical(FALSE, total)) {
+  if (!is.null(hist) && !identical(FALSE, total)) {
     tottmp <- droplevels(total[total$scenario == "historical", ])
     # repeat historical total as often as there are scenarios
     # so that it will be plotted for each single scenario
@@ -178,12 +178,12 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   ############################################
 
   p <- ggplot() +
-       geom_area(data = pos, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack)))) +
-       geom_area(data = neg, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))))
+    geom_area(data = pos, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack)))) +
+    geom_area(data = neg, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))))
 
   if (!is.null(hist)) {
-       p <- p + geom_area(data = posH, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))), alpha = 0.3)
-       p <- p + geom_area(data = negH, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))), alpha = 0.3)
+    p <- p + geom_area(data = posH, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))), alpha = 0.3)
+    p <- p + geom_area(data = negH, aes_(~period, ~value, fill = as.formula(paste("~", dimToStack))), alpha = 0.3)
   }
 
 
@@ -194,7 +194,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
     # facet 1 and 2 are combined in dim 1
     if (length(facets) == 3) p <- p + facet_grid(as.formula(paste(facets[1], "~", facets[3])), scales = scales)
   } else {
-    if (length(facets) == 1) p <- p + facet_wrap(as.formula(paste(facets,"~")), scales = scales)
+    if (length(facets) == 1) p <- p + facet_wrap(as.formula(paste(facets, "~")), scales = scales)
     if (length(facets) == 2) p <- p + facet_grid(as.formula(paste(facets[2], "~", facets[1])), scales = scales)
     # facet 1 and 2 are combined in dim 1
     if (length(facets) == 3) p <- p + facet_grid(as.formula(paste(facets[3], "~", facets[1])), scales = scales)
@@ -224,9 +224,17 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   # This is useful since we can use the same call of plotstyle as in other mip functions and thus
   # get the same order of colors for elements that are not defined in plotstyle.
   if (!is.factor(x[[dimToStack]])) x[[dimToStack]] <- factor(x[[dimToStack]], levels = unique(x[[dimToStack]]))
+
+  if (shorten) {
+    labels <- shorten_legend(levels(x[[dimToStack]]), ylab = NULL, identical_only = TRUE)
+    names(labels) <- levels(x[[dimToStack]])
+  } else {
+    labels <- levels(x[[dimToStack]])
+  }
+
   # use plotstyle colours and labels by default
   p <- p + scale_fill_manual(values = plotstyle(levels(x[[dimToStack]]), strip_units = FALSE),
-                             name   = "")
+                             labels = labels, name = "")
 
   # increase y-axis limits to hide all-zero data that was set to -1e-36
   p <- p +

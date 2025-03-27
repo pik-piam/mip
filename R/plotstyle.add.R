@@ -52,9 +52,7 @@ plotstyle.add <- function(entity, legend, color, marker = NULL,
   }
 
   # read plotstyles from plotstyles()-internal cache
-  plotstyles <- getElement(get('cache', envir = environment(plotstyle),
-                               inherits = FALSE),
-                           'ps')
+  plotstyles <- getOption('mip.plotstyle')
   class(plotstyles) <- "data.frame"
 
   # find existing entries
@@ -92,9 +90,7 @@ plotstyle.add <- function(entity, legend, color, marker = NULL,
     plotstyles <- rbind(plotstyles,newdata[-dup,])
   }
 
-  # save plot styles to plotstyle()-internal cache
-  assign(x = 'ps', value = plotstyles, envir = environment(plotstyle),
-         inherits = FALSE)
+  options(`mip.plotstyle` = plotstyles)
 
   if (isTRUE(write_file)) {
     write.csv2(x = plotstyles, file = 'plotstyles.csv', quote = FALSE)

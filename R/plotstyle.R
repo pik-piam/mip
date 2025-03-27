@@ -55,11 +55,11 @@
 
 plotstyle <- (function()
 {
-  cache <- new.env(parent = emptyenv())
-  cache$ps <- read.csv2(
-    system.file("extdata", "plotstyle.csv", package = "mip"),
-    stringsAsFactors = FALSE,
-    row.names = 1)
+  options(
+    `mip.plotstyle` = read.csv2(
+      system.file("extdata", "plotstyle.csv", package = "mip"),
+      stringsAsFactors = FALSE,
+      row.names = 1))
 
   function(..., out = "color", unknown = NULL, plot = FALSE,
            verbosity = getOption("plotstyle.verbosity"),
@@ -68,9 +68,15 @@ plotstyle <- (function()
                                    default = TRUE)) {
 
     luplot <- list()
-    luplot$plotstyle <- getElement(get('cache', envir = environment(plotstyle),
-                                       inherits = FALSE),
-                                   'ps')
+    luplot$plotstyle <- getOption('mip.plotstyle',
+                                  # devtools::check() seems to use some weird
+                                  # environment where the defaults are not
+                                  # loaded
+                                  default = read.csv2(
+                                    system.file("extdata", "plotstyle.csv",
+                                                package = "mip"),
+                                    stringsAsFactors = FALSE,
+                                    row.names = 1))
 
     if (is.null(out)) {
       out <- "color"

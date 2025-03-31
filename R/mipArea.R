@@ -11,11 +11,13 @@
 #' will ignore it.
 #' @param scales scales can be fixed ("fixed", default), free ("free"), or free in one dimension ("free_x", "free_y")?
 #' @param shorten Shorten variable names (default is TRUE) by removing categories only if they are identical (for short
-#' names in the legend)
+#' names in the legend). Important: if set to TRUE, the shortened variable names will be passed to `mip::plotstyle`
+#' to determine the variable colors.
 #' @param hist Historical data. Allowed data formats: magpie or quitte. NOTE: To ensure correct conversion to quitte
 #' objects, the dimension that contains the variables must have one of the following names: variable, scenario, model.
 #' @param hist_source If there are multiple historical sources the name of the source that you want to be plotted.
-#' @param ylab y-axis text
+#' @param ylab y-axis text. Important: when used in combination with `shorten = TRUE`, this parameter
+#' affects how variable names are shortened. For more info, see `mip::shorten_legend`.
 #' @param transpose Transposes the facet grid, swapping scenarios and regions being the horizontal and vertical axes.
 #' @author David Klein, Jan Philipp Dietrich
 #' @section Example Plot:

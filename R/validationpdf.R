@@ -412,13 +412,19 @@ validationpdf <- function(x,hist,file="validation.pdf",style="comparison", only_
     }
     if(length(xtrax)>0 | length(xtrahist)>0) {
       swlatex(sw,"\\section{Non-Matching Data}")
+      # We switch to small font size, as the long verbatim lists
+      # are too large for LaTeX
       if(length(xtrax)>0) {
         swlatex(sw,"\\subsection{Model outputs}")
+        swlatex(sw,"\\small")
         swR(sw,cat,xtrax,sep="\n")
+        swlatex(sw,"\\normalsize")
       }
       if(length(xtrahist)>0) {
         swlatex(sw,"\\subsection{Validation data}")
+        swlatex(sw,"\\small")
         swR(sw,cat,xtrahist,sep="\n")
+        swlatex(sw,"\\normalsize")
       }
     }
   }

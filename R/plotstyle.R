@@ -55,6 +55,8 @@
 
 plotstyle <- (function()
 {
+
+
   cache <- new.env(parent = emptyenv())
   cache$ps <- read.csv2(
     system.file("extdata", "plotstyle.csv", package = "mip"),
@@ -68,9 +70,15 @@ plotstyle <- (function()
                                    default = TRUE)) {
 
     luplot <- list()
-    luplot$plotstyle <- getElement(get('cache', envir = environment(plotstyle),
-                                       inherits = FALSE),
-                                   'ps')
+
+    # read in plot styles
+    # if user has modified settings locally, read from session cache,
+    # otherwise read in plotstyle.csv
+    if ("ps" %in% names(environment(plotstyle))) {
+      luplot$plotstyle <- get("ps", envir = environment(plotstyle))
+    } else {
+      luplot$plotstyle <- getElement(get("cache", envir = environment(plotstyle), inherits = FALSE), "ps")
+    }
 
     if (is.null(out)) {
       out <- "color"

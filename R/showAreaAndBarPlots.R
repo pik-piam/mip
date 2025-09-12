@@ -55,13 +55,13 @@
 #' }
 #' @export
 #' @importFrom rlang .data .env
-#' @importFrom dplyr rename left_join summarize group_by arrange filter
+#' @importFrom dplyr rename left_join summarize group_by arrange filter bind_rows
 showAreaAndBarPlots <- function(
-  data, vars, tot = NULL, fill = FALSE,
-  orderVars = c("mean", "user", "userRev"),
-  mainReg = getOption("mip.mainReg"),
-  yearsBarPlot = getOption("mip.yearsBarPlot"),
-  scales = "free_y"
+    data, vars, tot = NULL, fill = FALSE,
+    orderVars = c("mean", "user", "userRev"),
+    mainReg = getOption("mip.mainReg"),
+    yearsBarPlot = getOption("mip.yearsBarPlot"),
+    scales = "free_y"
 ) {
 
   data <- as.quitte(data)
@@ -84,21 +84,21 @@ showAreaAndBarPlots <- function(
     tot <- NULL
   }
 
-  dnohist <- data %>%
+  dataModel <- data %>%
     filter(.data$variable %in% c(.env$vars, tot), .data$scenario != "historical") %>%
     droplevels()
-  if (!"identifier" %in% names(dnohist)) dnohist$identifier <- identifierModelScen(dnohist)
-  d <- dnohist %>%
+  if (!"identifier" %in% names(dataModel)) dataModel$identifier <- identifierModelScen(dataModel)
+  dataVars <- dataModel %>%
     filter(.data$variable %in% .env$vars, .data$scenario != "historical") %>%
     droplevels()
-  warnMissingVars(d, vars)
+  warnMissingVars(dataVars, vars)
   if (!is.null(tot)) warnMissingVars(data, tot)
-  if (NROW(d) == 0) {
+  if (nrow(dataVars) == 0) {
     warning("Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
 
-  if (!mainReg %in% unique(d$region)) {
+  if (!mainReg %in% unique(dataVars$region)) {
     warning("Main region not found in data. Nothing to plot.", call. = FALSE)
     return(invisible(NULL))
   }
@@ -107,87 +107,104 @@ showAreaAndBarPlots <- function(
     orderVars,
     mean = {
       # Order variables by mean value.
-      # d <- mutate(d, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
+      # dataVars <- mutate(dataVars, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
       # To not use the additional package forcats, implement own version of that line:
-      means <- d %>%
+      means <- dataVars %>%
         group_by(.data$variable) %>%
         summarize(mean_value = mean(.data$value, na.rm = TRUE)) %>%
         arrange(.data$mean_value)
-      d$variable <- factor(d$variable, levels = means$variable)
+      dataVars$variable <- factor(dataVars$variable, levels = means$variable)
     },
     user = {
-      d$variable <- factor(d$variable, levels = vars)
+      dataVars$variable <- factor(dataVars$variable, levels = vars)
     },
     userRev = {
-      d$variable <- factor(d$variable, levels = rev(vars))
+      dataVars$variable <- factor(dataVars$variable, levels = rev(vars))
     }
   )
 
+  # Prepare data
+  dataRegi <- dataVars %>%
+    filter(.data$region != .env$mainReg)
+  showNonMainRegs <- nrow(dataRegi) > 0
+
+  if (!is.null(tot)) {
+    dataTot <- dataModel %>%
+      filter(
+        .data$region == .env$mainReg,
+        .data$variable == .env$tot) %>%
+      droplevels()
+
+    if (showNonMainRegs) {
+      dataTotRegi <- dataModel %>%
+        filter(
+          .data$region != .env$mainReg,
+          .data$variable == .env$tot) %>%
+        droplevels()
+    }
+  } else {
+    dataTot <- NULL
+    dataTotRegi <- NULL
+  }
+
   # Common label for y-axis.
   lcp <- if (is.null(tot)) gsub("\\|$", "", attr(shorten_legend(vars, identical_only = TRUE), "front")) else gsub(" pCap$", "", tot)
-  label <- paste0(lcp, " (", paste0(levels(d$unit), collapse = ","), ")")
+  label <- paste0(lcp, " (", paste0(levels(dataVars$unit), collapse = ","), ")")
 
   # Create plots.
-  p1 <- d %>%
+  # plotAreaMain: area plot for each scenario, main region
+  plotAreaMain <- dataVars %>%
     filter(.data$region == .env$mainReg) %>%
     droplevels() %>%
     mipArea(scales = scales, total = is.null(tot), ylab = lcp) +
     ylab(NULL) +
     theme(legend.position = "none")
-  p2 <- d %>%
+
+  # plotBarsMain: bar plot grouped by year, main region
+  plotBarsMain <- bind_rows(dataVars, dataTot) %>%
     filter(.data$region == .env$mainReg, .data$period %in% .env$yearsBarPlot) %>%
     droplevels() %>%
-    mipBarYearData(ylab = lcp) +
+    mipBarYearData(ylab = lcp, tot = tot) +
     ylab(NULL)
 
-  d3 <- d %>%
-    filter(.data$region != .env$mainReg,
-           .data$period %in% .env$yearsBarPlot)
-  d4 <- d %>%
-    filter(.data$region != .env$mainReg)
-  showNonMainRegs <- nrow(d3) > 0 && nrow(d4) > 0
 
   if (showNonMainRegs) {
-    p2 <- p2 +
-      theme(legend.position = "none")
-    p3 <- d3 %>%
+    plotBarsMain <- plotBarsMain + theme(legend.position = "none")
+
+    # plotBarsRegi: bar plot for each region
+    data.regi.bars <- bind_rows(dataRegi, dataTotRegi) %>%
+      filter(.data$period %in% .env$yearsBarPlot)
+    plotBarsRegi <- data.regi.bars %>%
       droplevels() %>%
-      mipBarYearData(ylab = lcp) +
+      mipBarYearData(ylab = lcp, tot = tot) +
       ylab(NULL) +
       guides(fill = guide_legend(reverse = TRUE, ncol = 3))
-    p4 <- d4 %>%
+
+    # plotAreaRegi: area plot for each scenario and region
+    plotAreaRegi <- dataRegi %>%
       droplevels() %>%
       mipArea(scales = scales, total = is.null(tot), ylab = lcp,
               stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
       guides(fill = guide_legend(reverse = TRUE))
   } else {
-    p2 <- p2 +
+    plotBarsMain <- plotBarsMain +
       guides(fill = guide_legend(reverse = TRUE, ncol = 3))
   }
 
   # Add black lines in area plots from variable tot if provided.
   if (!is.null(tot)) {
-    dMainTot <- dnohist %>%
-      filter(
-        .data$region == .env$mainReg,
-        .data$variable == .env$tot) %>%
-      droplevels()
-    p1 <- p1 +
+    plotAreaMain <- plotAreaMain +
       geom_line(
-        data = dMainTot,
+        data = dataTot,
         mapping = aes(.data$period, .data$value),
         size = 1.3
       )
+
     if (showNonMainRegs) {
-      dRegiTot <- dnohist %>%
-        filter(
-          .data$region != .env$mainReg,
-          .data$variable == .env$tot) %>%
-        droplevels()
-      dRegiTot$scenario <- dRegiTot$identifier
-      p4 <- p4 +
+      dataTotRegi$scenario <- dataTotRegi$identifier
+      plotAreaRegi <- plotAreaRegi +
         geom_line(
-          data = dRegiTot,
+          data = dataTotRegi,
           mapping = aes(.data$period, .data$value),
           size = 1.3
         )
@@ -196,13 +213,12 @@ showAreaAndBarPlots <- function(
 
   # Show plots.
   if (showNonMainRegs) {
-    grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)
+    grid.arrange(plotAreaMain, plotBarsMain, plotBarsRegi, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)
     cat("\n\n")
-    print(p4)
+    print(plotAreaRegi)
   } else {
-    grid.arrange(p1, p2, layout_matrix = rbind(c(1, 2)), left = label)
+    grid.arrange(plotAreaMain, plotBarsMain, layout_matrix = rbind(c(1, 2)), left = label)
   }
   cat("\n\n")
-
   return(invisible(NULL))
 }

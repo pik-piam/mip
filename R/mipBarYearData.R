@@ -15,7 +15,7 @@
 #'        and 20, or a ggplot2 shape name
 #'        (see \code{vignette("ggplot2-specs")}).  Set to \code{FALSE} to not
 #'        use markers.
-#' @param total variable used to show the total on top of stacked bars
+#' @param tot variable used to show the total on top of stacked bars
 #' @author Lavinia Baumstark, Oliver Richters
 #' @section Example Plot:
 #' \if{html}{\figure{mipBarYearData.png}{example plot}}

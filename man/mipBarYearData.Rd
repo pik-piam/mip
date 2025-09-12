@@ -5,16 +5,17 @@
 \title{mipBarYearData}
 \usage{
 mipBarYearData(
-  x,
+  data,
   colour = NULL,
   ylab = NULL,
   xlab = NULL,
   title = NULL,
-  scenario_markers = TRUE
+  scenario_markers = TRUE,
+  tot = NULL
 )
 }
 \arguments{
-\item{x}{Data to plot. Allowed data formats: magpie or quitte}
+\item{data}{Data to plot. Allowed data formats: magpie or quitte}
 
 \item{colour}{Dimension to be colored, default: "Scenario"}
 
@@ -31,6 +32,8 @@ passed as a named vector in the form of
 and 20, or a ggplot2 shape name
 (see \code{vignette("ggplot2-specs")}).  Set to \code{FALSE} to not
 use markers.}
+
+\item{tot}{variable used to show the total on top of stacked bars}
 }
 \description{
 Function for plotting (bar-plot) MAgPIE objects and compare different scenarios

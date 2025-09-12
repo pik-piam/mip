@@ -1,7 +1,7 @@
 Type: Package
 Package: mip
 Title: Comparison of multi-model runs
-Version: 0.155.0
+Version: 0.155.1
 Date: 2025-09-12
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
@@ -12,7 +12,9 @@ Authors@R: c(
     person("Stephen", "Wirth", , "wirth@pik-potsdam.de", role = "aut"),
     person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = "aut"),
     person("Oliver", "Richters", role = "aut"),
-    person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = "aut")
+    person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = "aut"),
+    person("Robert", "Salzwedel", , "robert.salzwedel@pik-potsdam.de", role = "aut"),
+    person("Fabrice", "Lécuyer", , "fabrice.lecuyer@pik-potsdam.de", role = "aut")
   )
 Description: Package contains generic functions to produce comparison
     plots of multi-model runs.

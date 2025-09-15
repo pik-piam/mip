@@ -3,7 +3,7 @@
 #' or models, on the x-axis for some time steps one bar for each scenario/model is generated
 #'
 #'
-#' @param x Data to plot. Allowed data formats: magpie or quitte
+#' @param data Data to plot. Allowed data formats: magpie or quitte
 #' @param ylab y-axis text
 #' @param xlab x-axis text
 #' @param title title appearing at the top of the plot
@@ -15,6 +15,7 @@
 #'        and 20, or a ggplot2 shape name
 #'        (see \code{vignette("ggplot2-specs")}).  Set to \code{FALSE} to not
 #'        use markers.
+#' @param tot variable used to show the total on top of stacked bars
 #' @author Lavinia Baumstark, Oliver Richters
 #' @section Example Plot:
 #' \if{html}{\figure{mipBarYearData.png}{example plot}}
@@ -29,49 +30,56 @@
 #'
 #' @importFrom magclass is.magpie
 #' @importFrom ggplot2 ggplot aes_ guides guide_legend scale_x_continuous
-#'             ggtitle geom_col scale_shape_manual theme_minimal theme
+#'             ggtitle geom_col scale_shape_manual theme_minimal theme geom_segment
 #' @importFrom dplyr %>% mutate filter inner_join group_by summarise select n sym arrange
 #' @importFrom tidyr crossing unite
 #' @importFrom quitte order.levels
 #' @export
 #
 
-mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = NULL,
-                           scenario_markers = TRUE) { #nolint
+mipBarYearData <- function(data, colour = NULL, ylab = NULL, xlab = NULL, title = NULL,
+                           scenario_markers = TRUE,
+                           tot = NULL) { #nolint
   scenarioMarkers <- scenario_markers
-  x <- droplevels(as.quitte(x))
-  if (! "identifier" %in% names(x)) x$identifier <- identifierModelScen(x)
-
-  if (!is.integer(x$period)) {
+  data <- droplevels(as.quitte(data))
+  if (! "identifier" %in% names(data)) data$identifier <- identifierModelScen(data)
+  
+  if (!is.integer(data$period)) {
     stop("this plot can only deal with data that have integer periods")
   }
-
-  if (nrow(x) == 0) {
+  
+  if (nrow(data) == 0) {
     warning("Quitte object is empty.")
     return()
   }
-
-  # if not given derive y-axis label, shorten variables accordingly
-  x$variable <- shorten_legend(x$variable, ylab = ylab, identical_only = TRUE, unit = x$unit)
-  ylab <- attr(x$variable, "ylab")
+  
   # add dummy-dimension for space between the time-steps
-  xpos <- crossing(period     = unique(x$period),
-                   identifier = factor(c(levels(x$identifier), "\x13"))) %>%
-          order.levels(identifier = c(levels(x$identifier), "\x13")) %>%
-          arrange(!!sym("period"), !!sym("identifier")) %>%
-          mutate(xpos = 1:n()) %>%
-          filter("\x13" != !!sym("identifier")) %>%
-          droplevels()
+  xpos <- crossing(period     = unique(data$period),
+                   identifier = factor(c(levels(data$identifier), "\x13"))) %>%
+    order.levels(identifier = c(levels(data$identifier), "\x13")) %>%
+    arrange(!!sym("period"), !!sym("identifier")) %>%
+    mutate(xpos = 1:n()) %>%
+    filter("\x13" != !!sym("identifier")) %>%
+    droplevels()
 
-  x <- x %>%
+  data <- data %>%
     inner_join(
       xpos,
       c("identifier", "period")
     )
 
+  if (!is.null(tot)) {
+    dataTotal <- data %>% filter(.data$variable == tot)
+    data <- data %>% filter(.data$variable != tot)
+  }
+  
+  # if not given derive y-axis label, shorten variables accordingly
+  data$variable <- shorten_legend(data$variable, ylab = ylab, identical_only = TRUE, unit = data$unit)
+  ylab <- attr(data$variable, "ylab")
+  
   if (scenarioMarkers) {
     yMarker <- crossing(
-      x %>%
+      data %>%
         group_by(!!sym("region"), !!sym("xpos")) %>%
         summarise(top    = sum(pmax(0, !!sym("value"))),
                   bottom = sum(pmin(0, !!sym("value")))) %>%
@@ -80,30 +88,30 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
         mutate(
           y = !!sym("bottom") - 0.05 * (!!sym("top") + !!sym("bottom"))) %>%
         select(-"top", -"bottom"),
-
+      
       xpos
     )
   }
-
+  
   if (scenarioMarkers) {
-    scenarioMarkers <- stats::setNames((1:20)[seq_along(unique(x$identifier))],
-                                 levels(x$identifier))
+    scenarioMarkers <- stats::setNames((1:20)[seq_along(unique(data$identifier))],
+                                       levels(data$identifier))
   }
-
+  
   # calculate positions of period labels
   if (any(scenarioMarkers)) {
     xpos <- xpos %>%
       group_by(!!sym("period")) %>%
       summarise(xpos = mean(!!sym("xpos")))
   }
-
+  
   if (is.null(colour)) {
-    colour <- plotstyle(levels(x$variable), strip_units = FALSE)
+    colour <- plotstyle(levels(data$variable), strip_units = FALSE)
   }
-
+  
   # make plot
   p <- ggplot() +
-    geom_col(data = x,
+    geom_col(data = data,
              mapping = aes(x = !!sym("xpos"), y = !!sym("value"),
                            fill = !!sym("variable"))) +
     scale_fill_manual(values = colour, name = NULL,
@@ -112,7 +120,16 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
     labs(x = xlab, y = ylab, title = title) +
     theme_minimal() +
     theme(legend.position = "bottom")
-
+  
+  if (!is.null(tot)) { # add a dash representing the total of stacked bars
+    p <- p + geom_segment(
+      data = dataTotal,
+      aes(x = !!sym("xpos") - 0.3, xend = !!sym("xpos") + 0.3,
+          y = !!sym("value"), yend = !!sym("value")),
+      color = "black", linewidth = 1.3
+    )
+  }
+  
   # add markers
   if (any(scenarioMarkers)) {
     p <- p +
@@ -135,6 +152,6 @@ mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = N
                            getElement("label")) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
   }
-
+  
   return(p)
 }

@@ -107,8 +107,6 @@ showAreaAndBarPlots <- function(
     orderVars,
     mean = {
       # Order variables by mean value.
-      # dataVars <- mutate(dataVars, variable = forcats::fct_reorder(.data$variable, .data$value, mean, na.rm = TRUE))
-      # To not use the additional package forcats, implement own version of that line:
       means <- dataVars %>%
         group_by(.data$variable) %>%
         summarize(mean_value = mean(.data$value, na.rm = TRUE)) %>%

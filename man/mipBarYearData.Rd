@@ -5,7 +5,7 @@
 \title{mipBarYearData}
 \usage{
 mipBarYearData(
-  data,
+  x,
   colour = NULL,
   ylab = NULL,
   xlab = NULL,
@@ -15,7 +15,7 @@ mipBarYearData(
 )
 }
 \arguments{
-\item{data}{Data to plot. Allowed data formats: magpie or quitte}
+\item{x}{Data to plot. Allowed data formats: magpie or quitte}
 
 \item{colour}{Dimension to be colored, default: "Scenario"}
 

@@ -3,7 +3,7 @@
 #' or models, on the x-axis for some time steps one bar for each scenario/model is generated
 #'
 #'
-#' @param data Data to plot. Allowed data formats: magpie or quitte
+#' @param x Data to plot. Allowed data formats: magpie or quitte
 #' @param ylab y-axis text
 #' @param xlab x-axis text
 #' @param title title appearing at the top of the plot
@@ -37,11 +37,11 @@
 #' @export
 #
 
-mipBarYearData <- function(data, colour = NULL, ylab = NULL, xlab = NULL, title = NULL,
+mipBarYearData <- function(x, colour = NULL, ylab = NULL, xlab = NULL, title = NULL,
                            scenario_markers = TRUE,
                            tot = NULL) { #nolint
   scenarioMarkers <- scenario_markers
-  data <- droplevels(as.quitte(data))
+  data <- droplevels(as.quitte(x))
   if (! "identifier" %in% names(data)) data$identifier <- identifierModelScen(data)
   
   if (!is.integer(data$period)) {

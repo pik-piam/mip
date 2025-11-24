@@ -36,18 +36,28 @@
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
 
-showLinePlots <- function(
-    data,
-    vars = getVars(as.quitte(data)),
-    histVars = vars,
-    scales = "free_y",
-    ylim = 0,
-    show.dots = TRUE,
-    color.dim.name = NULL,
-    mainReg = getOption("mip.mainReg"),
-    color.dim.manual = NULL,
-    histModelsExclude = character(),
-    vlines = NULL
+showLinePlots <- function(...) {
+  plot <- createLinePlots(...)
+  cat(plot)
+  cat("\n\n")
+}
+
+#' Create Line Plots
+#'
+#' Creates the line plots for showLinePlots.
+#' @noRd
+createLinePlots <- function(
+  data,
+  vars = getVars(as.quitte(data)),
+  histVars = vars,
+  scales = "free_y",
+  ylim = 0,
+  show.dots = TRUE,
+  color.dim.name = NULL,
+  mainReg = getOption("mip.mainReg"),
+  color.dim.manual = NULL,
+  histModelsExclude = character(),
+  vlines = NULL
 ) {
   # Validate function arguments.
   stopifnot(is.character(vars))
@@ -171,9 +181,6 @@ showLinePlots <- function(
     p2 <- p2 + theme(legend.position = "none")
   }
 
-  # Show plots.
-  grid.arrange(p1, p2, nrow = 1, widths = c(2, 3))
-  cat("\n\n")
+  return(grid.arrange(p1, p2, nrow = 1, widths = c(2, 3)))
 
-  return(invisible(NULL))
 }

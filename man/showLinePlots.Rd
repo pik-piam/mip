@@ -4,24 +4,9 @@
 \alias{showLinePlots}
 \title{Show Line Plots}
 \usage{
-showLinePlots(
-  data,
-  vars = getVars(as.quitte(data)),
-  histVars = vars,
-  scales = "free_y",
-  ylim = 0,
-  show.dots = TRUE,
-  color.dim.name = NULL,
-  mainReg = getOption("mip.mainReg"),
-  color.dim.manual = NULL,
-  histModelsExclude = character(),
-  vlines = NULL
-)
+showLinePlots(...)
 }
 \arguments{
-\item{data}{A quitte object or an object that can be transformed into a
-quitte object.}
-
 \item{vars}{A character vector of variables to be plotted.  Defaults to all
 variables in \code{data}.}
 
@@ -36,14 +21,11 @@ Defaults to \code{vars}.}
 
 \item{color.dim.name}{name for the color-dimension used in the legend}
 
-\item{mainReg}{A single string. The plots for this region are shown enlarged.
-Use \code{options(mip.mainReg=<value>)} to set globally.}
+\item{histModelsExclude}{A character vector with historical models to
+exclude.}
 
 \item{color.dim.manual}{optional vector with manual colors replacing default
 colors of color.dim, default is \code{NULL}.}
-
-\item{histModelsExclude}{A character vector with historical models to
-exclude.}
 
 \item{vlines}{period used for vertical line}
 }

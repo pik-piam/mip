@@ -6,9 +6,7 @@
 #' time. Different regions are shown in the same plot. Faceting is done by
 #' \code{variable}. The plots arranged and shown.
 #'
-#' @param vars A character vector. The variables to be plotted.
-#' @param nrowNum An integer value. Number of rows of the panel figures
-#' @inheritParams showLinePlots
+#' @inheritDotParams createMultiLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{page 1: \figure{showMultiLinePlots1.png}{options: width="100\%"}}
@@ -24,9 +22,23 @@
 #' showMultiLinePlots(data, vars)
 #' }
 #' @export
+showMultiLinePlots <- function(...) {
+  for (plot in createMultiLinePlots(...)) {
+    print(plot)
+    cat("\n\n")
+  }
+  return(invisible(NULL))
+}
+
+#' Create Multi Line Plots
+#'
+#' Creates the plots for showMultiLinePlots
+#' @param vars A character vector. The variables to be plotted.
+#' @param nrowNum An integer value. Number of rows of the panel figures
+#' @inheritParams createLinePlots
 #' @importFrom rlang .data .env
 #' @importFrom ggplot2 ylim
-showMultiLinePlots <- function(
+createMultiLinePlots <- function(
   data, vars, scales = "free_y",
   nrowNum = 1,
   mainReg = getOption("mip.mainReg")
@@ -60,7 +72,7 @@ showMultiLinePlots <- function(
   warnMissingVars(dMainScen, vars)
   if (NROW(dMainScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
-    return(invisible(NULL))
+    return(list())
   }
 
   label <- paste0("(", paste0(levels(d$unit), collapse = ","), ")")
@@ -86,11 +98,5 @@ showMultiLinePlots <- function(
     expand_limits(y = 0) +
     ylab(label)
 
-  # Show plots.
-  print(p1)
-  cat("\n\n")
-  print(p2)
-  cat("\n\n")
-
-  return(invisible(NULL))
+  return(list(p1, p2))
 }

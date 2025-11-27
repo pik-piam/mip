@@ -7,27 +7,27 @@
 showLinePlots(...)
 }
 \arguments{
-\item{vars}{A character vector of variables to be plotted.  Defaults to all
-variables in \code{data}.}
-
-\item{histVars}{A character vector of historical variables to be plotted.
-Defaults to \code{vars}.}
-
-\item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
-
-\item{ylim}{y limits}
-
-\item{show.dots}{If TRUE: shows geom_point dots on line. If FALSE: only plots geom_line without geom_point}
-
-\item{color.dim.name}{name for the color-dimension used in the legend}
-
-\item{histModelsExclude}{A character vector with historical models to
+\item{...}{
+  Arguments passed on to \code{\link[=createLinePlots]{createLinePlots}}
+  \describe{
+    \item{\code{vars}}{A character vector of variables to be plotted.  Defaults to all
+variables in `data`.}
+    \item{\code{histVars}}{A character vector of historical variables to be plotted.
+Defaults to `vars`.}
+    \item{\code{scales}}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+    \item{\code{ylim}}{y limits}
+    \item{\code{show.dots}}{If TRUE: shows geom_point dots on line. If FALSE: only plots geom_line without geom_point}
+    \item{\code{color.dim.name}}{name for the color-dimension used in the legend}
+    \item{\code{histModelsExclude}}{A character vector with historical models to
 exclude.}
-
-\item{color.dim.manual}{optional vector with manual colors replacing default
+    \item{\code{color.dim.manual}}{optional vector with manual colors replacing default
 colors of color.dim, default is \code{NULL}.}
-
-\item{vlines}{period used for vertical line}
+    \item{\code{vlines}}{period used for vertical line}
+    \item{\code{data}}{A quitte object or an object that can be transformed into a
+quitte object.}
+    \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.
+Use \code{options(mip.mainReg=<value>)} to set globally.}
+  }}
 }
 \value{
 \code{NULL} is returned invisible.

@@ -5,9 +5,7 @@
 #' Creates a line plot showing single line plot of vars over time. Additionally
 #' target values given in variables of the form \code{<vars>|target|<sth>} are
 #' shown. The plot is shown.
-#' @param vars A character vector. Usually just a single string. The variables
-#'   to be plotted.
-#' @inheritParams showLinePlots
+#' @inheritDotParams createLinePlotsWithTarget
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{\figure{showLinePlotsWithTarget.png}{options: width="100\%"}}
@@ -17,8 +15,20 @@
 #' showLinePlotsWithTarget(data, "Emi|GHG")
 #' }
 #' @export
+showLinePlotsWithTarget <- function(...) {
+  print(createLinePlotsWithTarget(...))
+  cat("\n\n")
+  return(invisible(NULL))
+}
+
+#' Create Line Plots with Target
+#'
+#' Creates the plots for showLinePlotsWithTarget
+#' @param vars A character vector. Usually just a single string. The variables
+#'   to be plotted.
+#' @inheritParams createLinePlots
 #' @importFrom rlang .data .env
-showLinePlotsWithTarget <- function(
+createLinePlotsWithTarget <- function(
   data, vars, scales = "free_y", color.dim.name = NULL
 ) {
 
@@ -41,7 +51,7 @@ showLinePlotsWithTarget <- function(
   warnMissingVars(d, vars)
   if (NROW(d) == 0) {
     warning("Nothing to plot.", call. = FALSE)
-    return(invisible(NULL))
+    return(list())
   }
 
   label <- paste0(vars, " [", paste0(levels(d$unit), collapse = ","), "]")
@@ -75,9 +85,5 @@ showLinePlotsWithTarget <- function(
       label = paste(.data$variable, .data$period)
     ))
 
-  # Show plot.
-  print(p)
-  cat("\n\n")
-
-  return(invisible(NULL))
+  return(p)
 }

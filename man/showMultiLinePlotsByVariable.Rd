@@ -4,51 +4,33 @@
 \alias{showMultiLinePlotsByVariable}
 \title{Show Multi-Line Plots by Variable}
 \usage{
-showMultiLinePlotsByVariable(
-  data,
-  vars,
-  xVar,
-  scales = "free_y",
-  showHistorical = FALSE,
-  showGlobal = FALSE,
-  nrowNum = 1,
-  mainReg = getOption("mip.mainReg"),
-  histRefModel = getOption("mip.histRefModel"),
-  yearsByVariable = getOption("mip.yearsBarPlot"),
-  logscale = ""
-)
+showMultiLinePlotsByVariable(...)
 }
 \arguments{
-\item{data}{A quitte object or an object that can be transformed into a
-quitte object.}
-
-\item{vars}{A character vector. The variables to be plotted.}
-
-\item{xVar}{A single string. The variable for the x-axis.}
-
-\item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
-
-\item{showHistorical}{A single logical value. Should historical data be
+\item{...}{
+  Arguments passed on to \code{\link[=createMultiLinePlotsByVariable]{createMultiLinePlotsByVariable}}
+  \describe{
+    \item{\code{xVar}}{A single string. The variable for the x-axis.}
+    \item{\code{showHistorical}}{A single logical value. Should historical data be
 shown? It is not recommended to set this to \code{TRUE} as the resulting
 plot we probably be quite confusing.}
-
-\item{showGlobal}{A single logical value. Should global data be
+    \item{\code{showGlobal}}{A single logical value. Should global data be
 shown? Default is false to save space in pdf}
-
-\item{nrowNum}{An integer value. Number of rows of the panel figures}
-
-\item{mainReg}{A single string. The plots for this region are shown enlarged.
-Use \code{options(mip.mainReg=<value>)} to set globally.}
-
-\item{histRefModel}{A named character vector identifying the unique model to
+    \item{\code{nrowNum}}{An integer value. Number of rows of the panel figures}
+    \item{\code{histRefModel}}{A named character vector identifying the unique model to
 be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
 to set globally.}
-
-\item{yearsByVariable}{A numeric vector. The years to be marked in the plots.
+    \item{\code{yearsByVariable}}{A numeric vector. The years to be marked in the plots.
 As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.}
-
-\item{logscale}{A string such as "x", "y" or "xy". Each axis mentioned in this string
+    \item{\code{logscale}}{A string such as "x", "y" or "xy". Each axis mentioned in this string
 is displayed in logarithmic scale (base 10) instead of linear.}
+    \item{\code{vars}}{A character vector. The variables to be plotted.}
+    \item{\code{scales}}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+    \item{\code{data}}{A quitte object or an object that can be transformed into a
+quitte object.}
+    \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.
+Use \code{options(mip.mainReg=<value>)} to set globally.}
+  }}
 }
 \value{
 \code{NULL} is returned invisible.

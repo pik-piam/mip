@@ -4,26 +4,20 @@
 \alias{showMultiLinePlots}
 \title{Show Multi-Line Plots}
 \usage{
-showMultiLinePlots(
-  data,
-  vars,
-  scales = "free_y",
-  nrowNum = 1,
-  mainReg = getOption("mip.mainReg")
-)
+showMultiLinePlots(...)
 }
 \arguments{
-\item{data}{A quitte object or an object that can be transformed into a
+\item{...}{
+  Arguments passed on to \code{\link[=createMultiLinePlots]{createMultiLinePlots}}
+  \describe{
+    \item{\code{vars}}{A character vector. The variables to be plotted.}
+    \item{\code{nrowNum}}{An integer value. Number of rows of the panel figures}
+    \item{\code{scales}}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+    \item{\code{data}}{A quitte object or an object that can be transformed into a
 quitte object.}
-
-\item{vars}{A character vector. The variables to be plotted.}
-
-\item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
-
-\item{nrowNum}{An integer value. Number of rows of the panel figures}
-
-\item{mainReg}{A single string. The plots for this region are shown enlarged.
+    \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
+  }}
 }
 \value{
 \code{NULL} is returned invisible.

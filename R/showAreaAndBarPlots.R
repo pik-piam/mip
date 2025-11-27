@@ -70,6 +70,7 @@ showAreaAndBarPlots <- function(...) {
 #' @param scales adjusts how axes are harmonized. Default is free_y
 #' @return A list of plots
 #' @importFrom rlang .data .env
+#' @importFrom gridExtra arrangeGrob
 #' @importFrom dplyr rename left_join summarize group_by arrange filter bind_rows
 createAreaAndBarPlots <- function(
   data, vars, tot = NULL, fill = FALSE,
@@ -229,7 +230,7 @@ createAreaAndBarPlots <- function(
   # Show plots.
   if (showNonMainRegs) {
     return(list(
-      grid.arrange(plotAreaMain, plotBarsMain, plotBarsRegi, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label),
+      arrangeGrob(plotAreaMain, plotBarsMain, plotBarsRegi, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label),
       plotAreaRegi
     ))
   } else {

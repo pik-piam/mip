@@ -181,5 +181,5 @@ createLinePlots <- function(
     p2 <- p2 + theme(legend.position = "none")
   }
 
-  return(grid.arrange(p1, p2, nrow = 1, widths = c(2, 3)))
+  return(arrangeGrob(p1, p2, nrow = 1, widths = c(2, 3)))
 }

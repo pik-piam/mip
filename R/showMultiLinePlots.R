@@ -24,7 +24,7 @@
 #' @export
 showMultiLinePlots <- function(...) {
   for (plot in createMultiLinePlots(...)) {
-    print(plot)
+    showPlot(plot)
     cat("\n\n")
   }
   return(invisible(NULL))

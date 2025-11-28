@@ -19,7 +19,7 @@
 #' }
 #' @export
 showLinePlots <- function(...) {
-  print(createLinePlots(...))
+  showPlot(createLinePlots(...))
   cat("\n\n")
   return(invisible(NULL))
 }
@@ -107,7 +107,7 @@ createLinePlots <- function(
 
   if (NROW(dMainScen) == 0 && NROW(dRegiScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
-    return(list())
+    return(NULL)
   }
 
   if (NROW(dMainScen) == 0) {

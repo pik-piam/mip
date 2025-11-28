@@ -22,7 +22,7 @@
 showAreaAndBarPlotsPlus <- function(...) {
   plots <- createAreaAndBarPlotsPlus(...)
   for (plot in plots) {
-    print(plot)
+    showPlot(plot)
     cat("\n\n")
   }
   return(invisible(NULL))

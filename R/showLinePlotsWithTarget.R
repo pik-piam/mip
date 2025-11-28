@@ -16,7 +16,7 @@
 #' }
 #' @export
 showLinePlotsWithTarget <- function(...) {
-  print(createLinePlotsWithTarget(...))
+  showPlot(createLinePlotsWithTarget(...))
   cat("\n\n")
   return(invisible(NULL))
 }

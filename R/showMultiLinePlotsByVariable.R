@@ -29,7 +29,7 @@
 #' @export
 showMultiLinePlotsByVariable <- function(...) {
 	for (plot in createMultiLinePlotsByVariable(...)) {
-		print(plot)
+		showPlot(plot)
 		cat("\n\n")
 	}
 	return(invisible(NULL))

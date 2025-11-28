@@ -34,7 +34,7 @@
 showAreaAndBarPlots <- function(...) {
   plots <- createAreaAndBarPlots(...)
   for (plot in plots) {
-    print(plot)
+    showPlot(plot)
     cat("\n\n")
   }
   return(invisible(NULL))
@@ -234,6 +234,6 @@ createAreaAndBarPlots <- function(
       plotAreaRegi
     ))
   } else {
-    return(list(grid.arrange(plotAreaMain, plotBarsMain, layout_matrix = rbind(c(1, 2)), left = label)))
+    return(list(arrangeGrob(plotAreaMain, plotBarsMain, layout_matrix = rbind(c(1, 2)), left = label)))
   }
 }

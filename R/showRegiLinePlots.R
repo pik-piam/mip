@@ -20,7 +20,7 @@
 #' @export
 #' @importFrom ggplot2 ylim
 showRegiLinePlots <- function(...) {
-  print(createRegiLinePlots(...))
+  showPlot(createRegiLinePlots(...))
   cat("\n\n")
   return(invisible(NULL))
 }

@@ -151,10 +151,11 @@ showAreaAndBarPlots <- function(
 
   # Create plots.
   # plotAreaMain: area plot for each scenario, main region
+  # no total line plotted here, can be added below
   plotAreaMain <- dataVars %>%
     filter(.data$region == .env$mainReg) %>%
     droplevels() %>%
-    mipArea(scales = scales, total = is.null(tot), ylab = lcp) +
+    mipArea(scales = scales, total = FALSE, ylab = lcp) +
     ylab(NULL) +
     theme(legend.position = "none")
 
@@ -179,9 +180,10 @@ showAreaAndBarPlots <- function(
       guides(fill = guide_legend(reverse = TRUE, ncol = 3))
 
     # plotAreaRegi: area plot for each scenario and region
+    # no total line plotted here, can be added below
     plotAreaRegi <- dataRegi %>%
       droplevels() %>%
-      mipArea(scales = scales, total = is.null(tot), ylab = lcp,
+      mipArea(scales = scales, total = FALSE, ylab = lcp,
               stack_priority = if (is.null(tot)) c("variable", "region") else "variable") +
       guides(fill = guide_legend(reverse = TRUE))
   } else {

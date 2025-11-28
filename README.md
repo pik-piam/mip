@@ -1,6 +1,6 @@
 # Comparison of multi-model runs
 
-R package **mip**, version **0.155.3**
+R package **mip**, version **0.155.4**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/mip)](https://cran.r-project.org/package=mip) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158586.svg)](https://doi.org/10.5281/zenodo.1158586) [![R build status](https://github.com/pik-piam/mip/workflows/check/badge.svg)](https://github.com/pik-piam/mip/actions) [![codecov](https://codecov.io/gh/pik-piam/mip/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mip) [![r-universe](https://pik-piam.r-universe.dev/badges/mip)](https://pik-piam.r-universe.dev/builds)
 
@@ -56,9 +56,9 @@ A BibTeX entry for LaTeX users is
   title = {mip: Comparison of multi-model runs},
   author = {David Klein and Jan Philipp Dietrich and Lavinia Baumstark and Florian Humpenoeder and Miodrag Stevanovic and Stephen Wirth and Pascal Führlich and Oliver Richters and Tonn Rüter and Robert Salzwedel and Fabrice Lécuyer},
   doi = {10.5281/zenodo.1158586},
-  date = {2025-09-16},
+  date = {2025-11-28},
   year = {2025},
   url = {https://github.com/pik-piam/mip},
-  note = {Version: 0.155.3},
+  note = {Version: 0.155.4},
 }
 ```

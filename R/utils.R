@@ -121,3 +121,19 @@ identifierModelScen <- function(x) {
   }
   return(x$identifier)
 }
+
+#' Draw various kinds of plots
+#'
+#' Draws different kinds of plots and handles their respective idiosyncracies.
+#' @param aPlot A low-level grob or a ggplot2 plot
+#' @noRd
+showPlot <- function(aPlot) {
+  if (!is.null(aPlot)) {
+    if ("grob" %in% class(aPlot)) {
+      grid::grid.newpage()
+      grid::grid.draw(aPlot)
+    } else {
+      print(aPlot)
+    }
+  }
+}

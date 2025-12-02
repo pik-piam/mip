@@ -7,6 +7,26 @@
 #' arranged and shown.
 #'
 #' @md
+#' @inheritDotParams createLinePlots
+#' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{\figure{showLinePlots.png}{options: width="100\%"}}
+#' @examples
+#' \dontrun{
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
+#' showLinePlots(data, "Policy Cost|GDP Loss")
+#' }
+#' @export
+showLinePlots <- function(...) {
+  showPlot(createLinePlots(...))
+  cat("\n\n")
+  return(invisible(NULL))
+}
+
+#' Create Line Plots
+#'
+#' Creates the line plots for showLinePlots.
 #' @param vars A character vector of variables to be plotted.  Defaults to all
 #'   variables in `data`.
 #' @param histVars A character vector of historical variables to be plotted.
@@ -20,34 +40,24 @@
 #' @param color.dim.manual optional vector with manual colors replacing default
 #' colors of color.dim, default is \code{NULL}.
 #' @param vlines period used for vertical line
-#' @inheritParams showAreaAndBarPlots
-#' @return \code{NULL} is returned invisible.
-#' @section Example Plots:
-#' \if{html}{\figure{showLinePlots.png}{options: width="100\%"}}
-#' @examples
-#' \dontrun{
-#' options(mip.mainReg = "World")
-#' data <- as.quitte(data)
-#' showLinePlots(data, "Policy Cost|GDP Loss")
-#' }
-#' @export
+#' @return Arranged plots
+#' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
 #' @importFrom gridExtra arrangeGrob
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
-
-showLinePlots <- function(
-    data,
-    vars = getVars(as.quitte(data)),
-    histVars = vars,
-    scales = "free_y",
-    ylim = 0,
-    show.dots = TRUE,
-    color.dim.name = NULL,
-    mainReg = getOption("mip.mainReg"),
-    color.dim.manual = NULL,
-    histModelsExclude = character(),
-    vlines = NULL
+createLinePlots <- function(
+  data,
+  vars = getVars(as.quitte(data)),
+  histVars = vars,
+  scales = "free_y",
+  ylim = 0,
+  show.dots = TRUE,
+  color.dim.name = NULL,
+  mainReg = getOption("mip.mainReg"),
+  color.dim.manual = NULL,
+  histModelsExclude = character(),
+  vlines = NULL
 ) {
   # Validate function arguments.
   stopifnot(is.character(vars))
@@ -97,7 +107,7 @@ showLinePlots <- function(
 
   if (NROW(dMainScen) == 0 && NROW(dRegiScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
-    return(invisible(NULL))
+    return(NULL)
   }
 
   if (NROW(dMainScen) == 0) {
@@ -171,9 +181,5 @@ showLinePlots <- function(
     p2 <- p2 + theme(legend.position = "none")
   }
 
-  # Show plots.
-  grid.arrange(p1, p2, nrow = 1, widths = c(2, 3))
-  cat("\n\n")
-
-  return(invisible(NULL))
+  return(arrangeGrob(p1, p2, nrow = 1, widths = c(2, 3)))
 }

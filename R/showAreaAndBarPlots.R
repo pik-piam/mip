@@ -10,6 +10,40 @@
 #' divided by the values of tot to show share of total. The plots arranged and
 #' shown.
 #'
+#' @inheritDotParams createAreaAndBarPlots
+#' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}
+#' \if{html}{page 2 - \code{fill=FALSE}: \figure{showAreaAndBarPlots2.png}{options: width="100\%"}}
+#' \if{html}{page 1 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill1.png}{options: width="100\%"} }
+#' \if{html}{page 2 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill2.png}{options: width="100\%"} }
+#' @examples
+#' \dontrun{
+#' options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
+#' options(mip.mainReg = "World")
+#' data <- as.quitte(data)
+#' vars <- c(
+#'   "FE|CDR",
+#'   "FE|Transport",
+#'   "FE|Buildings",
+#'   "FE|Industry")
+#' showAreaAndBarPlots(data, vars)
+#' showAreaAndBarPlots(data, vars, orderVars = "user")
+#' }
+#' @export
+showAreaAndBarPlots <- function(...) {
+  plots <- createAreaAndBarPlots(...)
+  for (plot in plots) {
+    showPlot(plot)
+    cat("\n\n")
+  }
+  return(invisible(NULL))
+}
+
+#' Create Area and Bar Plots
+#'
+#' Creates the area and bar plots for showAreaAndBarPlots.
+#'
 #' @param data A quitte object or an object that can be transformed into a
 #'   quitte object.
 #' @param vars A character vector. The variables to be plotted.
@@ -34,34 +68,16 @@
 #' @param yearsBarPlot A numeric vector. The years shown in the bar plots. Use
 #'   \code{options(mip.yearsBarPlot=<value>)} to set globally.
 #' @param scales adjusts how axes are harmonized. Default is free_y
-#' @return \code{NULL} is returned invisible.
-#' @section Example Plots:
-#' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}
-#' \if{html}{page 2 - \code{fill=FALSE}: \figure{showAreaAndBarPlots2.png}{options: width="100\%"}}
-#' \if{html}{page 1 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill1.png}{options: width="100\%"} }
-#' \if{html}{page 2 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill2.png}{options: width="100\%"} }
-#' @examples
-#' \dontrun{
-#' options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))
-#' options(mip.mainReg = "World")
-#' data <- as.quitte(data)
-#' vars <- c(
-#'   "FE|CDR",
-#'   "FE|Transport",
-#'   "FE|Buildings",
-#'   "FE|Industry")
-#' showAreaAndBarPlots(data, vars)
-#' showAreaAndBarPlots(data, vars, orderVars = "user")
-#' }
-#' @export
+#' @return A list of plots
 #' @importFrom rlang .data .env
+#' @importFrom gridExtra arrangeGrob
 #' @importFrom dplyr rename left_join summarize group_by arrange filter bind_rows
-showAreaAndBarPlots <- function(
-    data, vars, tot = NULL, fill = FALSE,
-    orderVars = c("mean", "user", "userRev"),
-    mainReg = getOption("mip.mainReg"),
-    yearsBarPlot = getOption("mip.yearsBarPlot"),
-    scales = "free_y"
+createAreaAndBarPlots <- function(
+  data, vars, tot = NULL, fill = FALSE,
+  orderVars = c("mean", "user", "userRev"),
+  mainReg = getOption("mip.mainReg"),
+  yearsBarPlot = getOption("mip.yearsBarPlot"),
+  scales = "free_y"
 ) {
 
   data <- as.quitte(data)
@@ -95,12 +111,12 @@ showAreaAndBarPlots <- function(
   if (!is.null(tot)) warnMissingVars(data, tot)
   if (nrow(dataVars) == 0) {
     warning("Nothing to plot.", call. = FALSE)
-    return(invisible(NULL))
+    return(list())
   }
 
   if (!mainReg %in% unique(dataVars$region)) {
     warning("Main region not found in data. Nothing to plot.", call. = FALSE)
-    return(invisible(NULL))
+    return(list())
   }
 
   switch(
@@ -213,12 +229,11 @@ showAreaAndBarPlots <- function(
 
   # Show plots.
   if (showNonMainRegs) {
-    grid.arrange(plotAreaMain, plotBarsMain, plotBarsRegi, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label)
-    cat("\n\n")
-    print(plotAreaRegi)
+    return(list(
+      arrangeGrob(plotAreaMain, plotBarsMain, plotBarsRegi, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label),
+      plotAreaRegi
+    ))
   } else {
-    grid.arrange(plotAreaMain, plotBarsMain, layout_matrix = rbind(c(1, 2)), left = label)
+    return(list(arrangeGrob(plotAreaMain, plotBarsMain, layout_matrix = rbind(c(1, 2)), left = label)))
   }
-  cat("\n\n")
-  return(invisible(NULL))
 }

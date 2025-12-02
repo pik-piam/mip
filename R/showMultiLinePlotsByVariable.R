@@ -9,21 +9,7 @@
 #' variable. For the x-axis-variable a unique historical source / model is
 #' chosen via \code{histRefModel}.
 #'
-#' @param xVar A single string. The variable for the x-axis.
-#' @param showHistorical A single logical value. Should historical data be
-#'   shown? It is not recommended to set this to \code{TRUE} as the resulting
-#'   plot we probably be quite confusing.
-#' @param showGlobal A single logical value. Should global data be
-#'  shown? Default is false to save space in pdf
-#' @param nrowNum An integer value. Number of rows of the panel figures
-#' @param histRefModel A named character vector identifying the unique model to
-#'   be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
-#'   to set globally.
-#' @param yearsByVariable A numeric vector. The years to be marked in the plots.
-#'   As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.
-#' @param logscale A string such as "x", "y" or "xy". Each axis mentioned in this string
-#'   is displayed in logarithmic scale (base 10) instead of linear.
-#' @inheritParams showMultiLinePlots
+#' @inheritDotParams createMultiLinePlotsByVariable
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{page 1: \figure{showMultiLinePlotsByVariable1.png}{options: width="100\%"}}
@@ -41,10 +27,36 @@
 #' showMultiLinePlotsByVariable(data, vars, "GDP|PPP pCap")
 #' }
 #' @export
+showMultiLinePlotsByVariable <- function(...) {
+	for (plot in createMultiLinePlotsByVariable(...)) {
+		showPlot(plot)
+		cat("\n\n")
+	}
+	return(invisible(NULL))
+}
+
+#' Create Multi Line Plots by Variable
+#'
+#' Creates the plots for showMultiLinePlotsByVariable
+#' @param xVar A single string. The variable for the x-axis.
+#' @param showHistorical A single logical value. Should historical data be
+#'   shown? It is not recommended to set this to \code{TRUE} as the resulting
+#'   plot we probably be quite confusing.
+#' @param showGlobal A single logical value. Should global data be
+#'  shown? Default is false to save space in pdf
+#' @param nrowNum An integer value. Number of rows of the panel figures
+#' @param histRefModel A named character vector identifying the unique model to
+#'   be chosen for historical data. Use \code{options(mip.histRefModel=<value>)}
+#'   to set globally.
+#' @param yearsByVariable A numeric vector. The years to be marked in the plots.
+#'   As default it uses the value globally set by \code{options(mip.yearsBarPlot=<value>)}.
+#' @param logscale A string such as "x", "y" or "xy". Each axis mentioned in this string
+#'   is displayed in logarithmic scale (base 10) instead of linear.
+#' @inheritParams createMultiLinePlots
 #' @importFrom rlang .data .env
 #' @importFrom tidyr drop_na
 #' @importFrom ggplot2 ylim
-showMultiLinePlotsByVariable <- function(
+createMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   showHistorical = FALSE,
   showGlobal = FALSE,
@@ -125,7 +137,7 @@ showMultiLinePlotsByVariable <- function(
 		warnMissingVars(dMainScen, vars)
 		if (NROW(dMainScen) == 0) {
 			warning("Nothing to plot.", call. = FALSE)
-			return(invisible(NULL))
+			return(list())
 		}
 		plotGlobal <- dMainScen %>% plotOptions()
 	}
@@ -156,13 +168,9 @@ showMultiLinePlotsByVariable <- function(
 		plotRegi <- plotRegi + plotOptionsHist(dRegiHist)
 	}
 
-
-	# show plots
 	if (showGlobal) {
-		print(plotGlobal)
-		cat("\n\n")
+		return(list(plotGlobal, plotRegi))
+	} else {
+		return(list(plotRegi))
 	}
-	print(plotRegi)
-	cat("\n\n")
-	return(invisible(NULL))
 }

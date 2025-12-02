@@ -9,9 +9,7 @@
 #' followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
 #' These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
 #'
-#' @param tot A single string. A total value to be shown in the area plots.
-#' @param plusNum A single number. Number of "+"symbols for disaggregation.
-#' @inheritParams showAreaAndBarPlots
+#' @inheritDotParams createAreaAndBarPlotsPlus
 #' @return \code{NULL} is returned invisible.
 #' @examples
 #' \dontrun{
@@ -21,7 +19,22 @@
 #' showAreaAndBarPlotsPlus(data, "SE|Liquids")
 #' }
 #' @export
-showAreaAndBarPlotsPlus <- function(
+showAreaAndBarPlotsPlus <- function(...) {
+  plots <- createAreaAndBarPlotsPlus(...)
+  for (plot in plots) {
+    showPlot(plot)
+    cat("\n\n")
+  }
+  return(invisible(NULL))
+}
+
+#' Create Area and Bar Plus Plots
+#'
+#' Creates the plots for \code{\link{showAreaAndBarPlotsPlus}}
+#' @param tot A single string. A total value to be shown in the area plots.
+#' @param plusNum A single number. Number of "+"symbols for disaggregation.
+#' @inheritParams createAreaAndBarPlots
+createAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
   yearsBarPlot = getOption("mip.yearsBarPlot"),
@@ -47,6 +60,6 @@ showAreaAndBarPlotsPlus <- function(
   # Instead:
   vars <- gsub("\\|\\++\\|", "|", varsPlus)
 
-  showAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
-                      yearsBarPlot = yearsBarPlot, scales = scales)
+  return(createAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
+                               yearsBarPlot = yearsBarPlot, scales = scales))
 }

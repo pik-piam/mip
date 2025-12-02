@@ -4,34 +4,24 @@
 \alias{showAreaAndBarPlotsPlus}
 \title{Show Area and Bar Plots Utilizing '+'-Notation}
 \usage{
-showAreaAndBarPlotsPlus(
-  data,
-  tot,
-  plusNum = 1,
-  fill = FALSE,
-  mainReg = getOption("mip.mainReg"),
-  yearsBarPlot = getOption("mip.yearsBarPlot"),
-  scales = "free_y"
-)
+showAreaAndBarPlotsPlus(...)
 }
 \arguments{
-\item{data}{A quitte object or an object that can be transformed into a
+\item{...}{
+  Arguments passed on to \code{\link[=createAreaAndBarPlotsPlus]{createAreaAndBarPlotsPlus}}
+  \describe{
+    \item{\code{tot}}{A single string. A total value to be shown in the area plots.}
+    \item{\code{plusNum}}{A single number. Number of "+"symbols for disaggregation.}
+    \item{\code{data}}{A quitte object or an object that can be transformed into a
 quitte object.}
-
-\item{tot}{A single string. A total value to be shown in the area plots.}
-
-\item{plusNum}{A single number. Number of "+"symbols for disaggregation.}
-
-\item{fill}{Logical. Should the vars be normalized so that their values add
+    \item{\code{fill}}{Logical. Should the vars be normalized so that their values add
 to 1? (Plot shares instead of absolute values.)}
-
-\item{mainReg}{A single string. The plots for this region are shown enlarged.
+    \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
-
-\item{yearsBarPlot}{A numeric vector. The years shown in the bar plots. Use
+    \item{\code{yearsBarPlot}}{A numeric vector. The years shown in the bar plots. Use
 \code{options(mip.yearsBarPlot=<value>)} to set globally.}
-
-\item{scales}{adjusts how axes are harmonized. Default is free_y}
+    \item{\code{scales}}{adjusts how axes are harmonized. Default is free_y}
+  }}
 }
 \value{
 \code{NULL} is returned invisible.

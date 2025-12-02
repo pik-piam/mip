@@ -4,26 +4,20 @@
 \alias{showRegiLinePlots}
 \title{Show Line Plots for Region Comparison}
 \usage{
-showRegiLinePlots(
-  data,
-  vars,
-  scales = "free_y",
-  excludeMainRegion = TRUE,
-  mainReg = getOption("mip.mainReg")
-)
+showRegiLinePlots(...)
 }
 \arguments{
-\item{data}{A quitte object or an object that can be transformed into a
-quitte object.}
-
-\item{vars}{A character vector. The variables to be plotted.}
-
-\item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
-
-\item{excludeMainRegion}{A single logical value. Should the main region be
+\item{...}{
+  Arguments passed on to \code{\link[=createRegiLinePlots]{createRegiLinePlots}}
+  \describe{
+    \item{\code{excludeMainRegion}}{A single logical value. Should the main region be
 excluded (or shown in the same plot)?}
-
-\item{mainReg}{A single string. Use options(mip.mainReg=<value>) to set globally.}
+    \item{\code{mainReg}}{A single string. Use options(mip.mainReg=<value>) to set globally.}
+    \item{\code{vars}}{A character vector. The variables to be plotted.}
+    \item{\code{scales}}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+    \item{\code{data}}{A quitte object or an object that can be transformed into a
+quitte object.}
+  }}
 }
 \value{
 \code{NULL} is returned invisible.

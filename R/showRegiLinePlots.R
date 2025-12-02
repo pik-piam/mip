@@ -7,10 +7,7 @@
 #' show historical data. Different regions are shown in the same plot. Faceting
 #' is done by \code{scenario}. The plots arranged and shown.
 #'
-#' @param excludeMainRegion A single logical value. Should the main region be
-#'   excluded (or shown in the same plot)?
-#' @param mainReg A single string. Use options(mip.mainReg=<value>) to set globally.
-#' @inheritParams showMultiLinePlots
+#' @inheritDotParams createRegiLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{\figure{showRegiLinePlots.png}{options: width="100\%"}}
@@ -21,9 +18,22 @@
 #' showRegiLinePlots(data, "Price|Carbon")
 #' }
 #' @export
-#' @importFrom rlang .data .env
 #' @importFrom ggplot2 ylim
-showRegiLinePlots <- function(
+showRegiLinePlots <- function(...) {
+  showPlot(createRegiLinePlots(...))
+  cat("\n\n")
+  return(invisible(NULL))
+}
+
+#' Create Region Comparison Line Plots
+#'
+#' Creates the plots for showRegiLinePlots
+#' @param excludeMainRegion A single logical value. Should the main region be
+#'   excluded (or shown in the same plot)?
+#' @param mainReg A single string. Use options(mip.mainReg=<value>) to set globally.
+#' @inheritParams createMultiLinePlots
+#' @importFrom rlang .data .env
+createRegiLinePlots <- function(
   data, vars, scales = "free_y",
   excludeMainRegion = TRUE,
   mainReg = getOption("mip.mainReg")
@@ -56,7 +66,7 @@ showRegiLinePlots <- function(
   warnMissingVars(dScen, vars)
   if (NROW(dScen) == 0) {
     warning("Nothing to plot.", call. = FALSE)
-    return(invisible(NULL))
+    return(list())
   }
 
   label <- paste0(
@@ -76,9 +86,5 @@ showRegiLinePlots <- function(
     theme_minimal() ->
     p
 
-  # Show plots.
-  print(p)
-  cat("\n\n")
-
-  return(invisible(NULL))
+  return(p)
 }

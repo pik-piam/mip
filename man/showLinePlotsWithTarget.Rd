@@ -4,18 +4,19 @@
 \alias{showLinePlotsWithTarget}
 \title{Show Line Plots With Target}
 \usage{
-showLinePlotsWithTarget(data, vars, scales = "free_y", color.dim.name = NULL)
+showLinePlotsWithTarget(...)
 }
 \arguments{
-\item{data}{A quitte object or an object that can be transformed into a
-quitte object.}
-
-\item{vars}{A character vector. Usually just a single string. The variables
+\item{...}{
+  Arguments passed on to \code{\link[=createLinePlotsWithTarget]{createLinePlotsWithTarget}}
+  \describe{
+    \item{\code{vars}}{A character vector. Usually just a single string. The variables
 to be plotted.}
-
-\item{scales}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
-
-\item{color.dim.name}{name for the color-dimension used in the legend}
+    \item{\code{scales}}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+    \item{\code{color.dim.name}}{name for the color-dimension used in the legend}
+    \item{\code{data}}{A quitte object or an object that can be transformed into a
+quitte object.}
+  }}
 }
 \value{
 \code{NULL} is returned invisible.

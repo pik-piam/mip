@@ -1,6 +1,7 @@
 test_that("getPlotData works for a single gdx file", {
   skip_if_not_installed("gdxrrw")
   skip_if_not(as.logical(gdxrrw::igdx(silent = TRUE)))
+  tempDir <- withr::local_tempdir()
 
   testData <- data.frame(
     iteration = as.factor(rep(1:4, each = 4)),
@@ -12,7 +13,7 @@ test_that("getPlotData works for a single gdx file", {
   attr(testData, "domains") <- c("iteration", "year", "region")
 
   # write test data to gdx file
-  testFile <- file.path(tempdir(), "fulldata.gdx")
+  testFile <- file.path(tempDir, "fulldata.gdx")
   gdxrrw::wgdx.lst(testFile, testData)
 
   expected <- data.frame(
@@ -29,6 +30,7 @@ test_that("getPlotData works for a single gdx file", {
 test_that("getPlotData works for multiple gdx files", {
   skip_if_not_installed("gdxrrw")
   skip_if_not(as.logical(gdxrrw::igdx(silent = TRUE)))
+  tempDir <- withr::local_tempdir()
 
   testData1 <- data.frame(
     year = as.factor(rep(2000 + 0:7, each = 2)),
@@ -37,7 +39,7 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(testData1, "symName") <- "testSymbolName"
   attr(testData1, "domains") <- c("year", "region")
-  gdxrrw::wgdx.lst(file.path(tempdir(), "fulldata_1.gdx"), testData1)
+  gdxrrw::wgdx.lst(file.path(tempDir, "fulldata_1.gdx"), testData1)
 
   testData2 <- data.frame(
     year = as.factor(rep(2000 + 0:7, each = 2)),
@@ -46,7 +48,7 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(testData2, "symName") <- "testSymbolName"
   attr(testData2, "domains") <- c("year", "region")
-  gdxrrw::wgdx.lst(file.path(tempdir(), "fulldata_2.gdx"), testData2)
+  gdxrrw::wgdx.lst(file.path(tempDir, "fulldata_2.gdx"), testData2)
 
   expected <- data.frame(
     year = as.character(c(rep(2000 + 0:7, each = 2), rep(2000 + 0:7, each = 2))),
@@ -55,8 +57,8 @@ test_that("getPlotData works for multiple gdx files", {
     testSymbolName = c(rep(1:4, each = 4) + 0.1, rep(1:4, each = 4) + 0.2)
   )
 
-  actual <- getPlotData("testSymbolName", file.path(tempdir(), paste0("fulldata_", 1:2, ".gdx")))
+  actual <- getPlotData("testSymbolName", file.path(tempDir, paste0("fulldata_", 1:2, ".gdx")))
   expect_equal(actual, expected)
-  actual2 <- getPlotData("testSymbolName", tempdir())
+  actual2 <- getPlotData("testSymbolName", tempDir)
   expect_equal(actual2, expected)
 })

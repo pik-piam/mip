@@ -4,4 +4,6 @@ test_that("mipLineHistorical works", {
                       .data$variable == "Consumption")
   p <- mipLineHistorical(qe)
   expect_identical(p$labels$x, "Year")
+
+  expect_no_error(print(p))
 })

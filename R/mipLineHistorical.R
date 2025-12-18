@@ -99,12 +99,6 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
   a$scenario <- as.factor(a$scenario)
   a$id <- factor(a$id, ordered = TRUE, levels = rev(plot.priority))
 
-  # ensure that linetype exists
-  if (is.null(linetype.dim)) {
-    a$dummy_linetype <- "x"  # constant value
-    linetype.dim <- "dummy_linetype"
-  }
-
   # make line plot of data
   p <- ggplot()
   if (color.dim != "identifier" && !is.null(x_hist)) stop("color.dim can only be choosen freely if x_hist is NULL!")
@@ -139,7 +133,7 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
 
   # internal functions for plotting of different types of data
   priority_x <- function(p) {
-    p <- p + geom_line(data = a[a$id == "x", ], aes(x = .data[["period"]], y = .data[["value"]], color = .data[[color.dim]], linetype = .data[[linetype.dim]]), linewidth = 1)
+    p <- p + geom_line(data = a[a$id == "x", ], aes(x = .data[["period"]], y = .data[["value"]], color = .data[[color.dim]], linetype = if(!is.null(linetype.dim)) .data[[linetype.dim]] else NULL), linewidth = 1)
     if (show.dots) {
       p <- p + geom_point(data = a[a$id == "x", ], aes(x = .data[["period"]], y = .data[["value"]], color = .data[[color.dim]]), size = 1.5)
     }
@@ -161,30 +155,31 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
 
   priority_x_proj <- function(p) {
     if (any(a$id == "x_proj")) {
+      a_x_proj <- a[a$id == "x_proj" & a$period <= ymax, ]
       if (leg.proj) {
         # plot for creating the legend
         p <- p + geom_line(
-          data = a[a$id == "x_proj" & a$period <= ymax, ],
-          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], color = .data[["identifier"]], linetype = .data[[linetype.dim]], alpha = .data[["identifier"]]),
+          data = a_x_proj,
+          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], color = .data[["identifier"]], linetype = if(!is.null(linetype.dim)) .data[[linetype.dim]] else NULL, alpha = .data[["identifier"]]),
           linewidth = 0
         )
         # plot the data
         p <- p + geom_line(
-          data = a[a$id == "x_proj" & a$period <= ymax, ],
-          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], color = .data[["identifier"]], linetype = .data[[linetype.dim]]),
+          data = a_x_proj,
+          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], color = .data[["identifier"]], linetype = if(!is.null(linetype.dim)) .data[[linetype.dim]] else NULL),
           linewidth = 0.8, alpha = .7, show.legend = TRUE
         )
       } else {
         # plot for creating the legend
         p <- p + geom_line(
-          data = a[a$id == "x_proj" & a$period <= ymax, ],
-          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], linetype = .data[[linetype.dim]], alpha = .data[["model"]]),
+          data = a_x_proj,
+          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], linetype = if(!is.null(linetype.dim)) .data[[linetype.dim]] else NULL, alpha = .data[["model"]]),
           linewidth = 0, color = "white"
         )
         # plot the data
         p <- p + geom_line(
-          data = a[a$id == "x_proj" & a$period <= ymax, ],
-          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], linetype = .data[[linetype.dim]]),
+          data = a_x_proj,
+          aes(x = .data[["period"]], y = .data[["value"]], group = .data[["identifier"]], linetype = if(!is.null(linetype.dim)) .data[[linetype.dim]] else NULL),
           linewidth = 0.8, alpha = .5, color = "#A1A194", show.legend = TRUE
         )
       }

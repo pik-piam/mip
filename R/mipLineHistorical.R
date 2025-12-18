@@ -101,7 +101,7 @@ mipLineHistorical <- function(x, x_hist = NULL, color.dim = "identifier", linety
 
   # ensure that linetype exists
   if (is.null(linetype.dim)) {
-    a$dummy_linetype <- 1  # constant value
+    a$dummy_linetype <- "x"  # constant value
     linetype.dim <- "dummy_linetype"
   }
 

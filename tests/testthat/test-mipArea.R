@@ -6,5 +6,5 @@ test_that("mipArea works", {
   expect_identical(p$labels$x, "Year")
   expect_identical(p$labels$y, "Final Energy (EJ/yr)")
 
-  expect_no_error(print(p))
+  expect_no_error(suppressWarnings(print(p)))
 })

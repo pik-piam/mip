@@ -119,7 +119,7 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
     total <- x %>%
       group_by(.data[[dimToGroup[1]]], .data[[dimToGroup[2]]], .data[[dimToGroup[3]]],
                .data[[dimToGroup[4]]], .data[[dimToGroup[5]]]) %>%
-      summarise(value = sum(.data[["value"]], na.rm = TRUE)) %>%
+      summarise(value = sum(.data$value, na.rm = TRUE)) %>%
       ungroup()
     # add missing column dimToStack to make it convertable to quitte
     total[, dimToStack] <- "Total"
@@ -180,12 +180,12 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
   ############################################
 
   p <- ggplot() +
-       geom_area(data = pos, aes(.data[["period"]], .data[["value"]], fill = .data[[dimToStack]])) +
-       geom_area(data = neg, aes(.data[["period"]], .data[["value"]], fill = .data[[dimToStack]]))
+       geom_area(data = pos, aes(.data$period, .data$value, fill = .data[[dimToStack]])) +
+       geom_area(data = neg, aes(.data$period, .data$value, fill = .data[[dimToStack]]))
 
   if (!is.null(hist)) {
-       p <- p + geom_area(data = posH, aes(.data[["period"]], .data[["value"]], fill = .data[[dimToStack]]), alpha = 0.3)
-       p <- p + geom_area(data = negH, aes(.data[["period"]], .data[["value"]], fill = .data[[dimToStack]]), alpha = 0.3)
+       p <- p + geom_area(data = posH, aes(.data$period, .data$value, fill = .data[[dimToStack]]), alpha = 0.3)
+       p <- p + geom_area(data = negH, aes(.data$period, .data$value, fill = .data[[dimToStack]]), alpha = 0.3)
   }
 
 
@@ -204,11 +204,11 @@ mipArea <- function(x, stack_priority = c("variable", "region"), total = TRUE, s
 
   # add total to plot as black line
   if (is.quitte(total)) {
-    p <- p + geom_line(data = totalX, aes(.data[["period"]], .data[["value"]], linetype = .data[[dimToStack]]),
+    p <- p + geom_line(data = totalX, aes(.data$period, .data$value, linetype = .data[[dimToStack]]),
                        color = "#000000", linewidth = 1)
     p <- p + scale_linetype_discrete(labels = "Total", name = "")
     if (!is.null(hist)) {
-      p <- p + geom_line(data = totalH, aes(.data[["period"]], .data[["value"]], linetype = .data[[dimToStack]]),
+      p <- p + geom_line(data = totalH, aes(.data$period, .data$value, linetype = .data[[dimToStack]]),
                          color = "#000000", linewidth = 1, alpha = 0.3)
     }
   }

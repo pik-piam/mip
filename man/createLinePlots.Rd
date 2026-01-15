@@ -15,6 +15,7 @@ createLinePlots(
   mainReg = getOption("mip.mainReg"),
   color.dim.manual = NULL,
   histModelsExclude = character(),
+  target = NULL,
   vlines = NULL
 )
 }
@@ -22,7 +23,7 @@ createLinePlots(
 \item{data}{A quitte object or an object that can be transformed into a
 quitte object.}
 
-\item{vars}{A character vector of variables to be plotted.  Defaults to all
+\item{vars}{A character vector of variables to be plotted. Defaults to all
 variables in `data`.}
 
 \item{histVars}{A character vector of historical variables to be plotted.
@@ -44,6 +45,8 @@ colors of color.dim, default is \code{NULL}.}
 
 \item{histModelsExclude}{A character vector with historical models to
 exclude.}
+
+\item{target}{optional string, model variable to be plotted with dots (indicating targets)}
 
 \item{vlines}{period used for vertical line}
 }

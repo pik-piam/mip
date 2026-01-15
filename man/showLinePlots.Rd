@@ -10,7 +10,7 @@ showLinePlots(...)
 \item{...}{
   Arguments passed on to \code{\link[=createLinePlots]{createLinePlots}}
   \describe{
-    \item{\code{vars}}{A character vector of variables to be plotted.  Defaults to all
+    \item{\code{vars}}{A character vector of variables to be plotted. Defaults to all
 variables in `data`.}
     \item{\code{histVars}}{A character vector of historical variables to be plotted.
 Defaults to `vars`.}
@@ -22,6 +22,7 @@ Defaults to `vars`.}
 exclude.}
     \item{\code{color.dim.manual}}{optional vector with manual colors replacing default
 colors of color.dim, default is \code{NULL}.}
+    \item{\code{target}}{optional string, model variable to be plotted with dots (indicating targets)}
     \item{\code{vlines}}{period used for vertical line}
     \item{\code{data}}{A quitte object or an object that can be transformed into a
 quitte object.}

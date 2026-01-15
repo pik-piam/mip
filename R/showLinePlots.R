@@ -27,7 +27,7 @@ showLinePlots <- function(...) {
 #' Create Line Plots
 #'
 #' Creates the line plots for showLinePlots.
-#' @param vars A character vector of variables to be plotted.  Defaults to all
+#' @param vars A character vector of variables to be plotted. Defaults to all
 #'   variables in `data`.
 #' @param histVars A character vector of historical variables to be plotted.
 #'   Defaults to `vars`.
@@ -39,6 +39,7 @@ showLinePlots <- function(...) {
 #'   exclude.
 #' @param color.dim.manual optional vector with manual colors replacing default
 #' colors of color.dim, default is \code{NULL}.
+#' @param target optional model variable to be plotted with dots (indicating targets)
 #' @param vlines period used for vertical line
 #' @return Arranged plots
 #' @inheritParams createAreaAndBarPlots
@@ -57,6 +58,7 @@ createLinePlots <- function(
   mainReg = getOption("mip.mainReg"),
   color.dim.manual = NULL,
   histModelsExclude = character(),
+  target = NULL,
   vlines = NULL
 ) {
   # Validate function arguments.
@@ -135,9 +137,24 @@ createLinePlots <- function(
           mapping = aes(x = .data$period, y = .data$value))
     }
 
-    if (! is.null(vlines)) {
+    if (!is.null(vlines)) {
       p1 <- p1 + geom_vline(xintercept = vlines, linetype = 3)
     }
+
+    if (!is.null(target)) {
+
+      targets <- as.quitte(data) %>%
+        filter(!is.na(.data$value), .data$region == .env$mainReg,
+               .data$scenario != "historical", .data$variable == target) %>%
+        droplevels()
+
+      p1 <- p1 +
+        geom_point(data = targets,
+                   aes(x = .data$period, y = .data$value, shape = .data$scenario)) +
+        guides(shape = guide_legend(title = "Target",
+                                    theme = theme(legend.direction = "vertical",)))
+    }
+
   }
   if (NROW(dRegiScen) == 0) {
     p2 <- ggplot() + theme_minimal()
@@ -155,8 +172,24 @@ createLinePlots <- function(
         color.dim.manual = color.dim.manual,
         color.dim.manual.hist = color.dim.manual.hist[regiHistModels]
       )
+
     if (!is.null(vlines)) {
       p2 <- p2 + geom_vline(xintercept = vlines, linetype = 3)
+    }
+
+    if (!is.null(target)) {
+
+      targets <- as.quitte(data) %>%
+        filter(!is.na(.data$value), .data$region != .env$mainReg,
+               .data$scenario != "historical", .data$variable == target) %>%
+        droplevels()
+
+      p2 <- p2 +
+        geom_point(data = targets,
+                   aes(x = .data$period, y = .data$value, shape = .data$scenario)) +
+        guides(shape = guide_legend(title = "Target",
+                                    theme = theme(legend.direction = "vertical")))
+
     }
   }
 

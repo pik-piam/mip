@@ -39,7 +39,7 @@ showLinePlots <- function(...) {
 #'   exclude.
 #' @param color.dim.manual optional vector with manual colors replacing default
 #' colors of color.dim, default is \code{NULL}.
-#' @param target optional model variable to be plotted with dots (indicating targets)
+#' @param target optional string, model variable to be plotted with dots (indicating targets)
 #' @param vlines period used for vertical line
 #' @return Arranged plots
 #' @inheritParams createAreaAndBarPlots

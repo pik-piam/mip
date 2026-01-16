@@ -7,7 +7,7 @@
 #' \code{varplus} containing variable names that use the '+'-notaion. The
 #' function searches for values in \code{varplus} that start with \code{tot}
 #' followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
-#' These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
+#' These variables are then used in a call to \code{\link{layoutAreaAndBarPlots}}.
 #'
 #' @inheritDotParams createAreaAndBarPlotsPlus
 #' @return \code{NULL} is returned invisible.
@@ -33,7 +33,7 @@ showAreaAndBarPlotsPlus <- function(...) {
 #' Creates the plots for \code{\link{showAreaAndBarPlotsPlus}}
 #' @param tot A single string. A total value to be shown in the area plots.
 #' @param plusNum A single number. Number of "+"symbols for disaggregation.
-#' @inheritParams createAreaAndBarPlots
+#' @inheritParams layoutAreaAndBarPlots
 createAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),
@@ -54,12 +54,8 @@ createAreaAndBarPlotsPlus <- function(
   prefix <- paste0(tot, "|", strrep("+", plusNum), "|")
   varsPlus <- allVarsPlus[startsWith(allVarsPlus, prefix)]
 
-  # TODO: Want to use
-  # vars <- remind2::deletePlus(varsPlus)
-  # Does not work as remind2 imports mip, i.e., circular imports.
-  # Instead:
-  vars <- gsub("\\|\\++\\|", "|", varsPlus)
+  vars <- piamutils::deletePlus(varsPlus)
 
-  return(createAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
+  return(layoutAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
                                yearsBarPlot = yearsBarPlot, scales = scales))
 }

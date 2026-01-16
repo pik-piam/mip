@@ -10,7 +10,7 @@
 #' divided by the values of tot to show share of total. The plots arranged and
 #' shown.
 #'
-#' @inheritDotParams createAreaAndBarPlots
+#' @inheritDotParams layoutAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}
@@ -32,7 +32,7 @@
 #' }
 #' @export
 showAreaAndBarPlots <- function(...) {
-  plots <- createAreaAndBarPlots(...)
+  plots <- layoutAreaAndBarPlots(...)
   for (plot in plots) {
     showPlot(plot)
     cat("\n\n")
@@ -40,9 +40,54 @@ showAreaAndBarPlots <- function(...) {
   return(invisible(NULL))
 }
 
+
+
+#' Layout Area and Bar Plots
+#' Layouts the area and bar plots created by createAreaAndBarPlots, which can
+#' then be displayed using showAreaAndBarPlots
+#' @md
+#' @inheritDotParams createAreaAndBarPlots
+#' @return Arranged plots
+#' @importFrom gridExtra arrangeGrob
+#'
+#' @export
+layoutAreaAndBarPlots <- function(...) {
+
+  items <- createAreaAndBarPlots(...)
+
+  if (is.null(items) || length(items) == 0) {
+    return(NULL)
+  }
+
+  if (items[["showNonMainRegs"]]) {
+
+    plotAreaMain <- items[["p1"]][[1]]
+    plotBarsMain <- items[["p1"]][[2]]
+    plotBarsRegi <- items[["p1"]][[3]]
+    label <- items[["p1"]][[4]]
+
+    return(list(
+      arrangeGrob(plotAreaMain, plotBarsMain, plotBarsRegi,
+        layout_matrix = rbind(c(1, 3), c(2, 3)), left = label
+      ),
+      items[["p2"]]
+    ))
+  } else {
+
+    plotAreaMain <- items[["p1"]][[1]]
+    plotBarsMain <- items[["p1"]][[2]]
+    label <- items[["p1"]][[3]]
+
+    return(list(arrangeGrob(plotAreaMain, plotBarsMain,
+                            layout_matrix = rbind(c(1, 2)), left = label)))
+
+  }
+}
+
+
 #' Create Area and Bar Plots
 #'
-#' Creates the area and bar plots for showAreaAndBarPlots.
+#' Creates the area and bar plots for layoutAreaAndBarPlots.
 #'
 #' @param data A quitte object or an object that can be transformed into a
 #'   quitte object.
@@ -70,8 +115,8 @@ showAreaAndBarPlots <- function(...) {
 #' @param scales adjusts how axes are harmonized. Default is free_y
 #' @return A list of plots
 #' @importFrom rlang .data .env
-#' @importFrom gridExtra arrangeGrob
 #' @importFrom dplyr rename left_join summarize group_by arrange filter bind_rows
+#' @export
 createAreaAndBarPlots <- function(
   data, vars, tot = NULL, fill = FALSE,
   orderVars = c("mean", "user", "userRev"),
@@ -227,13 +272,16 @@ createAreaAndBarPlots <- function(
     }
   }
 
-  # Show plots.
   if (showNonMainRegs) {
     return(list(
-      arrangeGrob(plotAreaMain, plotBarsMain, plotBarsRegi, layout_matrix = rbind(c(1, 3), c(2, 3)), left = label),
-      plotAreaRegi
+      showNonMainRegs = showNonMainRegs,
+      p1 = list(plotAreaMain, plotBarsMain, plotBarsRegi, label),
+      p2 = plotAreaRegi
     ))
   } else {
-    return(list(arrangeGrob(plotAreaMain, plotBarsMain, layout_matrix = rbind(c(1, 2)), left = label)))
+    return(list(
+      showNonMainRegs = showNonMainRegs,
+      p1 = list(plotAreaMain, plotBarsMain, label)
+    ))
   }
 }

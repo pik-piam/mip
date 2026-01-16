@@ -31,10 +31,16 @@ showLinePlots <- function(...) {
 #' @md
 #' @inheritDotParams createLinePlots
 #' @return Arranged plots
+#' @importFrom gridExtra arrangeGrob
 #'
 #' @export
 layoutLinePlots <- function(...) {
+
   items <- createLinePlots(...)
+
+  if (is.null(items) || length(items) == 0) {
+    return(NULL)
+  }
 
   p1 <- items[[1]]
   p2 <- items[[2]]
@@ -56,7 +62,7 @@ layoutLinePlots <- function(...) {
 
 #' Create Line Plots
 #'
-#' Creates the line plots for showLinePlots.
+#' Creates the line plots for layoutLinePlots.
 #' @param vars A character vector of variables to be plotted. Defaults to all
 #'   variables in `data`.
 #' @param histVars A character vector of historical variables to be plotted.
@@ -74,7 +80,6 @@ layoutLinePlots <- function(...) {
 #' @return List of ggplot objects
 #' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
-#' @importFrom gridExtra arrangeGrob
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
 #' @export

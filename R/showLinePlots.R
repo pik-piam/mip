@@ -7,7 +7,7 @@
 #' arranged and shown.
 #'
 #' @md
-#' @inheritDotParams createLinePlots
+#' @inheritDotParams layoutLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{\figure{showLinePlots.png}{options: width="100\%"}}
@@ -19,10 +19,40 @@
 #' }
 #' @export
 showLinePlots <- function(...) {
-  showPlot(createLinePlots(...))
+  showPlot(layoutLinePlots(...))
   cat("\n\n")
   return(invisible(NULL))
 }
+
+#' Layout Line Plots
+#'
+#' Layouts the line plots created by createLinePlots, which can then be displayed using
+#' showLinePlots
+#' @md
+#' @inheritDotParams createLinePlots
+#' @return Arranged plots
+#'
+#' @export
+layoutLinePlots <- function(...) {
+  items <- createLinePlots(...)
+
+  p1 <- items[[1]]
+  p2 <- items[[2]]
+  lgnd <- items[[3]]
+
+  if (!is.null(lgnd)) {
+    p1 <- arrangeGrob(
+      p1 + theme(legend.position = "none"),
+      lgnd,
+      ncol = 1,
+      heights = c(0.6, 0.4)
+    )
+    p2 <- p2 + theme(legend.position = "none")
+  }
+
+  return(arrangeGrob(p1, p2, nrow = 1, widths = c(2, 3)))
+}
+
 
 #' Create Line Plots
 #'
@@ -41,12 +71,13 @@ showLinePlots <- function(...) {
 #' colors of color.dim, default is \code{NULL}.
 #' @param target optional string, model variable to be plotted with dots (indicating targets)
 #' @param vlines period used for vertical line
-#' @return Arranged plots
+#' @return List of ggplot objects
 #' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
 #' @importFrom gridExtra arrangeGrob
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
+#' @export
 createLinePlots <- function(
   data,
   vars = getVars(as.quitte(data)),
@@ -204,15 +235,6 @@ createLinePlots <- function(
     lgnd <- NULL
   }
 
-  if (!is.null(lgnd)) {
-    p1 <- arrangeGrob(
-      p1 + theme(legend.position = "none"),
-      lgnd,
-      ncol = 1,
-      heights = c(0.6, 0.4)
-    )
-    p2 <- p2 + theme(legend.position = "none")
-  }
+  return(list(p1, p2, lgnd))
 
-  return(arrangeGrob(p1, p2, nrow = 1, widths = c(2, 3)))
 }

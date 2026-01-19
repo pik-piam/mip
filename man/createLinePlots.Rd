@@ -51,8 +51,8 @@ exclude.}
 \item{vlines}{period used for vertical line}
 }
 \value{
-Arranged plots
+List of ggplot objects
 }
 \description{
-Creates the line plots for showLinePlots.
+Creates the line plots for layoutLinePlots.
 }

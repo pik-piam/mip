@@ -189,16 +189,12 @@ createAreaAndBarPlots <- function(
 
   if (!is.null(tot)) {
     dataTot <- dataModel %>%
-      filter(
-        .data$region == .env$mainReg,
-        .data$variable == .env$tot) %>%
+      filter(.data$region == .env$mainReg, .data$variable == .env$tot) %>%
       droplevels()
 
     if (showNonMainRegs) {
       dataTotRegi <- dataModel %>%
-        filter(
-          .data$region != .env$mainReg,
-          .data$variable == .env$tot) %>%
+        filter(.data$region != .env$mainReg, .data$variable == .env$tot) %>%
         droplevels()
     }
   } else {

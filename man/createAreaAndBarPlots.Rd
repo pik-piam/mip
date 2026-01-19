@@ -52,5 +52,5 @@ Use \code{options(mip.mainReg=<value>)} to set globally.}
 A list of plots
 }
 \description{
-Creates the area and bar plots for showAreaAndBarPlots.
+Creates the area and bar plots for layoutAreaAndBarPlots.
 }

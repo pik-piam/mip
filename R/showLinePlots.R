@@ -106,12 +106,13 @@ createLinePlots <- function(
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
   d <- as.quitte(data) %>%
-    filter(!is.na(.data$value),
-           ((.data$variable %in% .env$vars & .data$scenario != "historical")           |
- (.data$variable %in% .env$histVars             &
-  .data$scenario ==   "historical"             &
- !.data$model    %in% .env$histModelsExclude)
-           )) %>%
+    filter(
+      !is.na(.data$value),
+      ((.data$variable %in% .env$vars & .data$scenario != "historical") |
+          (.data$variable %in% .env$histVars & .data$scenario == "historical" &
+             !.data$model %in% .env$histModelsExclude)
+      )
+    ) %>%
     droplevels()
 
   unitlabel <- ifelse(identical("(Missing)", levels(d$unit)), "",
@@ -165,12 +166,10 @@ createLinePlots <- function(
       )
 
     # make World match regional facets for fixed scales
-    if ('fixed' == scales) {
+    if ("fixed" == scales) {
       p1 <- p1 +
-        geom_blank(
-          data = dRegiScen %>%
-            select(-'region'),
-          mapping = aes(x = .data$period, y = .data$value))
+        ggplot2::geom_blank(data = dRegiScen %>% select(-"region"),
+                            mapping = aes(x = .data$period, y = .data$value))
     }
 
     if (!is.null(vlines)) {
@@ -188,7 +187,7 @@ createLinePlots <- function(
         geom_point(data = targets,
                    aes(x = .data$period, y = .data$value, shape = .data$scenario)) +
         guides(shape = guide_legend(title = "Target",
-                                    theme = theme(legend.direction = "vertical",)))
+                                    theme = theme(legend.direction = "vertical")))
     }
 
   }

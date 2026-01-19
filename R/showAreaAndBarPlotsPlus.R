@@ -33,7 +33,7 @@ showAreaAndBarPlotsPlus <- function(...) {
 #' Creates the plots for \code{\link{showAreaAndBarPlotsPlus}}
 #' @param tot A single string. A total value to be shown in the area plots.
 #' @param plusNum A single number. Number of "+"symbols for disaggregation.
-#' @inheritParams layoutAreaAndBarPlots
+#' @inheritParams createAreaAndBarPlots
 createAreaAndBarPlotsPlus <- function(
   data, tot, plusNum = 1, fill = FALSE,
   mainReg = getOption("mip.mainReg"),

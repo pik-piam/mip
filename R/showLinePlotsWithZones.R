@@ -6,7 +6,7 @@
 showLinePlotsWithZones <- function(...,
                                     safePB,
                                     highRisk,
-                                    apply.to = c("main","all", "regions")) {
+                                    apply.to = c("main", "all", "regions")) {
 
   apply.to <- match.arg(apply.to)
 
@@ -52,17 +52,6 @@ showLinePlotsWithZones <- function(...,
   if (apply.to %in% c("all", "regions")) {
     p2 <- p2 + pb_layers
   }
-
-  # # same as layoutLinePlots()
-  # if (!is.null(lgnd)) {
-  #   p1 <- gridExtra::arrangeGrob(
-  #     p1 + ggplot2::theme(legend.position = "none"),
-  #     lgnd,
-  #     ncol = 1,
-  #     heights = c(0.6, 0.4)
-  #   )
-  #   p2 <- p2 + ggplot2::theme(legend.position = "none")
-  # }
 
   items[[1]] <- p1
   items[[2]] <- p2

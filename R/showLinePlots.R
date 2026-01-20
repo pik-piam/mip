@@ -7,7 +7,7 @@
 #' arranged and shown.
 #'
 #' @md
-#' @inheritDotParams layoutLinePlots
+#' @inheritDotParams createAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{\figure{showLinePlots.png}{options: width="100\%"}}

@@ -10,7 +10,7 @@
 #' divided by the values of tot to show share of total. The plots arranged and
 #' shown.
 #'
-#' @inheritDotParams layoutAreaAndBarPlots
+#' @inheritDotParams createAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
 #' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}

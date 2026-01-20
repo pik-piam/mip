@@ -8,32 +8,26 @@ showLinePlots(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createAreaAndBarPlots]{createAreaAndBarPlots}}
+  Arguments passed on to \code{\link[=createLinePlots]{createLinePlots}}
   \describe{
+    \item{\code{vars}}{A character vector of variables to be plotted. Defaults to all
+variables in `data`.}
+    \item{\code{histVars}}{A character vector of historical variables to be plotted.
+Defaults to `vars`.}
+    \item{\code{scales}}{A single string. choose either \code{"free_y"} or \code{"fixed"}.}
+    \item{\code{ylim}}{y limits}
+    \item{\code{show.dots}}{If TRUE: shows geom_point dots on line. If FALSE: only plots geom_line without geom_point}
+    \item{\code{color.dim.name}}{name for the color-dimension used in the legend}
+    \item{\code{histModelsExclude}}{A character vector with historical models to
+exclude.}
+    \item{\code{color.dim.manual}}{optional vector with manual colors replacing default
+colors of color.dim, default is \code{NULL}.}
+    \item{\code{target}}{optional string, model variable to be plotted with dots (indicating targets)}
+    \item{\code{vlines}}{period used for vertical line}
     \item{\code{data}}{A quitte object or an object that can be transformed into a
 quitte object.}
-    \item{\code{vars}}{A character vector. The variables to be plotted.}
-    \item{\code{tot}}{A single string. A total value to be shown in the area plots.}
-    \item{\code{fill}}{Logical. Should the vars be normalized so that their values add
-to 1? (Plot shares instead of absolute values.)}
-    \item{\code{orderVars}}{In what order should the variables be shown?
-\describe{
-  \item{\code{"mean"}}{
-    Order by mean value
-    (largest mean at bottom).
-    The default.}
-  \item{\code{"user"}}{
-    As supplied by the user
-    (first element of \code{vars} at top).}
-  \item{\code{"userRev"}}{
-    Reverse order of the one supplied by the user
-    (first element of \code{vars} at bottom).}
-}}
     \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.
 Use \code{options(mip.mainReg=<value>)} to set globally.}
-    \item{\code{yearsBarPlot}}{A numeric vector. The years shown in the bar plots. Use
-\code{options(mip.yearsBarPlot=<value>)} to set globally.}
-    \item{\code{scales}}{adjusts how axes are harmonized. Default is free_y}
   }}
 }
 \value{

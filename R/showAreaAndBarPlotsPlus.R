@@ -7,7 +7,7 @@
 #' \code{varplus} containing variable names that use the '+'-notaion. The
 #' function searches for values in \code{varplus} that start with \code{tot}
 #' followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
-#' These variables are then used in a call to \code{\link{layoutAreaAndBarPlots}}.
+#' These variables are then used in a call to \code{\link{createAreaAndBarPlots}}.
 #'
 #' @inheritDotParams createAreaAndBarPlotsPlus
 #' @return \code{NULL} is returned invisible.
@@ -56,6 +56,10 @@ createAreaAndBarPlotsPlus <- function(
 
   vars <- piamutils::deletePlus(varsPlus)
 
-  return(layoutAreaAndBarPlots(createAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
-                               yearsBarPlot = yearsBarPlot, scales = scales)))
+  return(layoutAreaAndBarPlots(
+    createAreaAndBarPlots(data, vars,
+      tot = tot, fill = fill, mainReg = mainReg,
+      yearsBarPlot = yearsBarPlot, scales = scales
+    )
+  ))
 }

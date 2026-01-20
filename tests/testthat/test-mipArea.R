@@ -7,4 +7,5 @@ test_that("mipArea works", {
   expect_identical(p$labels$y, "Final Energy (EJ/yr)")
 
   expect_no_error(suppressWarnings(print(p)))
+  unlink("Rplots.pdf")
 })

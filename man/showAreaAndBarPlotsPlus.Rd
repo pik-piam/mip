@@ -35,7 +35,7 @@ The function requires \code{data} to have a character column named
 \code{varplus} containing variable names that use the '+'-notaion. The
 function searches for values in \code{varplus} that start with \code{tot}
 followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
-These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
+These variables are then used in a call to \code{\link{layoutAreaAndBarPlots}}.
 }
 \examples{
 \dontrun{

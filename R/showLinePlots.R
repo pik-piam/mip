@@ -19,14 +19,50 @@
 #' }
 #' @export
 showLinePlots <- function(...) {
-  showPlot(createLinePlots(...))
+  showPlot(layoutLinePlots(createLinePlots(...)))
   cat("\n\n")
   return(invisible(NULL))
 }
 
+#' Layout Line Plots
+#'
+#' Layouts the line plots created by createLinePlots, which can then be displayed using
+#' showLinePlots
+#' @md
+#' @param items list of ggplot2 objects returned by createAreaAndBarPlots, these
+#' can be modified before passing them, but structure of the list must remain
+#' intact for layouting to work
+#' @return Arranged plots
+#' @importFrom gridExtra arrangeGrob
+#'
+#' @export
+layoutLinePlots <- function(items) {
+
+  if (is.null(items) || length(items) == 0) {
+    return(NULL)
+  }
+
+  p1 <- items[[1]]
+  p2 <- items[[2]]
+  lgnd <- items[[3]]
+
+  if (!is.null(lgnd)) {
+    p1 <- arrangeGrob(
+      p1 + theme(legend.position = "none"),
+      lgnd,
+      ncol = 1,
+      heights = c(0.6, 0.4)
+    )
+    p2 <- p2 + theme(legend.position = "none")
+  }
+
+  return(arrangeGrob(p1, p2, nrow = 1, widths = c(2, 3)))
+}
+
+
 #' Create Line Plots
 #'
-#' Creates the line plots for showLinePlots.
+#' Creates the line plots for layoutLinePlots.
 #' @param vars A character vector of variables to be plotted. Defaults to all
 #'   variables in `data`.
 #' @param histVars A character vector of historical variables to be plotted.
@@ -41,12 +77,12 @@ showLinePlots <- function(...) {
 #' colors of color.dim, default is \code{NULL}.
 #' @param target optional string, model variable to be plotted with dots (indicating targets)
 #' @param vlines period used for vertical line
-#' @return Arranged plots
+#' @return List of ggplot objects
 #' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
-#' @importFrom gridExtra arrangeGrob
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
+#' @export
 createLinePlots <- function(
   data,
   vars = getVars(as.quitte(data)),
@@ -70,12 +106,13 @@ createLinePlots <- function(
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
   d <- as.quitte(data) %>%
-    filter(!is.na(.data$value),
-           ((.data$variable %in% .env$vars & .data$scenario != "historical")           |
- (.data$variable %in% .env$histVars             &
-  .data$scenario ==   "historical"             &
- !.data$model    %in% .env$histModelsExclude)
-           )) %>%
+    filter(
+      !is.na(.data$value),
+      ((.data$variable %in% .env$vars & .data$scenario != "historical") |
+          (.data$variable %in% .env$histVars & .data$scenario == "historical" &
+             !.data$model %in% .env$histModelsExclude)
+      )
+    ) %>%
     droplevels()
 
   unitlabel <- ifelse(identical("(Missing)", levels(d$unit)), "",
@@ -129,12 +166,10 @@ createLinePlots <- function(
       )
 
     # make World match regional facets for fixed scales
-    if ('fixed' == scales) {
+    if ("fixed" == scales) {
       p1 <- p1 +
-        geom_blank(
-          data = dRegiScen %>%
-            select(-'region'),
-          mapping = aes(x = .data$period, y = .data$value))
+        ggplot2::geom_blank(data = dRegiScen %>% select(-"region"),
+                            mapping = aes(x = .data$period, y = .data$value))
     }
 
     if (!is.null(vlines)) {
@@ -152,7 +187,7 @@ createLinePlots <- function(
         geom_point(data = targets,
                    aes(x = .data$period, y = .data$value, shape = .data$scenario)) +
         guides(shape = guide_legend(title = "Target",
-                                    theme = theme(legend.direction = "vertical",)))
+                                    theme = theme(legend.direction = "vertical")))
     }
 
   }
@@ -204,15 +239,6 @@ createLinePlots <- function(
     lgnd <- NULL
   }
 
-  if (!is.null(lgnd)) {
-    p1 <- arrangeGrob(
-      p1 + theme(legend.position = "none"),
-      lgnd,
-      ncol = 1,
-      heights = c(0.6, 0.4)
-    )
-    p2 <- p2 + theme(legend.position = "none")
-  }
+  return(list(p1, p2, lgnd))
 
-  return(arrangeGrob(p1, p2, nrow = 1, widths = c(2, 3)))
 }

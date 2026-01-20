@@ -1,8 +1,8 @@
 Type: Package
 Package: mip
 Title: Comparison of multi-model runs
-Version: 0.155.8
-Date: 2026-01-15
+Version: 0.155.9
+Date: 2026-01-20
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),
@@ -33,6 +33,7 @@ Imports:
     gridExtra,
     htmltools,
     lusweave (>= 1.43.2),
+    piamutils,
     plotly,
     RColorBrewer,
     reshape2,

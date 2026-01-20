@@ -7,7 +7,7 @@
 #' \code{varplus} containing variable names that use the '+'-notaion. The
 #' function searches for values in \code{varplus} that start with \code{tot}
 #' followed by \code{"|"}, \code{plusNum}-times \code{"+"}, and \code{"|"}.
-#' These variables are then used in a call to \code{\link{showAreaAndBarPlots}}.
+#' These variables are then used in a call to \code{\link{createAreaAndBarPlots}}.
 #'
 #' @inheritDotParams createAreaAndBarPlotsPlus
 #' @return \code{NULL} is returned invisible.
@@ -54,12 +54,12 @@ createAreaAndBarPlotsPlus <- function(
   prefix <- paste0(tot, "|", strrep("+", plusNum), "|")
   varsPlus <- allVarsPlus[startsWith(allVarsPlus, prefix)]
 
-  # TODO: Want to use
-  # vars <- remind2::deletePlus(varsPlus)
-  # Does not work as remind2 imports mip, i.e., circular imports.
-  # Instead:
-  vars <- gsub("\\|\\++\\|", "|", varsPlus)
+  vars <- piamutils::deletePlus(varsPlus)
 
-  return(createAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
-                               yearsBarPlot = yearsBarPlot, scales = scales))
+  return(layoutAreaAndBarPlots(
+    createAreaAndBarPlots(data, vars,
+      tot = tot, fill = fill, mainReg = mainReg,
+      yearsBarPlot = yearsBarPlot, scales = scales
+    )
+  ))
 }

@@ -56,6 +56,6 @@ createAreaAndBarPlotsPlus <- function(
 
   vars <- piamutils::deletePlus(varsPlus)
 
-  return(layoutAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
-                               yearsBarPlot = yearsBarPlot, scales = scales))
+  return(layoutAreaAndBarPlots(createAreaAndBarPlots(data, vars, tot = tot, fill = fill, mainReg = mainReg,
+                               yearsBarPlot = yearsBarPlot, scales = scales)))
 }

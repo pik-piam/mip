@@ -6,37 +6,12 @@
 Layouts the area and bar plots created by createAreaAndBarPlots, which can
 then be displayed using showAreaAndBarPlots}
 \usage{
-layoutAreaAndBarPlots(...)
+layoutAreaAndBarPlots(items)
 }
 \arguments{
-\item{...}{
-  Arguments passed on to \code{\link[=createAreaAndBarPlots]{createAreaAndBarPlots}}
-  \describe{
-    \item{\code{data}}{A quitte object or an object that can be transformed into a
-quitte object.}
-    \item{\code{vars}}{A character vector. The variables to be plotted.}
-    \item{\code{tot}}{A single string. A total value to be shown in the area plots.}
-    \item{\code{fill}}{Logical. Should the vars be normalized so that their values add
-to 1? (Plot shares instead of absolute values.)}
-    \item{\code{orderVars}}{In what order should the variables be shown?
-\describe{
-  \item{\code{"mean"}}{
-    Order by mean value
-    (largest mean at bottom).
-    The default.}
-  \item{\code{"user"}}{
-    As supplied by the user
-    (first element of \code{vars} at top).}
-  \item{\code{"userRev"}}{
-    Reverse order of the one supplied by the user
-    (first element of \code{vars} at bottom).}
-}}
-    \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.
-Use \code{options(mip.mainReg=<value>)} to set globally.}
-    \item{\code{yearsBarPlot}}{A numeric vector. The years shown in the bar plots. Use
-\code{options(mip.yearsBarPlot=<value>)} to set globally.}
-    \item{\code{scales}}{adjusts how axes are harmonized. Default is free_y}
-  }}
+\item{items}{list of ggplot2 objects returned by createAreaAndBarPlots, these
+can be modified before passing them, but structure of the list must remain
+intact for layouting to work}
 }
 \value{
 Arranged plots

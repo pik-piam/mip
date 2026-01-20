@@ -32,11 +32,14 @@
 #' }
 #' @export
 showAreaAndBarPlots <- function(...) {
-  plots <- layoutAreaAndBarPlots(...)
+
+  plots <- layoutAreaAndBarPlots(createAreaAndBarPlots(...))
+
   for (plot in plots) {
     showPlot(plot)
     cat("\n\n")
   }
+
   return(invisible(NULL))
 }
 
@@ -46,14 +49,14 @@ showAreaAndBarPlots <- function(...) {
 #' Layouts the area and bar plots created by createAreaAndBarPlots, which can
 #' then be displayed using showAreaAndBarPlots
 #' @md
-#' @inheritDotParams createAreaAndBarPlots
+#' @param items list of ggplot2 objects returned by createAreaAndBarPlots, these
+#' can be modified before passing them, but structure of the list must remain
+#' intact for layouting to work
 #' @return Arranged plots
 #' @importFrom gridExtra arrangeGrob
 #'
 #' @export
-layoutAreaAndBarPlots <- function(...) {
-
-  items <- createAreaAndBarPlots(...)
+layoutAreaAndBarPlots <- function(items) {
 
   if (is.null(items) || length(items) == 0) {
     return(NULL)

@@ -19,7 +19,7 @@
 #' }
 #' @export
 showLinePlots <- function(...) {
-  showPlot(layoutLinePlots(...))
+  showPlot(layoutLinePlots(createLinePlots(...)))
   cat("\n\n")
   return(invisible(NULL))
 }
@@ -29,14 +29,14 @@ showLinePlots <- function(...) {
 #' Layouts the line plots created by createLinePlots, which can then be displayed using
 #' showLinePlots
 #' @md
-#' @inheritDotParams createLinePlots
+#' @param items list of ggplot2 objects returned by createAreaAndBarPlots, these
+#' can be modified before passing them, but structure of the list must remain
+#' intact for layouting to work
 #' @return Arranged plots
 #' @importFrom gridExtra arrangeGrob
 #'
 #' @export
-layoutLinePlots <- function(...) {
-
-  items <- createLinePlots(...)
+layoutLinePlots <- function(items) {
 
   if (is.null(items) || length(items) == 0) {
     return(NULL)

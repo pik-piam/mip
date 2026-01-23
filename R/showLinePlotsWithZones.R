@@ -1,32 +1,58 @@
-
-
+#' Show Line Plots With Zones
+#'
+#' Shows line plots of variables with additional (planetary boundary) zone overlay.
+#'
+#' Creates line plots using \code{createLinePlots()} and overlays colored
+#' background zones indicating safe, intermediate, and high-risk ranges
+#' based on given planetary boundary thresholds. Horizontal reference lines
+#' mark the safe boundary and high-risk threshold. The zones can be applied
+#' to the main plot, regional plots, or both.
+#'
+#' *RoSa*: Zones will be the same for all regions. Once regionalized PBs are
+#' available, this functionality has to be added.
+#'
 #' @inheritDotParams createLinePlots
+#' @param safePB Numeric. Value of the safe planetary boundary.
+#' @param highRisk Numeric. Value of the high-risk threshold.
+#' @param applyTo Character. Specifies which plots receive the boundary zones.
+#'   One of \code{"main"}, \code{"regions"}, or \code{"all"}.
 #' @return \code{NULL} is returned invisible.
+#' @section Example Plots:
+#' \if{html}{\figure{showLinePlotsWithZones.png}{options: width="100\%"}}
+#' @examples
+#' \dontrun{
+#' data <- as.quitte(data)
+#' showLinePlotsWithZones(
+#'   data,
+#'   "Planetary Boundary|Nitrogen|Agricultural Nitrogen surplus",
+#'   safePB = 61,
+#'   highRisk = 84
+# )
+#' }
 #' @export
 showLinePlotsWithZones <- function(...,
-                                    safePB,
-                                    highRisk,
-                                    apply.to = c("main", "all", "regions")) {
+                                   safePB,
+                                   highRisk,
+                                   applyTo = c("main", "all", "regions")) {
 
-  apply.to <- match.arg(apply.to)
+  applyTo <- match.arg(applyTo)
 
   items <- createLinePlots(...)
   if (is.null(items) || length(items) == 0) return(invisible(NULL))
 
   p1 <- items[[1]]
   p2 <- items[[2]]
-  lgnd <- items[[3]]
 
-  # Build planetary boundary zones (green/yellow/red),
+  # Build planetary boundary zones,
   if (safePB < highRisk) {
-    # green (low) -> yellow -> red (high)
+    # Zone order: low risk (green), intermediate (yellow), high risk (red)
     zones <- data.frame(
       ymin = c(-Inf, safePB, highRisk),
       ymax = c(safePB, highRisk, Inf),
       fill = c("#c7e9c0", "#fff7bc", "#fee0d2")
     )
   } else {
-    # green (high) -> yellow -> red (low)
+    # Zone order: high risk (red), intermediate (yellow), low risk (green)
     zones <- data.frame(
       ymin = c(-Inf, highRisk, safePB),
       ymax = c(highRisk, safePB, Inf),
@@ -34,10 +60,10 @@ showLinePlotsWithZones <- function(...,
     )
   }
 
-  pb_layers <- list(
+  pbLayers <- list(
     ggplot2::geom_rect(
       data = zones,
-      ggplot2::aes(xmin = -Inf, xmax = Inf, ymin = ymin, ymax = ymax, fill = fill),
+      ggplot2::aes(xmin = -Inf, xmax = Inf, ymin = .data$ymin, ymax = .data$ymax, fill = .data$fill),
       inherit.aes = FALSE,
       alpha = 0.5
     ),
@@ -46,11 +72,11 @@ showLinePlotsWithZones <- function(...,
     ggplot2::geom_hline(yintercept = highRisk, linetype = 2, linewidth = 1, color = "#e31a1c")
   )
 
-  if (apply.to %in% c("all", "main")) {
-    p1 <- p1 + pb_layers
+  if (applyTo %in% c("all", "main")) {
+    p1 <- p1 + pbLayers
   }
-  if (apply.to %in% c("all", "regions")) {
-    p2 <- p2 + pb_layers
+  if (applyTo %in% c("all", "regions")) {
+    p2 <- p2 + pbLayers
   }
 
   items[[1]] <- p1

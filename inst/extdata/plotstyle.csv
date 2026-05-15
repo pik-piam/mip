@@ -489,6 +489,7 @@ non-Heating|Electricity|ICT pCap;ICT pCap;#ffd966;;
 non-Heating|Electricity|Space Cooling pCap;Space Cooling pCap;#9d4edd;;
 District Heating pCap;District heating pCap;#cc0000;;
 Electricity|Resistance;Resistive electric heating;#f58231;;
+Electricity|Resistive electric;Resistive electric;#f58231;;
 Electricity|Heat pump;Heat pumps;#3cb44b;;
 Electricity|Resistance pCap;Resistive electric heating pCap;#f58231;;
 Electricity|Heat pump pCap;Heat pumps pCap;#3cb44b;;

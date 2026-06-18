@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'mip: Comparison of multi-model runs'
-version: 0.155.12
-date-released: '2026-05-15'
+version: 0.156.0
+date-released: '2026-06-18'
 abstract: Package contains generic functions to produce comparison plots of multi-model
   runs.
 authors:

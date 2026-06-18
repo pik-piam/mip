@@ -8,7 +8,7 @@ showMultiLinePlots(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createMultiLinePlots]{createMultiLinePlots}}
+  Arguments passed on to \code{\link{createMultiLinePlots}}
   \describe{
     \item{\code{vars}}{A character vector. The variables to be plotted.}
     \item{\code{nrowNum}}{An integer value. Number of rows of the panel figures}

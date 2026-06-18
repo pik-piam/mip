@@ -8,7 +8,7 @@ showLinePlotsWithTarget(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createLinePlotsWithTarget]{createLinePlotsWithTarget}}
+  Arguments passed on to \code{\link{createLinePlotsWithTarget}}
   \describe{
     \item{\code{vars}}{A character vector. Usually just a single string. The variables
 to be plotted.}

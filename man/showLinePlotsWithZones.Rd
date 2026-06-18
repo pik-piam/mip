@@ -13,7 +13,7 @@ showLinePlotsWithZones(
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createLinePlots]{createLinePlots}}
+  Arguments passed on to \code{\link{createLinePlots}}
   \describe{
     \item{\code{vars}}{A character vector of variables to be plotted. Defaults to all
 variables in `data`.}

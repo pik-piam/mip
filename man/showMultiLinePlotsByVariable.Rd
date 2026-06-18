@@ -8,7 +8,7 @@ showMultiLinePlotsByVariable(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createMultiLinePlotsByVariable]{createMultiLinePlotsByVariable}}
+  Arguments passed on to \code{\link{createMultiLinePlotsByVariable}}
   \describe{
     \item{\code{xVar}}{A single string. The variable for the x-axis.}
     \item{\code{showHistorical}}{A single logical value. Should historical data be

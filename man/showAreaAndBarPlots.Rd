@@ -8,7 +8,7 @@ showAreaAndBarPlots(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createAreaAndBarPlots]{createAreaAndBarPlots}}
+  Arguments passed on to \code{\link{createAreaAndBarPlots}}
   \describe{
     \item{\code{data}}{A quitte object or an object that can be transformed into a
 quitte object.}

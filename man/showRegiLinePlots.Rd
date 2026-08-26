@@ -8,7 +8,7 @@ showRegiLinePlots(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createRegiLinePlots]{createRegiLinePlots}}
+  Arguments passed on to \code{\link{createRegiLinePlots}}
   \describe{
     \item{\code{excludeMainRegion}}{A single logical value. Should the main region be
 excluded (or shown in the same plot)?}

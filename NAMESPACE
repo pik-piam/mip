@@ -37,181 +37,217 @@ export(warnMissingVars)
 import(magclass)
 import(quitte)
 importFrom(RColorBrewer,brewer.pal)
-importFrom(data.table,":=")
-importFrom(data.table,as.data.table)
-importFrom(data.table,data.table)
-importFrom(data.table,fread)
-importFrom(data.table,setcolorder)
-importFrom(data.table,setnames)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,arrange)
-importFrom(dplyr,bind_rows)
-importFrom(dplyr,filter)
-importFrom(dplyr,group_by)
-importFrom(dplyr,inner_join)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,n)
-importFrom(dplyr,rename)
-importFrom(dplyr,select)
-importFrom(dplyr,summarise)
-importFrom(dplyr,summarize)
-importFrom(dplyr,sym)
-importFrom(dplyr,ungroup)
-importFrom(dplyr,vars)
-importFrom(ggplot2,"%+replace%")
-importFrom(ggplot2,aes)
-importFrom(ggplot2,aes_)
-importFrom(ggplot2,aes_string)
-importFrom(ggplot2,coord_cartesian)
-importFrom(ggplot2,coord_flip)
-importFrom(ggplot2,coord_trans)
-importFrom(ggplot2,element_blank)
-importFrom(ggplot2,element_line)
-importFrom(ggplot2,element_rect)
-importFrom(ggplot2,element_text)
-importFrom(ggplot2,expand_limits)
-importFrom(ggplot2,facet_grid)
-importFrom(ggplot2,facet_wrap)
-importFrom(ggplot2,geom_area)
-importFrom(ggplot2,geom_bar)
-importFrom(ggplot2,geom_col)
-importFrom(ggplot2,geom_hline)
-importFrom(ggplot2,geom_line)
-importFrom(ggplot2,geom_point)
-importFrom(ggplot2,geom_ribbon)
-importFrom(ggplot2,geom_segment)
-importFrom(ggplot2,geom_text)
-importFrom(ggplot2,geom_vline)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,ggplot_build)
-importFrom(ggplot2,ggplot_gtable)
-importFrom(ggplot2,ggsave)
-importFrom(ggplot2,ggtitle)
-importFrom(ggplot2,guide_axis)
-importFrom(ggplot2,guide_legend)
-importFrom(ggplot2,guides)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,margin)
-importFrom(ggplot2,scale_alpha_manual)
-importFrom(ggplot2,scale_color_gradientn)
-importFrom(ggplot2,scale_color_hue)
-importFrom(ggplot2,scale_color_manual)
-importFrom(ggplot2,scale_fill_manual)
-importFrom(ggplot2,scale_linetype_discrete)
-importFrom(ggplot2,scale_shape_manual)
-importFrom(ggplot2,scale_x_continuous)
-importFrom(ggplot2,scale_y_log10)
-importFrom(ggplot2,stat_summary)
-importFrom(ggplot2,theme)
-importFrom(ggplot2,theme_bw)
-importFrom(ggplot2,theme_minimal)
-importFrom(ggplot2,unit)
-importFrom(ggplot2,xlab)
-importFrom(ggplot2,xlim)
-importFrom(ggplot2,ylab)
-importFrom(ggplot2,ylim)
-importFrom(grDevices,colorRampPalette)
-importFrom(grDevices,rainbow)
-importFrom(grDevices,rgb)
-importFrom(gridExtra,arrangeGrob)
-importFrom(gridExtra,grid.arrange)
-importFrom(htmltools,br)
-importFrom(htmltools,h4)
-importFrom(htmltools,tagList)
-importFrom(lusweave,swR)
-importFrom(lusweave,swclose)
-importFrom(lusweave,swfigure)
-importFrom(lusweave,swlatex)
-importFrom(lusweave,swopen)
-importFrom(lusweave,swtable)
-importFrom(magclass,as.magpie)
-importFrom(magclass,dimSums)
-importFrom(magclass,getNames)
-importFrom(magclass,getRegions)
-importFrom(magclass,getSets)
-importFrom(magclass,is.magpie)
-importFrom(magclass,ndata)
-importFrom(magclass,nregions)
-importFrom(magclass,nyears)
-importFrom(plotly,add_annotations)
-importFrom(plotly,as.widget)
-importFrom(plotly,ggplotly)
-importFrom(plotly,layout)
-importFrom(plotly,plotly)
-importFrom(plotly,plotlyOutput)
-importFrom(plotly,renderPlotly)
-importFrom(plotly,subplot)
-importFrom(quitte,as.quitte)
-importFrom(quitte,getRegs)
-importFrom(quitte,getVars)
-importFrom(quitte,is.quitte)
-importFrom(quitte,order.levels)
-importFrom(quitte,read.quitte)
-importFrom(reshape2,dcast)
-importFrom(reshape2,melt)
-importFrom(rlang,.data)
-importFrom(rlang,.env)
-importFrom(shiny,HTML)
-importFrom(shiny,checkboxGroupInput)
-importFrom(shiny,checkboxInput)
-importFrom(shiny,column)
-importFrom(shiny,conditionalPanel)
-importFrom(shiny,dataTableOutput)
-importFrom(shiny,downloadButton)
-importFrom(shiny,downloadHandler)
-importFrom(shiny,fileInput)
-importFrom(shiny,fluidPage)
-importFrom(shiny,fluidRow)
-importFrom(shiny,h2)
-importFrom(shiny,hoverOpts)
-importFrom(shiny,mainPanel)
-importFrom(shiny,navbarPage)
-importFrom(shiny,nearPoints)
-importFrom(shiny,numericInput)
-importFrom(shiny,observe)
-importFrom(shiny,observeEvent)
-importFrom(shiny,plotOutput)
-importFrom(shiny,radioButtons)
-importFrom(shiny,reactive)
-importFrom(shiny,reactiveValues)
-importFrom(shiny,renderDataTable)
-importFrom(shiny,renderPlot)
-importFrom(shiny,renderPrint)
-importFrom(shiny,renderUI)
-importFrom(shiny,selectInput)
-importFrom(shiny,shinyApp)
-importFrom(shiny,sidebarLayout)
-importFrom(shiny,sidebarPanel)
-importFrom(shiny,sliderInput)
-importFrom(shiny,tabPanel)
-importFrom(shiny,tabsetPanel)
-importFrom(shiny,tags)
-importFrom(shiny,textInput)
-importFrom(shiny,uiOutput)
-importFrom(shiny,updateCheckboxInput)
-importFrom(shiny,updateSelectInput)
-importFrom(shiny,updateSliderInput)
-importFrom(shiny,updateTextInput)
-importFrom(shiny,verbatimTextOutput)
-importFrom(shiny,wellPanel)
-importFrom(stats,as.formula)
-importFrom(stats,complete.cases)
-importFrom(stats,median)
-importFrom(stats,na.omit)
-importFrom(stats,reshape)
-importFrom(stats,runif)
-importFrom(stringr,str_extract)
-importFrom(stringr,str_match_all)
-importFrom(tidyr,all_of)
-importFrom(tidyr,crossing)
-importFrom(tidyr,drop_na)
-importFrom(tidyr,pivot_wider)
-importFrom(tidyr,unite)
-importFrom(tools,file_ext)
-importFrom(tools,file_path_sans_ext)
+importFrom(data.table,
+  ":=",
+  as.data.table,
+  data.table,
+  fread,
+  setcolorder,
+  setnames
+)
+importFrom(dplyr,
+  "%>%",
+  arrange,
+  bind_rows,
+  filter,
+  group_by,
+  inner_join,
+  left_join,
+  mutate,
+  n,
+  rename,
+  select,
+  summarise,
+  summarize,
+  sym,
+  ungroup,
+  vars
+)
+importFrom(ggplot2,
+  "%+replace%",
+  aes,
+  aes_,
+  aes_string,
+  coord_cartesian,
+  coord_flip,
+  coord_trans,
+  element_blank,
+  element_line,
+  element_rect,
+  element_text,
+  expand_limits,
+  facet_grid,
+  facet_wrap,
+  geom_area,
+  geom_bar,
+  geom_col,
+  geom_hline,
+  geom_line,
+  geom_point,
+  geom_ribbon,
+  geom_segment,
+  geom_text,
+  geom_vline,
+  ggplot,
+  ggplot_build,
+  ggplot_gtable,
+  ggsave,
+  ggtitle,
+  guide_axis,
+  guide_legend,
+  guides,
+  labs,
+  margin,
+  scale_alpha_manual,
+  scale_color_gradientn,
+  scale_color_hue,
+  scale_color_manual,
+  scale_fill_manual,
+  scale_linetype_discrete,
+  scale_shape_manual,
+  scale_x_continuous,
+  scale_y_log10,
+  stat_summary,
+  theme,
+  theme_bw,
+  theme_minimal,
+  unit,
+  xlab,
+  xlim,
+  ylab,
+  ylim
+)
+importFrom(grDevices,
+  colorRampPalette,
+  rainbow,
+  rgb
+)
+importFrom(gridExtra,
+  arrangeGrob,
+  grid.arrange
+)
+importFrom(htmltools,
+  br,
+  h4,
+  tagList
+)
+importFrom(lusweave,
+  swR,
+  swclose,
+  swfigure,
+  swlatex,
+  swopen,
+  swtable
+)
+importFrom(magclass,
+  as.magpie,
+  dimSums,
+  getNames,
+  getRegions,
+  getSets,
+  is.magpie,
+  ndata,
+  nregions,
+  nyears
+)
+importFrom(plotly,
+  add_annotations,
+  as.widget,
+  ggplotly,
+  layout,
+  plotly,
+  plotlyOutput,
+  renderPlotly,
+  subplot
+)
+importFrom(quitte,
+  as.quitte,
+  getRegs,
+  getVars,
+  is.quitte,
+  order.levels,
+  read.quitte
+)
+importFrom(reshape2,
+  dcast,
+  melt
+)
+importFrom(rlang,
+  .data,
+  .env
+)
+importFrom(shiny,
+  HTML,
+  checkboxGroupInput,
+  checkboxInput,
+  column,
+  conditionalPanel,
+  dataTableOutput,
+  downloadButton,
+  downloadHandler,
+  fileInput,
+  fluidPage,
+  fluidRow,
+  h2,
+  hoverOpts,
+  mainPanel,
+  navbarPage,
+  nearPoints,
+  numericInput,
+  observe,
+  observeEvent,
+  plotOutput,
+  radioButtons,
+  reactive,
+  reactiveValues,
+  renderDataTable,
+  renderPlot,
+  renderPrint,
+  renderUI,
+  selectInput,
+  shinyApp,
+  sidebarLayout,
+  sidebarPanel,
+  sliderInput,
+  tabPanel,
+  tabsetPanel,
+  tags,
+  textInput,
+  uiOutput,
+  updateCheckboxInput,
+  updateSelectInput,
+  updateSliderInput,
+  updateTextInput,
+  verbatimTextOutput,
+  wellPanel
+)
+importFrom(stats,
+  as.formula,
+  complete.cases,
+  median,
+  na.omit,
+  reshape,
+  runif
+)
+importFrom(stringr,
+  str_extract,
+  str_match_all
+)
+importFrom(tidyr,
+  all_of,
+  crossing,
+  drop_na,
+  pivot_wider,
+  unite
+)
+importFrom(tools,
+  file_ext,
+  file_path_sans_ext
+)
 importFrom(trafficlight,trafficlight)
-importFrom(utils,read.csv2)
-importFrom(utils,tail)
-importFrom(utils,write.csv)
-importFrom(utils,write.csv2)
+importFrom(utils,
+  read.csv2,
+  tail,
+  write.csv,
+  write.csv2
+)

@@ -12,10 +12,10 @@
 #' @importFrom ggplot2 ggsave theme_minimal aes_ aes_string ylab scale_color_manual scale_x_continuous xlim stat_summary
 #' @importFrom reshape2 melt dcast
 #' @importFrom shiny reactiveValues observeEvent updateTextInput observe updateSelectInput reactive hoverOpts uiOutput sliderInput
-#' renderPrint renderDataTable downloadHandler fluidPage navbarPage tabPanel sidebarLayout sidebarPanel
-#' fileInput tags selectInput mainPanel tabsetPanel wellPanel fluidRow column radioButtons conditionalPanel
-#' checkboxInput checkboxGroupInput numericInput textInput downloadButton dataTableOutput h2 verbatimTextOutput
-#' shinyApp renderPlot plotOutput renderUI HTML nearPoints updateCheckboxInput updateSliderInput
+#'             renderPrint renderDataTable downloadHandler fluidPage navbarPage tabPanel sidebarLayout sidebarPanel
+#'             fileInput tags selectInput mainPanel tabsetPanel wellPanel fluidRow column radioButtons conditionalPanel
+#'             checkboxInput checkboxGroupInput numericInput textInput downloadButton dataTableOutput h2 verbatimTextOutput
+#'             shinyApp renderPlot plotOutput renderUI HTML nearPoints updateCheckboxInput updateSliderInput
 #' @importFrom plotly as.widget layout plotly plotlyOutput renderPlotly ggplotly
 #' @importFrom stats as.formula complete.cases na.omit
 #' @importFrom utils write.csv
@@ -90,7 +90,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
     } else val$a <- read.mif(file)
     if(!is.null(valfile)) val$b <- read.mif(valfile)
 
-    
+
 
     #Upload and read in data file if there is a change in input$datafile
     observeEvent(input$datafile, {
@@ -208,7 +208,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       updateSelectInput(session, "valvariable", choices = levels(val$valtmp$Variable),selected = levels(val$valtmp$Variable)[1])
       })
 
-    
+
     # observe({
     #   print("update presets")
     #   if(input$preset == "None") {
@@ -262,7 +262,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       }
     })
 
-    
+
     plot <- reactive({
       myBreaks <- function(x){
         if(length(unique(x)) <= 3) {
@@ -613,7 +613,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
                         )
                )
 
-  
+
 
   #start the app
   shinyApp(ui = ui, server = server)

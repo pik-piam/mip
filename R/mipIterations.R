@@ -23,7 +23,7 @@
 #' @author Pascal Führlich
 #' @seealso \code{\link{getPlotData}}
 #' @importFrom ggplot2 ggplot aes_string geom_line ylab facet_wrap ggtitle
-#' scale_color_gradientn theme_bw theme element_blank
+#'             scale_color_gradientn theme_bw theme element_blank
 #' @importFrom grDevices rainbow
 #' @importFrom plotly ggplotly
 #' @importFrom utils tail

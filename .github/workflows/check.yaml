@@ -15,7 +15,7 @@ jobs:
       image: ghcr.io/pik-piam/ci-image:latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install package and dependencies
         shell: Rscript {0}
@@ -23,7 +23,7 @@ jobs:
           options(repos = c(pikpiam = 'https://pik-piam.r-universe.dev',
                             CRAN = Sys.getenv('RSPM')))
           pak::pak()
-          
+
       - name: Run pre-commit checks
         shell: bash
         run: |

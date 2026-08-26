@@ -257,7 +257,7 @@ createAreaAndBarPlots <- function(
       geom_line(
         data = dataTot,
         mapping = aes(.data$period, .data$value),
-        size = 1.3
+        linewidth = 1.3
       )
 
     if (showNonMainRegs) {
@@ -266,7 +266,7 @@ createAreaAndBarPlots <- function(
         geom_line(
           data = dataTotRegi,
           mapping = aes(.data$period, .data$value),
-          size = 1.3
+          linewidth = 1.3
         )
     }
   }

@@ -11,10 +11,10 @@
 #'
 #' @importFrom quitte as.quitte read.quitte
 #' @importFrom shiny reactiveValues observeEvent updateTextInput observe updateSelectInput reactive hoverOpts uiOutput sliderInput
-#' renderPrint renderDataTable downloadHandler fluidPage navbarPage tabPanel sidebarLayout sidebarPanel
-#' fileInput tags selectInput mainPanel tabsetPanel wellPanel fluidRow column radioButtons conditionalPanel
-#' checkboxInput checkboxGroupInput numericInput textInput downloadButton dataTableOutput h2 verbatimTextOutput
-#' shinyApp renderPlot plotOutput renderUI HTML nearPoints updateCheckboxInput updateSliderInput
+#'             renderPrint renderDataTable downloadHandler fluidPage navbarPage tabPanel sidebarLayout sidebarPanel
+#'             fileInput tags selectInput mainPanel tabsetPanel wellPanel fluidRow column radioButtons conditionalPanel
+#'             checkboxInput checkboxGroupInput numericInput textInput downloadButton dataTableOutput h2 verbatimTextOutput
+#'             shinyApp renderPlot plotOutput renderUI HTML nearPoints updateCheckboxInput updateSliderInput
 #' @importFrom plotly as.widget layout plotly plotlyOutput renderPlotly ggplotly
 #' @importFrom stats as.formula complete.cases na.omit
 #' @importFrom utils write.csv

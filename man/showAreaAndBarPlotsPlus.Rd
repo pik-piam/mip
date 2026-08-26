@@ -8,7 +8,7 @@ showAreaAndBarPlotsPlus(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=createAreaAndBarPlotsPlus]{createAreaAndBarPlotsPlus}}
+  Arguments passed on to \code{\link{createAreaAndBarPlotsPlus}}
   \describe{
     \item{\code{tot}}{A single string. A total value to be shown in the area plots.}
     \item{\code{plusNum}}{A single number. Number of "+"symbols for disaggregation.}

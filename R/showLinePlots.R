@@ -80,6 +80,7 @@ layoutLinePlots <- function(items) {
 #' @return List of ggplot objects
 #' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
+#' @importFrom ggplot2 theme_void
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
 #' @export

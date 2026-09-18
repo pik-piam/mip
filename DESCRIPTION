@@ -45,7 +45,6 @@ Imports:
     trafficlight,
     withr,
 Suggests:
-    gdxrrw,
     knitr,
     rmarkdown,
     testthat

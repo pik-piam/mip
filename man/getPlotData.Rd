@@ -24,9 +24,6 @@ A data frame with data from the given gdx file(s). If multiple gdx files are pro
 \description{
 Get ready-to-plot data from one or more gdx files.
 }
-\seealso{
-\code{\link{mipIterations}}, \code{\link{dataframeFromGdx}}
-}
 \author{
 Pascal Sauer
 }

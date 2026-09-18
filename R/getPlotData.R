@@ -12,7 +12,6 @@
 #'         "iteration" column is added. The iteration value will be 1 for data rows from the first gdx, 2 for the second
 #'         etc. The last column will always be the actual value column called <symbolName>.
 #' @author Pascal Sauer
-#' @seealso \code{\link{mipIterations}}}
 #' @export
 getPlotData <- function(symbolName, pathToGdx = ".", ...) {
   stopifnot(

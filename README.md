@@ -47,14 +47,14 @@ In case of questions / problems please contact David Klein <dklein@pik-potsdam.d
 
 To cite package **mip** in publications use:
 
-Klein D, Dietrich J, Baumstark L, Humpenoeder F, Stevanovic M, Wirth S, Führlich P, Richters O, Rüter T, Salzwedel R, Lécuyer F, Krogmann S (2026). "mip: Comparison of multi-model runs." doi:10.5281/zenodo.1158586 <https://doi.org/10.5281/zenodo.1158586>, Version: 0.156.0, <https://github.com/pik-piam/mip>.
+Klein D, Dietrich J, Baumstark L, Humpenoeder F, Stevanovic M, Wirth S, Sauer P, Richters O, Rüter T, Salzwedel R, Lécuyer F, Krogmann S (2026). "mip: Comparison of multi-model runs." doi:10.5281/zenodo.1158586 <https://doi.org/10.5281/zenodo.1158586>, Version: 0.156.0, <https://github.com/pik-piam/mip>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Misc{,
   title = {mip: Comparison of multi-model runs},
-  author = {David Klein and Jan Philipp Dietrich and Lavinia Baumstark and Florian Humpenoeder and Miodrag Stevanovic and Stephen Wirth and Pascal Führlich and Oliver Richters and Tonn Rüter and Robert Salzwedel and Fabrice Lécuyer and Simon Krogmann},
+  author = {David Klein and Jan Philipp Dietrich and Lavinia Baumstark and Florian Humpenoeder and Miodrag Stevanovic and Stephen Wirth and Pascal Sauer and Oliver Richters and Tonn Rüter and Robert Salzwedel and Fabrice Lécuyer and Simon Krogmann},
   doi = {10.5281/zenodo.1158586},
   date = {2026-09-18},
   year = {2026},

@@ -275,7 +275,7 @@ scenTool <- function(file=NULL,valfile=NULL) {
       }
 
       ggname <- function(x) {
-        if (class(x) != "character") {
+        if ("character" != class(x)) {
           return(x)
         }
         y <- sapply(x, function(s) {

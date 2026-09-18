@@ -1,8 +1,8 @@
 Type: Package
 Package: mip
 Title: Comparison of multi-model runs
-Version: 0.155.16
-Date: 2026-09-16
+Version: 0.156.0
+Date: 2026-09-18
 Authors@R: c(
     person("David", "Klein", , "dklein@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),
@@ -10,7 +10,7 @@ Authors@R: c(
     person("Florian", "Humpenoeder", , "humpenoeder@pik-potsdam.de", role = "aut"),
     person("Miodrag", "Stevanovic", , "miodrag@pik-potsdam.de", role = "aut"),
     person("Stephen", "Wirth", , "wirth@pik-potsdam.de", role = "aut"),
-    person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = "aut"),
+    person("Pascal", "Sauer", , "pascal.fuehrlich@pik-potsdam.de", role = "aut"),
     person("Oliver", "Richters", role = "aut"),
     person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = "aut"),
     person("Robert", "Salzwedel", , "robert.salzwedel@pik-potsdam.de", role = "aut"),
@@ -34,7 +34,7 @@ Imports:
     gridExtra,
     htmltools,
     lusweave (>= 1.43.2),
-    piamutils,
+    piamutils (>= 0.2.1),
     plotly,
     RColorBrewer,
     reshape2,
@@ -45,7 +45,6 @@ Imports:
     trafficlight,
     withr,
 Suggests:
-    gdxrrw,
     knitr,
     rmarkdown,
     testthat

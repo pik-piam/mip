@@ -12,7 +12,7 @@ test_that("getPlotData works for a single gdx file", {
 
   # write test data to gdx file
   testFile <- file.path(tempDir, "fulldata.gdx")
-  piamutils::writeDfToGdx(testData, gdxPath = testFile,
+  piamutils::writeDfToGDXparameter(testData, gdxFileName = testFile,
                           paramName = "testSymbolName", valueCol = "testSymbolName")
 
   expected <- data.frame(
@@ -36,7 +36,7 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(testData1, "symName") <- "testSymbolName"
   attr(testData1, "domains") <- c("year", "region")
-  piamutils::writeDfToGdx(testData1, gdxPath = file.path(tempDir, "fulldata_1.gdx"),
+  piamutils::writeDfToGDXparameter(testData1, gdxFileName = file.path(tempDir, "fulldata_1.gdx"),
                           paramName = "testSymbolName", valueCol = "testSymbolName")
 
 
@@ -47,7 +47,7 @@ test_that("getPlotData works for multiple gdx files", {
   )
   attr(testData2, "symName") <- "testSymbolName"
   attr(testData2, "domains") <- c("year", "region")
-  piamutils::writeDfToGdx(testData2, gdxPath = file.path(tempDir, "fulldata_2.gdx"),
+  piamutils::writeDfToGDXparameter(testData2, gdxFileName = file.path(tempDir, "fulldata_2.gdx"),
                           paramName = "testSymbolName", valueCol = "testSymbolName")
 
   expected <- data.frame(

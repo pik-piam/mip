@@ -34,7 +34,7 @@ Imports:
     gridExtra,
     htmltools,
     lusweave (>= 1.43.2),
-    piamutils (>= 0.2.0),
+    piamutils (>= 0.2.1),
     plotly,
     RColorBrewer,
     reshape2,

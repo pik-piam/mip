@@ -33,7 +33,8 @@ plotly. If NULL no slider is used.}
 \item{facets}{A string from names(x), defining which column is used for grouping. A small plot (facet) is
 shown for each group. If NULL facets are not used.}
 
-\item{facetScales}{The 'scales' argument for facets (if used), defaults to 'fixed'. See help(facet_wrap) for more info.}
+\item{facetScales}{The 'scales' argument for facets (if used), defaults to 'fixed'.
+See help(facet_wrap) for more info.}
 }
 \value{
 A list of plotly plots, if returnGgplots is TRUE a list of ggplots instead
@@ -48,5 +49,5 @@ is used.
 \code{\link{getPlotData}}
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

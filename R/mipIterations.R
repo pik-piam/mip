@@ -108,6 +108,7 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
       return(filteredData[filteredData[[names(unplottedCombination)[[index]]]] == unplottedCombination[[index]], ])
     }, seq_along(unplottedCombination), plotData)
 
+    # don't plot combinations containing only 0s
     if (all(x[[valueColumnName]] == 0)) return()
 
     heading <- tail(names(plotData), 1)
@@ -131,7 +132,10 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
     return(plot)
   })
 
+  # remove NULL entries from the list
   plots <- plots[!vapply(plots, is.null, FUN.VALUE = logical(1))]
+
+  # extract title as list item names
   names(plots) <- lapply(plots, function(plot) ggplot2::get_labs(plot)[["title"]])
 
   if (!returnGgplots) {

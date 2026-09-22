@@ -54,6 +54,10 @@ getPlotData <- function(symbolName, pathToGdx = ".", ...) {
     }
   }
 
+  if (nrow(plotData) == 0) {
+    return(plotData)
+  }
+
   plotData["iteration"] <- as.integer(plotData[["iteration"]])
 
   # move actual value column (called <symbolName>) to the end

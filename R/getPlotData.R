@@ -7,7 +7,7 @@
 #'                   are provided each one represents data after a specific iteration. The order of paths should match
 #'                   iteration order, e.g. pathToGdx[1] should hold data for the first iteration, pathToGdx[2] for the
 #'                   second iteration etc. If the path to a folder is given the fulldata gdx files in it are used.
-#' @param ...        Additional arguments passed to gamstransfer::readGDX.
+#' @param ...        Additional arguments passed to piamtutils::readGdxToDf
 #' @return A data frame with data from the given gdx file(s). If multiple gdx files are provided an additional
 #'         "iteration" column is added. The iteration value will be 1 for data rows from the first gdx, 2 for the second
 #'         etc. The last column will always be the actual value column called <symbolName>.

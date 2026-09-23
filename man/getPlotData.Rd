@@ -14,7 +14,7 @@ are provided each one represents data after a specific iteration. The order of p
 iteration order, e.g. pathToGdx[1] should hold data for the first iteration, pathToGdx[2] for the
 second iteration etc. If the path to a folder is given the fulldata gdx files in it are used.}
 
-\item{...}{Additional arguments passed to gamstransfer::readGDX.}
+\item{...}{Additional arguments passed to piamtutils::readGdxToDf}
 }
 \value{
 A data frame with data from the given gdx file(s). If multiple gdx files are provided an additional

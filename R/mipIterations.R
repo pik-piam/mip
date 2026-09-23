@@ -17,10 +17,11 @@
 #'                      plotly. If NULL no slider is used.
 #' @param facets        A string from names(x), defining which column is used for grouping. A small plot (facet) is
 #'                      shown for each group. If NULL facets are not used.
-#' @param facetScales   The 'scales' argument for facets (if used), defaults to 'fixed'. See help(facet_wrap) for more info.
+#' @param facetScales   The 'scales' argument for facets (if used), defaults to 'fixed'.
+#' See help(facet_wrap) for more info.
 #'
 #' @return A list of plotly plots, if returnGgplots is TRUE a list of ggplots instead
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @seealso \code{\link{getPlotData}}
 #' @importFrom ggplot2 ggplot aes_string geom_line ylab facet_wrap ggtitle
 #'             scale_color_gradientn theme_bw theme element_blank
@@ -101,21 +102,26 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
 
   # create a plot for each combination of unplotted values (not mapped to an aesthetic)
   plots <- lapply(unplottedCombinations, function(unplottedCombination) {
+
     # keep only rows corresponding to unplottedCombination
     x <- Reduce(function(filteredData, index) {
       return(filteredData[filteredData[[names(unplottedCombination)[[index]]]] == unplottedCombination[[index]], ])
     }, seq_along(unplottedCombination), plotData)
+
+    # don't plot combinations containing only 0s
+    if (all(x[[valueColumnName]] == 0)) return()
 
     heading <- tail(names(plotData), 1)
     if (length(unplottedCombination) > 0) {
       heading <- paste(heading, substring(paste0(list(lapply(unplottedCombination, as.character))), 5))
     }
 
-    plot <- ggplot(x, do.call(aes_string, aestheticsArgs)) +
+    plot <- ggplot(x, do.call(aes, lapply(aestheticsArgs, str2lang))) +
       geom_line() +
       ggtitle(heading) +
       theme_bw() +
       theme(strip.background = element_blank())
+
     if (!is.null(facets)) {
       # by default create a small plot for each region; always show all facets, even if empty
       plot <- plot + facet_wrap(facets, drop = FALSE, scales = facetScales)
@@ -125,7 +131,13 @@ mipIterations <- function(plotData, returnGgplots = FALSE,
     }
     return(plot)
   })
-  names(plots) <- lapply(plots, function(plot) plot$label$title)
+
+  # remove NULL entries from the list
+  plots <- plots[!vapply(plots, is.null, FUN.VALUE = logical(1))]
+
+  # extract title as list item names
+  names(plots) <- lapply(plots, function(plot) ggplot2::get_labs(plot)[["title"]])
+
   if (!returnGgplots) {
     # return plotly plots instead of ggplots
     plots <- lapply(plots, ggplotly)

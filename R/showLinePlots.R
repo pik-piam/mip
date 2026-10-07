@@ -84,13 +84,14 @@ layoutLinePlots <- function(items) {
 #' @return List of ggplot objects
 #' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
+#' @importFrom ggplot2 theme_void
 #' @importFrom quitte as.quitte getVars
 #' @importFrom rlang .data .env
 #' @export
 createLinePlots <- function(
   data,
-  vars = getVars(as.quitte(data)),
-  histVars = vars,
+  vars = NULL,
+  histVars = NULL,
   scales = "free_y",
   ylim = 0,
   show.dots = TRUE,
@@ -102,6 +103,9 @@ createLinePlots <- function(
   vlines = NULL,
   thresholds = getOption("mip.validationThresholds")
 ) {
+  df <- as.quitte(data)
+  if (is.null(vars)) vars <- getVars(df)
+  if (is.null(histVars)) histVars <- vars
   # Validate function arguments.
   stopifnot(is.character(vars))
   stopifnot(is.character(histVars))
@@ -113,7 +117,7 @@ createLinePlots <- function(
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
-  d <- as.quitte(data) %>%
+  d <- df %>%
     filter(
       !is.na(.data$value),
       ((.data$variable %in% .env$vars & .data$scenario != "historical") |
@@ -158,7 +162,7 @@ createLinePlots <- function(
   }
 
   if (NROW(dMainScen) == 0) {
-    p1 <- ggplot() + theme_minimal()
+    p1 <- ggplot() + theme_void()
   } else {
     p1 <- dMainScen %>%
       mipLineHistorical(
@@ -186,7 +190,7 @@ createLinePlots <- function(
 
     if (!is.null(target)) {
 
-      targets <- as.quitte(data) %>%
+      targets <- df %>%
         filter(!is.na(.data$value), .data$region == .env$mainReg,
                .data$scenario != "historical", .data$variable == target) %>%
         droplevels()
@@ -200,7 +204,7 @@ createLinePlots <- function(
 
   }
   if (NROW(dRegiScen) == 0) {
-    p2 <- ggplot() + theme_minimal()
+    p2 <- ggplot() + theme_void()
   } else {
     p2 <- dRegiScen %>%
       mipLineHistorical(
@@ -222,7 +226,7 @@ createLinePlots <- function(
 
     if (!is.null(target)) {
 
-      targets <- as.quitte(data) %>%
+      targets <- df %>%
         filter(!is.na(.data$value), .data$region != .env$mainReg,
                .data$scenario != "historical", .data$variable == target) %>%
         droplevels()

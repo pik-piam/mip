@@ -55,7 +55,8 @@ showMultiLinePlotsByVariable <- function(...) {
 #' @inheritParams createMultiLinePlots
 #' @importFrom rlang .data .env
 #' @importFrom tidyr drop_na
-#' @importFrom ggplot2 ylim
+#' @importFrom ggplot2 ylim scale_x_log10
+#' @importFrom dplyr first last
 createMultiLinePlotsByVariable <- function(
   data, vars, xVar, scales = "free_y",
   showHistorical = FALSE,
@@ -100,12 +101,13 @@ createMultiLinePlotsByVariable <- function(
 	logscaleRange <- function(dataValues) c(floor(log10(min(dataValues))*10)/10, ceiling(log10(max(dataValues))*10)/10)
 	logscaleBreaks <- function(dataValues) {
 		majorBreaks <- 10^seq(floor(log10(min(dataValues))), ceiling(log10(max(dataValues))), 1) # 10 100 1000
-		minorBreaks <- as.vector(outer(1:9, head(majorBreaks,-1), "*")) # 10 20 .. 90 100 200 .. 900
+		minorBreaks <- as.vector(outer(1:9, utils::head(majorBreaks,-1), "*")) # 10 20 .. 90 100 200 .. 900
 		if(diff(logscaleRange(dataValues)) < 3) majorBreaks <- minorBreaks
 		return(list(majorBreaks, minorBreaks))
 	}
 
-	plotOptions <- function(dataOptions)
+	plotOptions <- function(dataOptions) {
+	  . <- NULL
 		dataOptions %>% ggplot(aes(.data$value.x, .data$value)) +
 		geom_line(aes(linetype = .data$scenario)) +
 		facet_wrap(vars(.data$variable), scales = scales, nrow = nrowNum) +
@@ -129,8 +131,8 @@ createMultiLinePlotsByVariable <- function(
 			if(grepl("y", logscale)) expand_limits(y = 10^logscaleRange(dataOptions$value))
 			else					 expand_limits(y = 0)
 		)
+	}
 
-	
 	# plot global or main region data
 	if (showGlobal) {
 		dMainScen <- d %>% filter(.data$region == .env$mainReg, .data$scenario != "historical") %>% droplevels()
@@ -151,7 +153,7 @@ createMultiLinePlotsByVariable <- function(
 		scale_color_manual(values = plotstyle(regions))
 
 
-	# add historical data 
+	# add historical data
 	if (showHistorical) {
 		stopifnot(xVar %in% names(histRefModel))
 

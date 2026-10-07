@@ -6,8 +6,8 @@
 \usage{
 createLinePlots(
   data,
-  vars = getVars(as.quitte(data)),
-  histVars = vars,
+  vars = NULL,
+  histVars = NULL,
   scales = "free_y",
   ylim = 0,
   show.dots = TRUE,

@@ -25,7 +25,6 @@
 #' @export
 #'
 scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
-  model <- scenario <- region <- year <- period <- variable <- unit <- NULL
 
   #limit for file upload set to 300 MB
   options(shiny.maxRequestSize = 300*1024^2)
@@ -205,7 +204,7 @@ scenToolMAgPIE <- function(file=NULL,valfile=NULL) {
     })
 
 
-    lineplot <- debounce(reactive({
+    lineplot <- shiny::debounce(reactive({
       if(input$update_plot) {
         p <- mipLineHistorical(x=val$rep_sel,x_hist=val$val_sel,size = 10,ylab = val$rep_sel$unit,title = val$rep_sel$variable,scales = ifelse(input$free_y,"free_y","fixed"),ylim=switch(input$auto_y + 1, 0, NULL), legend.ncol = if(length(levels(val$rep_sel$scenario)) > 5) 2 else 1)
       } else p <- NULL

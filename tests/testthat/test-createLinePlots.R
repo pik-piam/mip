@@ -24,11 +24,10 @@ test_that("createLinePlots draws validation threshold bands", {
   expect_s3_class(items[[1]]$layers[[2]]$geom, "GeomRibbon")
   expect_no_error(print(items[[1]]))
 
-  if (length(regions) > 1) {
-    expect_length(items[[2]]$layers, length(itemsBase[[2]]$layers) + 2)
-    expect_s3_class(items[[2]]$layers[[1]]$geom, "GeomRibbon")
-    expect_no_error(print(items[[2]]))
-  }
+
+  expect_length(items[[2]]$layers, length(itemsBase[[2]]$layers) + 2)
+  expect_s3_class(items[[2]]$layers[[1]]$geom, "GeomRibbon")
+  expect_no_error(print(items[[2]]))
 
   # thresholds covering a single period are drawn as vertical bars
   thresholdsSingle <- thresholds[thresholds$period == periods[1], ]

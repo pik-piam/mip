@@ -16,7 +16,8 @@ createLinePlots(
   color.dim.manual = NULL,
   histModelsExclude = character(),
   target = NULL,
-  vlines = NULL
+  vlines = NULL,
+  thresholds = getOption("mip.validationThresholds")
 )
 }
 \arguments{
@@ -49,6 +50,11 @@ exclude.}
 \item{target}{optional string, model variable to be plotted with dots (indicating targets)}
 
 \item{vlines}{period used for vertical line}
+
+\item{thresholds}{optional data.frame with validation thresholds as
+returned by \code{piamValidation::getThresholdBands()}.
+Thresholds are drawn as colored background bands. Defaults to
+\code{getOption("mip.validationThresholds")}.}
 }
 \value{
 List of ggplot objects

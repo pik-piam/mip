@@ -77,6 +77,10 @@ layoutLinePlots <- function(items) {
 #' colors of color.dim, default is \code{NULL}.
 #' @param target optional string, model variable to be plotted with dots (indicating targets)
 #' @param vlines period used for vertical line
+#' @param thresholds optional data.frame with validation thresholds as
+#'   returned by \code{piamValidation::getThresholdBands()}.
+#'   Thresholds are drawn as colored background bands. Defaults to
+#'   \code{getOption("mip.validationThresholds")}.
 #' @return List of ggplot objects
 #' @inheritParams createAreaAndBarPlots
 #' @importFrom dplyr bind_rows
@@ -96,7 +100,8 @@ createLinePlots <- function(
   color.dim.manual = NULL,
   histModelsExclude = character(),
   target = NULL,
-  vlines = NULL
+  vlines = NULL,
+  thresholds = getOption("mip.validationThresholds")
 ) {
   df <- as.quitte(data)
   if (is.null(vars)) vars <- getVars(df)
@@ -106,6 +111,9 @@ createLinePlots <- function(
   stopifnot(is.character(histVars))
   stopifnot(is.character(histModelsExclude))
   stopifnot(is.character(scales) && length(scales) == 1)
+  stopifnot(is.null(thresholds) || (is.data.frame(thresholds) && all(
+    c("variable", "unit", "region", "period",
+      "min_red", "min_yel", "max_yel", "max_red") %in% colnames(thresholds))))
   checkGlobalOptionsProvided("mainReg")
   stopifnot(is.character(mainReg) && length(mainReg) == 1)
 
@@ -230,6 +238,12 @@ createLinePlots <- function(
                                     theme = theme(legend.direction = "vertical")))
 
     }
+  }
+
+  # Add validation threshold bands to the background of the plots.
+  if (!is.null(thresholds)) {
+    if (NROW(dMainScen) > 0) p1 <- addThresholdBands(p1, dMainScen, thresholds)
+    if (NROW(dRegiScen) > 0) p2 <- addThresholdBands(p2, dRegiScen, thresholds)
   }
 
   # If a legend of the plots can be used as common legend for both plots,

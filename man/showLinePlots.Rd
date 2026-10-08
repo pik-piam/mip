@@ -24,6 +24,10 @@ exclude.}
 colors of color.dim, default is \code{NULL}.}
     \item{\code{target}}{optional string, model variable to be plotted with dots (indicating targets)}
     \item{\code{vlines}}{period used for vertical line}
+    \item{\code{thresholds}}{optional data.frame with validation thresholds as
+returned by \code{piamValidation::getThresholdBands()}.
+Thresholds are drawn as colored background bands. Defaults to
+\code{getOption("mip.validationThresholds")}.}
     \item{\code{data}}{A quitte object or an object that can be transformed into a
 quitte object.}
     \item{\code{mainReg}}{A single string. The plots for this region are shown enlarged.

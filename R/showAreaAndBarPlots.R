@@ -13,10 +13,10 @@
 #' @inheritDotParams createAreaAndBarPlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
-#' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: width="100\%"}}
-#' \if{html}{page 2 - \code{fill=FALSE}: \figure{showAreaAndBarPlots2.png}{options: width="100\%"}}
-#' \if{html}{page 1 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill1.png}{options: width="100\%"} }
-#' \if{html}{page 2 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill2.png}{options: width="100\%"} }
+#' \if{html}{page 1 - \code{fill=FALSE}: \figure{showAreaAndBarPlots1.png}{options: style="width:100\%;"}}
+#' \if{html}{page 2 - \code{fill=FALSE}: \figure{showAreaAndBarPlots2.png}{options: style="width:100\%;"}}
+#' \if{html}{page 1 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill1.png}{options: style="width:100\%;"} }
+#' \if{html}{page 2 - \code{fill=TRUE}: \figure{showAreaAndBarPlots_fill2.png}{options: style="width:100\%;"} }
 #' @examples
 #' \dontrun{
 #' options(mip.yearsBarPlot = c(2010, 2030, 2050, 2100))

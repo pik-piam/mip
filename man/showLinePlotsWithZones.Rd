@@ -64,7 +64,7 @@ available, this functionality has to be added.
 }
 \section{Example Plots}{
 
-\if{html}{\figure{showLinePlotsWithZones.png}{options: width="100\%"}}
+\if{html}{\figure{showLinePlotsWithZones.png}{options: style="width:100\%;"}}
 }
 
 \examples{

@@ -9,8 +9,8 @@
 #' @inheritDotParams createMultiLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
-#' \if{html}{page 1: \figure{showMultiLinePlots1.png}{options: width="100\%"}}
-#' \if{html}{page 2: \figure{showMultiLinePlots2.png}{options: width="100\%"}}
+#' \if{html}{page 1: \figure{showMultiLinePlots1.png}{options: style="width:100\%;"}}
+#' \if{html}{page 2: \figure{showMultiLinePlots2.png}{options: style="width:100\%;"}}
 #' @examples
 #' \dontrun{
 #' options(mip.mainReg = "World")

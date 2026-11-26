@@ -32,8 +32,8 @@ time. Different regions are shown in the same plot. Faceting is done by
 }
 \section{Example Plots}{
 
-\if{html}{page 1: \figure{showMultiLinePlots1.png}{options: width="100\%"}}
-\if{html}{page 2: \figure{showMultiLinePlots2.png}{options: width="100\%"}}
+\if{html}{page 1: \figure{showMultiLinePlots1.png}{options: style="width:100\%;"}}
+\if{html}{page 2: \figure{showMultiLinePlots2.png}{options: style="width:100\%;"}}
 }
 
 \examples{

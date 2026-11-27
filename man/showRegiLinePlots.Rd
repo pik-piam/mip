@@ -33,7 +33,7 @@ is done by \code{scenario}. The plots arranged and shown.
 }
 \section{Example Plots}{
 
-\if{html}{\figure{showRegiLinePlots.png}{options: width="100\%"}}
+\if{html}{\figure{showRegiLinePlots.png}{options: style="width:100\%;"}}
 }
 
 \examples{

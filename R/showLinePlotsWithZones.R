@@ -18,7 +18,7 @@
 #'   One of \code{"main"}, \code{"regions"}, or \code{"all"}.
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
-#' \if{html}{\figure{showLinePlotsWithZones.png}{options: width="100\%"}}
+#' \if{html}{\figure{showLinePlotsWithZones.png}{options: style="width:100\%;"}}
 #' @examples
 #' \dontrun{
 #' data <- as.quitte(data)

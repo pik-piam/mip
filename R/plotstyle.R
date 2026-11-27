@@ -27,15 +27,15 @@
 #'   can be set globally using the `plotstyle.strip_units` option.
 #' @return Plot styles for given entities
 #' @section Colors for unknown entities:
-#' \if{html}{\figure{colors.png}{options: width="100\%"}}
+#' \if{html}{\figure{colors.png}{options: style="width:100\%;"}}
 #' @author David Klein, Jan Philipp Dietrich
 #' @seealso \code{\link{plotstyle.add}}
 #' @examples
 #' entities <- c("AFR", "AAA", "AFR", "UNKNOWN_ELEMENT2")
 #' plotstyle(entities)
 #' unknown <- data.frame(row.names = c("AAA", "UNKNOWN_ELEMENT2"),
-#'                    color = c("#123456", "#345678"),
-#'                    legend = c("l_AAA", "l_UNKNOWN_ELEMENT2"))
+#'                       color = c("#123456", "#345678"),
+#'                       legend = c("l_AAA", "l_UNKNOWN_ELEMENT2"))
 #' plotstyle(entities, unknown = unknown)
 #' plotstyle(entities, out = "legend")
 #' plotstyle(entities, out = "all")

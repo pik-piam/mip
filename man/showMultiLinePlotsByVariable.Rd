@@ -48,8 +48,8 @@ chosen via \code{histRefModel}.
 }
 \section{Example Plots}{
 
-\if{html}{page 1: \figure{showMultiLinePlotsByVariable1.png}{options: width="100\%"}}
-\if{html}{page 2: \figure{showMultiLinePlotsByVariable2.png}{options: width="100\%"}}
+\if{html}{page 1: \figure{showMultiLinePlotsByVariable1.png}{options: style="width:100\%;"}}
+\if{html}{page 2: \figure{showMultiLinePlotsByVariable2.png}{options: style="width:100\%;"}}
 }
 
 \examples{

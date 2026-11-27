@@ -8,7 +8,7 @@
 #' @inheritDotParams createLinePlotsWithTarget
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
-#' \if{html}{\figure{showLinePlotsWithTarget.png}{options: width="100\%"}}
+#' \if{html}{\figure{showLinePlotsWithTarget.png}{options: style="width:100\%;"}}
 #' @examples
 #' \dontrun{
 #' data <- as.quitte(data)

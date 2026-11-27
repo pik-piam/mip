@@ -10,7 +10,7 @@
 #' @inheritDotParams createRegiLinePlots
 #' @return \code{NULL} is returned invisible.
 #' @section Example Plots:
-#' \if{html}{\figure{showRegiLinePlots.png}{options: width="100\%"}}
+#' \if{html}{\figure{showRegiLinePlots.png}{options: style="width:100\%;"}}
 #' @examples
 #' \dontrun{
 #' options(mip.mainReg = "World")
